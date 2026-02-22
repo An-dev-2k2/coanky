@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+* {
+  font-family: 'Gilroy', sans-serif;
+  scroll-behavior: smooth;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('/fonts/MTD\ Gilroy\ Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-ExtraBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
