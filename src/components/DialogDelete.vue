@@ -23,7 +23,7 @@
                 </Button>
               </template>
               <template v-else>
-                <Button @click="emits('submit')" variant="danger" class="inline-flex justify-center">
+                <Button @click="emits('submit', data._id)" variant="danger" class="inline-flex justify-center">
                   Xóa ngay
                 </Button>
               </template>

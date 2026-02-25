@@ -1,5 +1,5 @@
 <template>
-  <Modal :model-value="modelValue" @update:modelValue="emit('update:modelValue', $event)" title="Thêm icon">
+  <Modal :model-value="modelValue" @update:modelValue="emit('update:modelValue', $event)" :title="title">
     <form @submit.prevent="onSubmit" class="space-y-4">
       <FormField name="name" label="Tên icon">
         <Field name="name" as="input" type="text"
@@ -8,34 +8,32 @@
       </FormField>
 
       <FormField name="image" label="Hình ảnh icon">
-        <div v-if="previewUrl"
-          class="mb-2 w-20 h-20 border border-slate-200 rounded-md overflow-hidden flex items-center justify-center bg-slate-50">
-          <img :src="previewUrl" class="w-full h-full object-contain" />
-        </div>
+        <Field name="image">
+          <div v-if="previewUrl"
+            class="mb-2 w-20 h-20 border border-slate-200 rounded-md overflow-hidden flex items-center justify-center bg-slate-50">
+            <img :src="previewUrl" class="w-full h-full object-contain" />
+          </div>
 
-        <label
-          class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-md cursor-pointer transition-all"
-          :class="isDragging
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50'" @dragover.prevent="isDragging = true"
-          @dragleave="isDragging = false" @drop.prevent="onDrop">
-          <Upload class="w-6 h-6 mb-1" :class="isDragging ? 'text-blue-500' : 'text-slate-400'" />
-          <span class="text-xs text-slate-400">
-            Kéo thả hoặc <span class="text-blue-500">chọn file</span>
-          </span>
-          <input type="file" accept="image/*" class="hidden" @change="onFileChange" />
-        </label>
-
-        <p v-if="fileError" class="text-xs text-red-500 mt-1">
-          {{ fileError }}
-        </p>
+          <label
+            class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed rounded-md cursor-pointer transition-all"
+            :class="isDragging
+              ? 'border-blue-500 bg-blue-50'
+              : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50'" @dragover.prevent="isDragging = true"
+            @dragleave="isDragging = false" @drop.prevent="onDrop">
+            <Upload class="w-6 h-6 mb-1" :class="isDragging ? 'text-blue-500' : 'text-slate-400'" />
+            <span class="text-xs text-slate-400">
+              Kéo thả hoặc <span class="text-blue-500">chọn file</span>
+            </span>
+            <input type="file" accept="image/*" class="hidden" @change="onFileChange" />
+          </label>
+        </Field>
       </FormField>
     </form>
 
     <template #footer>
       <div class="flex justify-end gap-2">
         <Button variant="outline" @click="close">Huỷ</Button>
-        <Button @click="onSubmit">Thêm</Button>
+        <Button @click="onSubmit">{{ nameBtn }}</Button>
       </div>
     </template>
   </Modal>
@@ -50,11 +48,16 @@ import FormField from '@/components/FormField.vue'
 import { useForm, Field } from 'vee-validate'
 import { z } from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
+import IconAPI from '@/services/api/admin/IconAPI'
+import { useToast } from 'vue-toastification';
 
+const toast = useToast()
 const props = defineProps({
   modelValue: Boolean,
   mode: String,
-  data: Object
+  data: Object,
+  title: String,
+  nameBtn: String,
 })
 
 const emit = defineEmits(['update:modelValue', 'close', 'submit'])
@@ -62,19 +65,22 @@ const emit = defineEmits(['update:modelValue', 'close', 'submit'])
 const isDragging = ref(false)
 const imageFile = ref(null)
 const previewUrl = ref('')
-const fileError = ref('')
 
 const schema = toTypedSchema(
   z.object({
-    name: z.string().trim().nonempty('Tên icon không được để trống')
+    name: z.string().trim().nonempty('Tên icon không được để trống'),
+    image: z
+      .any()
+      .refine(file => typeof file === 'string' || file instanceof File, { message: 'Vui lòng chọn ảnh' }),
   })
 )
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, setFieldError, setFieldValue } = useForm({
   validationSchema: schema,
   initialValues: {
-    name: ''
-  }
+    name: props.data.name || '',
+    image: props.data.image || null,
+  },
 })
 
 function close() {
@@ -91,39 +97,81 @@ function onDrop(e) {
 }
 
 function handleFile(file) {
-  fileError.value = ''
   if (!file) return
-  if (!file.type.startsWith('image/')) {
-    fileError.value = 'Vui lòng chọn file hình ảnh'
-    return
-  }
   imageFile.value = file
   previewUrl.value = URL.createObjectURL(file)
+  setFieldValue('image', file)
 }
 
 const onSubmit = handleSubmit(async (values) => {
-  if (!imageFile.value) {
-    fileError.value = 'Vui lòng chọn hình ảnh icon'
-    return
-  }
-
   const formData = new FormData()
   formData.append('name', values.name)
-  formData.append('image', imageFile.value)
+  if (imageFile.value instanceof File) {
+    formData.append('image', imageFile.value)
+  }
 
-  emit('submit', formData)
-  close()
-  resetState()
+  if (props.mode === 'create') {
+    createIcon(formData)
+  } else if (props.mode === 'update') {
+    updateIcon(formData)
+  }
 })
+
+const createIcon = async (formData) => {
+  try {
+    const { data: d } = await IconAPI.create(formData)
+    toast.success('Thêm ấn ký thành công!')
+    emit('submit', d)
+    resetState()
+  }
+  catch (e) {
+    const errors = e?.errors
+
+    if (errors && Array.isArray(errors)) {
+      errors.forEach(err => {
+        setFieldError(err.path, err.message)
+      })
+    }
+    console.log(e)
+  }
+}
+
+const updateIcon = async (formData) => {
+  try {
+    const { data: d } = await IconAPI.update(props.data._id, formData)
+    toast.success('Cập nhật ấn ký thành công!')
+    emit('submit', d)
+    resetState()
+  }
+  catch (e) {
+    console.log(e)
+  }
+}
 
 function resetState() {
   imageFile.value = null
   previewUrl.value = ''
-  fileError.value = ''
   resetForm()
 }
 
-watch(() => props.modelValue, (val) => {
-  if (!val) resetState()
-})
+watch(
+  () => props.data,
+  (newVal) => {
+    if (!newVal) return
+
+    resetForm({
+      values: {
+        name: newVal.name || '',
+        image: newVal.image || null,
+      },
+    })
+
+    // Nếu là update và có ảnh URL
+    if (typeof newVal.image === 'string') {
+      previewUrl.value = newVal.image
+      imageFile.value = null
+    }
+  },
+  { immediate: true }
+)
 </script>

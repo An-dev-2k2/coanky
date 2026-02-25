@@ -7,8 +7,8 @@ const router = createRouter({
   linkActiveClass: 'active',
 })
 router.beforeEach((to, from, next) => {
-  const userToken = localStorage.getItem('token')
-  const adminToken = localStorage.getItem('adminToken')
+  const userToken = sessionStorage.getItem('token')
+  const adminToken = sessionStorage.getItem('adminToken')
 
   const isMobile = window.innerWidth < 640
   if (isMobile && to.meta.mobileOnly) {

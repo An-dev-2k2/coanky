@@ -55,7 +55,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import { LayoutDashboard, ChevronLeft, ChevronRight, LogOut, TicketsPlane, MapPinned, User, Handbag, Users, Settings, Landmark } from 'lucide-vue-next'
+import { LayoutDashboard, ChevronLeft, ChevronRight, LogOut, TicketsPlane, MapPinned, User, Handbag, Users, Settings, Landmark, BoomBox } from 'lucide-vue-next'
+import AuthAPI from '@/services/api/admin/AuthAPI'
 
 const props = defineProps({
   collapsed: Boolean
@@ -65,15 +66,24 @@ const menus = [
   { id: 1, name: 'Dashboard', to: '/admin/dashboard', icon: LayoutDashboard },
   { id: 2, name: 'Tour', to: '/admin/tours', icon: TicketsPlane },
   { id: 3, name: 'Ấn ký', to: '/admin/icons', icon: MapPinned },
-  { id: 4, name: 'Đơn hàng', to: '/admin/orders', icon: Handbag },
-  { id: 5, name: 'Người dùng', to: '/admin/users', icon: Users },
-  { id: 6, name: 'Lịch sử giao dịch', to: '/admin/transactions', icon: Landmark },
-  { id: 7, name: 'Cài đặt', to: '/admin/settings', icon: Settings },
+  { id: 4, name: 'Audio', to: '/admin/audios', icon: BoomBox },
+  { id: 5, name: 'Đơn hàng', to: '/admin/orders', icon: Handbag },
+  { id: 6, name: 'Người dùng', to: '/admin/users', icon: Users },
+  { id: 7, name: 'Lịch sử giao dịch', to: '/admin/transactions', icon: Landmark },
+  { id: 8, name: 'Cài đặt', to: '/admin/settings', icon: Settings },
 ]
 
-const logout = () => {
+const logout = async () => {
   // localStorage.removeItem('token')
-  window.location.href = '/admin/login'
+  // window.location.href = '/admin/login'
+  try {
+    await AuthAPI.logout()
+    sessionStorage.removeItem('adminToken')
+    window.location.href = '/admin/login'
+  }
+  catch (error) {
+    console.error('Logout failed:', error)
+  }
 }
 </script>
 

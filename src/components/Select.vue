@@ -2,7 +2,7 @@
   <PopoverRoot v-model:open="open" :disabled="disabled">
     <PopoverTrigger as-child :disabled="disabled">
       <div
-        :class="[props.class, disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer bg-white px-3.5 py-2 rounded-lg transition-all border border-slate-300/70']"
+        :class="[props.class, disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer bg-white px-3.5 py-1.5 rounded-lg transition-all border border-slate-300/70']"
         class="flex items-center">
         <component :is="icon" class="w-4 h-4 mr-1.5" :class="modelValueDisplay ? '' : 'text-slate-400'" v-if="icon" />
         <span class="truncate flex-1 text-left text-sm" :class="modelValueDisplay ? '' : 'text-slate-400'">
@@ -18,7 +18,7 @@
         <ul class="space-y-1">
           <li v-for="(item, index) in options" :key="index" @click="selectItem(item.value)"
             class="flex items-center justify-between cursor-pointer px-3 py-1.5 rounded "
-            :class="isSelected(item.value) ? 'bg-[var(--primary-50)] text-[var(--primary-900)] font-medium' : 'text-slate-500 hover:bg-[var(--primary-50)] hover:font-medium hover:text-[var(--primary-900)]'">
+            :class="isSelected(item.value) ? 'bg-blue-50 text-blue-900 font-medium' : 'text-slate-500 hover:bg-slate-100 hover:font-medium hover:text-slate-900'">
             <div class="flex items-center gap-2">
               <span class="text-sm">{{ item.name }}</span>
             </div>

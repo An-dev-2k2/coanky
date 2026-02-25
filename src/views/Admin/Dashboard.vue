@@ -45,6 +45,12 @@
       <Card class="col-span-6">
         <ChartRevenueByYear :data="revenueByYear" />
       </Card>
+      <Card class="col-span-5">
+        <ChartTourStatus :data="tourStatus" />
+      </Card>
+      <Card class="col-span-7">
+        <Table :fields="fieldsIconStatus" :data="dataIconStatus" />
+      </Card>
     </div>
   </div>
 </template>
@@ -58,12 +64,26 @@ import moment from 'moment';
 import ChartRevenueByDate from '@/components/admin/ChartRevenueByDate.vue';
 import ChartRevenueAndTours from '@/components/admin/ChartRevenueAndTours.vue';
 import ChartRevenueByYear from '@/components/admin/ChartRevenueByYear.vue';
+import ChartTourStatus from '@/components/admin/ChartTourStatus.vue';
+import Table from '@/components/Table.vue';
 
 const stats = [
   { id: 1, title: "Tổng doanh thu", color: '#01f195', background: "bg-gradient-to-b to-[#007e83] from-[#01f195]", icon: DollarSign, current: "0", previous: "0", proportion: "0" },
   { id: 3, title: "Tổng tour", color: '#a85139', background: "bg-gradient-to-b to-[#a85139] from-[#e0a79a]", icon: TicketsPlane, current: "0", previous: "0", proportion: "0" },
   { id: 2, title: "Lượt đặt", color: '#ffa600', background: "bg-gradient-to-b to-[#ffa600] from-[#ffd60b]", icon: Handbag, current: "0", previous: "0", proportion: "0" },
   { id: 4, title: "Khách hàng", color: '#4fadfe', background: "bg-gradient-to-b to-[#4fadfe] from-[#01f1fe]", icon: Users, current: "0", previous: "0", proportion: "0" },
+]
+
+const fieldsIconStatus = [
+  { key: 'index', label: 'STT' },
+  { key: 'name', label: 'Tên ấn ký' },
+  { key: 'tour', label: 'Tour' },
+  { key: 'updatedAt', label: 'Ngày cập nhật' },
+  { key: 'status', label: 'Trạng thái' },
+]
+
+const dataIconStatus = [
+
 ]
 
 const revenueByDate = ref({
@@ -81,6 +101,11 @@ const revenueByYear = ref({
   months: [],
   currentYear: [],
   previousYear: []
+})
+
+const tourStatus = ref({
+  completed: 0,
+  notCompleted: 0
 })
 
 const startOfMonth = ref(moment().startOf('month').format('YYYY-MM-DD'))
@@ -147,10 +172,21 @@ const generateRevenueByYear = () => {
   }
 }
 
+const generateTourStatus = () => {
+  const completed = 120
+  const notCompleted = 30
+
+  tourStatus.value = {
+    completed,
+    notCompleted
+  }
+}
+
 onMounted(() => {
   generateRevenueByDate()
   generateRevenueAndTours()
   generateRevenueByYear()
+  generateTourStatus()
 })
 </script>
 

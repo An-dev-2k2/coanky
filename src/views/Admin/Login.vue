@@ -62,7 +62,12 @@
 import { useForm, Form, Field, ErrorMessage } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
+import AuthAPI from '@/services/api/admin/AuthAPI'
+import { useToast } from 'vue-toastification'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+const toast = useToast()
 // Schema validation bằng Zod
 const schema = toTypedSchema(
   z.object({
@@ -84,8 +89,16 @@ const { handleSubmit } = useForm({
   },
 })
 
-const onSubmit = handleSubmit((values) => {
-  console.log('Login values:', values)
-  // TODO: call API login
+const onSubmit = handleSubmit(async (values) => {
+  try {
+    const { data } = await AuthAPI.login(values)
+    sessionStorage.setItem('adminToken', data)
+    toast.success('Đăng nhập thành công')
+    router.push('/admin/dashboard')
+
+  }
+  catch (error) {
+    toast.error(error?.message || 'Đăng nhập thất bại')
+  }
 })
 </script>

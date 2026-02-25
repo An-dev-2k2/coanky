@@ -3,14 +3,11 @@
     <div class="flex justify-end">
       <Button class="flex items-center gap-1" @click="openDialog('create')">
         <Plus class="w-4 h-4" />
-        Thêm ấn ký
+        Thêm audio
       </Button>
     </div>
     <Card class="py-0 mt-5">
       <Table :fields="fields" :data="data">
-        <template #head-image="{ field }">
-          <p class="text-center">{{ field.label }}</p>
-        </template>
         <template #head-name="{ field }">
           <p class="text-center">{{ field.label }}</p>
         </template>
@@ -18,9 +15,9 @@
           <p class="text-center font-bold">{{ value }}</p>
         </template>
         <template #image="{ item }">
-          <div class="flex justify-center">
-            <div class="w-10 h-10 relative flex items-center justify-center">
-              <img :src="item.image" alt="Image Preview" class="w-full h-full object-contain" />
+          <div class="h-[71px]">
+            <div class="relative aspect-video w-32 overflow-hidden h-full rounded-[10px]">
+              <img class="size-full object-cover" :src="item.image" alt="Image Preview" />
             </div>
           </div>
         </template>
@@ -45,18 +42,18 @@
       </Table>
     </Card>
     <component v-model="showModal" :is="currentDialog" :title="titleDialog" :nameBtn="nameBtnDialog"
-      :data="selectedDialog" :mode="modeDialog" @close="closeDialog" @submit="onDialogSubmit" />
+      :data="selectedDialog" :mode="modeDialog" @submit="onDialogSubmit" />
   </div>
 </template>
 
 <script setup>
-import { ref, markRaw, defineAsyncComponent, onMounted } from 'vue'
-import { Plus, Upload, Trash2, Pen } from 'lucide-vue-next';
-import Button from '@/components/Button.vue';
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
+import Button from '@/components/Button.vue';
+import { Plus, Pen, Trash2 } from 'lucide-vue-next';
 import { useFormat } from '@/composables/useFormat';
-import IconAPI from '@/services/api/admin/IconAPI';
+import { ref, markRaw, defineAsyncComponent, onMounted } from 'vue'
+import AudioAPI from '@/services/api/admin/AudioAPI';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast()
@@ -64,47 +61,78 @@ const { formatDate, formatTimeOnly } = useFormat()
 
 const fields = [
   { key: 'index', label: 'STT' },
-  { key: 'name', label: 'Tên icon' },
-  { key: 'image', label: 'Hình ảnh' },
-  { key: 'createdAt', label: "Ngày tạo" },
-  { key: 'updatedAt', label: "Ngày cập nhật" },
-  { key: 'actions', label: "Thao tác" },
+  { key: 'name', label: 'Tên audio' },
+  { key: 'image', label: 'Background audio' },
+  { key: 'createdAt', label: 'Ngày tạo' },
+  { key: 'updatedAt', label: 'Ngày cập nhật' },
+  { key: 'actions', label: 'Thao tác' },
 ]
+const data = ref([])
+
 const currentDialog = ref(null)
+const showModal = ref(false)
 const modeDialog = ref(null)
 const selectedDialog = ref(null)
-const data = ref([])
 const titleDialog = ref('')
 const nameBtnDialog = ref('')
 
-const showModal = ref(false)
-
 const openDialog = (type, props = {}) => {
   if (type === 'create') {
-    selectedDialog.value = {
-      name: '',
-      image: null,
-    }
+    selectedDialog.value = { name: '', audio: null }
     modeDialog.value = 'create'
-    titleDialog.value = 'Thêm ấn ký'
+    titleDialog.value = 'Thêm audio'
     nameBtnDialog.value = 'Thêm'
-    currentDialog.value = markRaw(defineAsyncComponent(() => import('@/views/Admin/Icons/IconAddModal.vue')))
-  }
-  if (type === 'update') {
+    currentDialog.value = markRaw(
+      defineAsyncComponent(() =>
+        import('@/views/Admin/Audios/AudioFormModal.vue')
+      )
+    )
+  } else if (type === 'update') {
     selectedDialog.value = props
     modeDialog.value = 'update'
-    titleDialog.value = 'Cập nhật ấn ký'
+    titleDialog.value = 'Cập nhật audio'
     nameBtnDialog.value = 'Cập nhật'
     currentDialog.value = markRaw(
-      defineAsyncComponent(() => import('@/views/Admin/Icons/IconAddModal.vue'))
+      defineAsyncComponent(() =>
+        import('@/views/Admin/Audios/AudioFormModal.vue')
+      )
     )
-  }
-  if (type === 'delete') {
+  } else if (type === 'delete') {
     selectedDialog.value = props
     modeDialog.value = 'delete'
-    currentDialog.value = markRaw(defineAsyncComponent(() => import('@/components/DialogDelete.vue')))
+    titleDialog.value = 'Xóa audio'
+    nameBtnDialog.value = 'Xóa'
+    currentDialog.value = markRaw(
+      defineAsyncComponent(() =>
+        import('@/components/DialogDelete.vue')
+      )
+    )
   }
   showModal.value = true
+}
+
+const onDialogSubmit = async (d) => {
+  if (modeDialog.value === 'create') {
+    data.value.push(d)
+  } else if (modeDialog.value === 'update') {
+    const index = data.value.findIndex(item => item.id === d.id)
+    if (index !== -1) {
+      data.value[index] = d
+    }
+  } else if (modeDialog.value === 'delete') {
+    await deleteAudio(d)
+  }
+  closeDialog()
+}
+
+const deleteAudio = async (id) => {
+  try {
+    await AudioAPI.delete(id)
+    data.value = data.value.filter(i => i._id !== id)
+    toast.success('Xóa audio thành công!')
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 const closeDialog = () => {
@@ -114,36 +142,12 @@ const closeDialog = () => {
   selectedDialog.value = null
   titleDialog.value = ''
   nameBtnDialog.value = ''
+  console.log(showModal.value)
 }
 
-const onDialogSubmit = async (d) => {
-  if (modeDialog.value === 'create') {
-    data.value.push(d)
-  } else if (modeDialog.value === 'update') {
-    const index = data.value.findIndex(i => i._id === d._id)
-    if (index !== -1) {
-      data.value[index] = d
-    }
-  } else if (modeDialog.value === 'delete') {
-    await deleteIcon(d)
-  }
-  closeDialog()
-}
-
-const deleteIcon = async (id) => {
+const getAudios = async () => {
   try {
-    await IconAPI.delete(id)
-    toast.success('Xóa ấn ký thành công!')
-    data.value = data.value.filter(i => i._id !== id)
-  }
-  catch (e) {
-    console.log(e)
-  }
-}
-
-const getIcons = async () => {
-  try {
-    const { data: d } = await IconAPI.get()
+    const { data: d } = await AudioAPI.get()
     data.value = d
   }
   catch (e) {
@@ -152,7 +156,7 @@ const getIcons = async () => {
 }
 
 onMounted(() => {
-  getIcons()
+  getAudios()
 })
 </script>
 

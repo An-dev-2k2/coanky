@@ -9,7 +9,7 @@
           <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 shrink-0">
             <h5 class="font-semibold text-base">{{ title }}</h5>
             <button type="button" @click="$emit('update:modelValue', false)"
-              class="text-slate-400 hover:text-slate-600 transition-colors">
+              class="text-slate-400 hover:text-slate-600 cursor-pointer transition-colors">
               <X class="w-5 h-5" />
             </button>
           </div>

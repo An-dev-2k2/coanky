@@ -39,7 +39,7 @@ const routes = [
         name: 'dashboard',
         meta: {
           title: 'Trang quản trị',
-          authRequired: false,
+          authRequired: true,
         },
         component: () => import('@/views/Admin/Dashboard.vue'),
       },
@@ -48,7 +48,7 @@ const routes = [
         name: 'tours',
         meta: {
           title: 'Danh sách tour',
-          authRequired: false,
+          authRequired: true,
         },
         component: () => import('@/views/Admin/Tours.vue'),
       },
@@ -57,7 +57,16 @@ const routes = [
         name: 'tours-create',
         meta: {
           title: 'Thêm tour',
-          authRequired: false,
+          authRequired: true,
+        },
+        component: () => import('@/views/Admin/Tours/Create.vue'),
+      },
+      {
+        path: 'tours/:id/edit',
+        name: 'tours-edit',
+        meta: {
+          title: 'Cập nhật tour',
+          authRequired: true,
         },
         component: () => import('@/views/Admin/Tours/Create.vue'),
       },
@@ -66,16 +75,25 @@ const routes = [
         name: 'icons',
         meta: {
           title: 'Danh sách Ấn Ký',
-          authRequired: false,
+          authRequired: true,
         },
         component: () => import('@/views/Admin/Icons.vue'),
+      },
+      {
+        path: 'audios',
+        name: 'audios',
+        meta: {
+          title: 'Danh sách Audio',
+          authRequired: true,
+        },
+        component: () => import('@/views/Admin/Audios.vue'),
       },
       {
         path: 'orders',
         name: 'orders',
         meta: {
           title: 'Danh sách đơn hàng',
-          authRequired: false,
+          authRequired: true,
         },
         component: () => import('@/views/Admin/Orders.vue'),
       },
@@ -84,7 +102,7 @@ const routes = [
         name: 'users',
         meta: {
           title: 'Danh sách người dùng',
-          authRequired: false,
+          authRequired: true,
         },
         component: () => import('@/views/Admin/Users.vue'),
       },
@@ -93,7 +111,7 @@ const routes = [
         name: 'transactions',
         meta: {
           title: 'Lịch sử giao dịch',
-          authRequired: false,
+          authRequired: true,
         },
         component: () => import('@/views/Admin/Transactions.vue'),
       },
@@ -102,7 +120,7 @@ const routes = [
         name: 'settings',
         meta: {
           title: 'Cài đặt',
-          authRequired: false,
+          authRequired: true,
         },
         component: () => import('@/views/Admin/Settings.vue'),
       },

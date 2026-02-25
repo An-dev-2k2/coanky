@@ -45,7 +45,8 @@
         </template>
         <template #actions="{ item, index }">
           <div class="flex items-center gap-2">
-            <Button variant="primary" class="!p-2">
+            <Button variant="primary" class="!p-2"
+              @click="$router.push({ name: 'tours-edit', params: { id: item._id } })">
               <Pen class="w-4 h-4" />
             </Button>
             <Button variant="danger" class="!p-2">
@@ -64,12 +65,14 @@ import Button from '@/components/Button.vue';
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
 import { useFormat } from '@/composables/useFormat';
+import { onMounted, ref } from 'vue';
+import TourAPI from '@/services/api/admin/TourAPI';
 
 const { formatPrice, formatDate, formatTimeOnly } = useFormat()
 const fields = [
   { key: 'index', label: "STT" },
   { key: 'image', label: "Ảnh đại diện" },
-  { key: 'name', label: "Tên tour" },
+  { key: 'title', label: "Tên tour" },
   { key: 'price', label: "Giá" },
   { key: 'percent', label: "% giảm giá" },
   { key: 'createdAt', label: "Ngày tạo" },
@@ -77,17 +80,21 @@ const fields = [
   { key: 'actions', label: "Thao tác" },
 ]
 
-const data = [
-  {
-    id: 1,
-    image: 'https://img.freepik.com/free-photo/travel-concept-with-landmarks_23-2149153256.jpg?semt=ais_user_personalization&w=740&q=80',
-    name: 'Tour 1',
-    price: 1000000,
-    percent: 10,
-    createdAt: '2026-02-22T10:03:58.745+00:00',
-    updatedAt: '2026-02-22T10:03:58.745+00:00',
-  },
-]
+const data = ref([])
+
+const getTours = async () => {
+  try {
+    const { data: d } = await TourAPI.get()
+    data.value = d
+  }
+  catch (e) {
+    console.log(e)
+  }
+}
+
+onMounted(() => {
+  getTours()
+})
 </script>
 
 <style></style>

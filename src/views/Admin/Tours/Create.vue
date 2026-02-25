@@ -1,23 +1,45 @@
 <template>
   <div>
-    <h4 class="text-base font-semibold uppercase">Thêm tour</h4>
+    <h4 class="text-base font-semibold uppercase">{{ isEditMode ? 'Cập nhật tour' : 'Thêm tour' }}</h4>
     <div class="mt-5">
       <form @submit.prevent="onSubmit" class="space-y-5">
-        <div class="grid grid-cols-3 gap-6">
-          <FormField name="name" label="Tên tour">
-            <Field name="name" as="input" type="text" id="name"
+        <div class="grid grid-cols-12 gap-6">
+          <FormField name="title" class="col-span-3" label="Tên tour">
+            <Field name="title" as="input" type="text" id="title"
               class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 placeholder:text-sm w-full"
               placeholder="Nhập tên tour..." />
           </FormField>
-          <FormField name="price" label="Giá">
+          <FormField name="price" class="col-span-3" label="Giá">
             <Field name="price" as="input" type="number" id="price"
               class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 placeholder:text-sm w-full"
               placeholder="Nhập giá..." />
           </FormField>
-          <FormField name="percent" label="% giảm giá">
+          <FormField name="percent" class="col-span-3" label="% giảm giá">
             <Field name="percent" as="input" type="number" id="percent"
               class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 placeholder:text-sm w-full"
               placeholder="Nhập % giảm giá..." />
+          </FormField>
+          <FormField name="audio" class="col-span-3" label="Audio">
+            <Field name="audio" v-slot="{ value, handleChange }">
+              <Select :modelValue="value" @update:modelValue="handleChange" :options="audioOptions"
+                placeholder="Chọn audio" />
+            </Field>
+          </FormField>
+          <FormField name="days" class="col-span-3" label="Số ngày">
+            <Field name="days" as="input" type="number"
+              class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 w-full"
+              placeholder="Nhập số ngày..." />
+          </FormField>
+
+          <FormField name="nights" class="col-span-3" label="Số đêm">
+            <Field name="nights" as="input" type="number"
+              class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 w-full"
+              placeholder="Nhập số đêm..." />
+          </FormField>
+          <FormField name="description" class="col-span-12" label="Mô tả">
+            <Field name="description" as="textarea" id="description" rows="4"
+              class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 placeholder:text-sm w-full"
+              placeholder="Nhập mô tả..." />
           </FormField>
         </div>
         <FormField name="image" label="Ảnh đại diện">
@@ -91,7 +113,7 @@
           <div class="flex items-center justify-between mb-1">
             <label class="text-sm font-semibold">Danh sách điểm đến</label>
             <button type="button" @click="addDiaDiem"
-              class="text-xs px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+              class="text-xs px-3 py-1.5 bg-blue-500 text-white rounded-md cursor-pointer hover:bg-blue-600">
               + Thêm điểm đến
             </button>
           </div>
@@ -129,15 +151,16 @@
                 <div>
                   <label class="block text-xs font-medium text-slate-600 mb-1">Icon</label>
                   <div class="flex items-center gap-2">
-                    <select v-model="item.icon"
+                    <!-- <select v-model="item.icon"
                       class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 w-full">
                       <option value="">-- Chọn icon --</option>
                       <option v-for="icon in iconList" :key="icon._id" :value="icon._id">
                         {{ icon.name }}
                       </option>
-                    </select>
-                    <img v-if="getIconById(item.icon)" :src="getIconById(item.icon).url"
-                      class="w-8 h-8 object-contain border rounded" alt="icon preview" />
+                    </select> -->
+                    <Select v-model="item.icon" :options="iconOptions" placeholder="Chọn icon" class="w-full" />
+                    <img v-if="getIconById(item.icon)" :src="getIconById(item.icon).image"
+                      class="w-9 h-9 object-contain border border-slate-300 rounded" alt="icon preview" />
                   </div>
                 </div>
               </div>
@@ -151,7 +174,7 @@
         </div>
 
         <div class="flex justify-end">
-          <Button type="submit">Thêm</Button>
+          <Button type="submit">{{ isEditMode ? 'Cập nhật' : 'Thêm' }}</Button>
         </div>
       </form>
     </div>
@@ -214,9 +237,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, nextTick, onBeforeUnmount } from 'vue'
+import { ref, reactive, nextTick, onBeforeUnmount, onMounted, computed } from 'vue'
 import FormField from '@/components/FormField.vue'
 import Button from '@/components/Button.vue'
+import Select from '@/components/Select.vue'
 import { useForm, Field } from 'vee-validate'
 import { z } from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -225,7 +249,16 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { Upload, Trash2, Image as ImageIcon } from 'lucide-vue-next'
+import AudioAPI from '@/services/api/admin/AudioAPI'
+import IconAPI from '@/services/api/admin/IconAPI'
+import TourAPI from '@/services/api/admin/TourAPI'
+import { useToast } from 'vue-toastification'
+import { useRouter, useRoute } from 'vue-router'
 
+const toast = useToast()
+const router = useRouter()
+const route = useRoute()
+const isEditMode = computed(() => !!route.params.id)
 // ==================== CKEditor ====================
 const editor = ClassicEditor
 const editorConfig = {
@@ -240,7 +273,15 @@ const editorConfig = {
   },
 }
 const content = ref('')
+const audioList = ref([])
+const selectedAudio = ref('')
 
+const audioOptions = computed(() => {
+  return audioList.value.map(item => ({
+    name: item.name,
+    value: item._id
+  }))
+})
 // ==================== Ảnh đại diện ====================
 const singleImage = ref('') // ảnh mặc định
 const singleImageFile = ref(null)
@@ -254,6 +295,11 @@ function onSingleFileChange(e, field) {
     singleImageError.value = 'Vui lòng chọn file hình ảnh'
     return
   }
+
+  if (singleImage.value) {
+    URL.revokeObjectURL(singleImage.value)
+  }
+
 
   singleImageError.value = ''
   singleImageFile.value = file
@@ -272,7 +318,7 @@ function removeSingleImage() {
 // ==================== Vee-validate ====================
 const schema = toTypedSchema(
   z.object({
-    name: z.string().trim().nonempty('Tên tour không được để trống').max(100, 'Tên tour tối đa 100 ký tự'),
+    title: z.string().trim().nonempty('Tên tour không được để trống').max(100, 'Tên tour tối đa 100 ký tự'),
     price: z.preprocess(
       (val) => {
         if (val === '' || val === null || val === undefined) {
@@ -314,11 +360,31 @@ const schema = toTypedSchema(
         .max(100, '% giảm giá không được vượt quá 100')
         .optional()
     ),
+    audio: z.string().trim().nonempty('Vui lòng chọn audio'),
+    description: z.string().trim().nonempty('Mô tả không được để trống').max(500, 'Mô tả tối đa 500 ký tự'),
+    image: z
+      .any()
+      .refine(file => typeof file === 'string' || file instanceof File, { message: 'Vui lòng chọn ảnh' }),
+    days: z.preprocess(
+      val => Number(val),
+      z.number({
+        required_error: 'Số ngày không được để trống',
+        invalid_type_error: 'Số ngày không hợp lệ'
+      }).min(1, 'Số ngày phải >= 1')
+    ),
+
+    nights: z.preprocess(
+      val => Number(val),
+      z.number({
+        required_error: 'Số đêm không được để trống',
+        invalid_type_error: 'Số đêm không hợp lệ'
+      }).min(0, 'Số đêm phải >= 0')
+    ),
   })
 )
-const { handleSubmit } = useForm({
+const { handleSubmit, resetForm, setValues } = useForm({
   validationSchema: schema,
-  initialValues: { name: '' },
+  initialValues: { title: '', price: '', percent: '', audio: '', image: null, description: '', days: '', nights: '' },
 })
 
 const isSearching = ref(false)
@@ -335,12 +401,13 @@ function removeDiaDiem(index) {
 
 // ==================== Icon list (lấy từ API) ====================
 // Thay bằng API call thực tế của bạn
-const iconList = ref([
-  { _id: '1', name: 'Bãi biển', url: '/icons/beach.png' },
-  { _id: '2', name: 'Núi', url: '/icons/mountain.png' },
-  { _id: '3', name: 'Thành phố', url: '/icons/city.png' },
-])
-
+const iconList = ref([])
+const iconOptions = computed(() => {
+  return iconList.value.map(item => ({
+    name: item.name,
+    value: item._id
+  }))
+})
 function getIconById(id) {
   return iconList.value.find(i => i._id === id) || null
 }
@@ -463,19 +530,38 @@ function destroyMap() {
 onBeforeUnmount(() => destroyMap())
 
 // ==================== Submit ====================
-const onSubmit = handleSubmit((values) => {
-  const payload = {
-    name: values.name,
-    content: content.value,
-    diadiem: diadiem.value.map(item => ({
-      name: item.name,
-      lon: item.lon,
-      lat: item.lat,
-      icon: item.icon || null,
-    })),
+const onSubmit = handleSubmit(async (values) => {
+  const formData = new FormData()
+  formData.append('title', values.title)
+  formData.append('price', values.price)
+  formData.append('percent', values.percent)
+  formData.append('audio', values.audio)
+  formData.append('days', values.days)
+  formData.append('nights', values.nights)
+  formData.append('description', values.description)
+  formData.append('content', content.value)
+  if (singleImageFile.value) {
+    formData.append('image', singleImageFile.value)
   }
-  console.log('Submit payload:', payload)
-  // Gọi API tại đây
+  formData.append('diadiem', JSON.stringify(diadiem.value.map(item => ({
+    name: item.name,
+    lon: item.lon,
+    lat: item.lat,
+    icon: item.icon || null,
+  }))))
+  try {
+    if (isEditMode.value) {
+      await TourAPI.update(route.params.id, formData)
+      toast.success('Cập nhật tour thành công!')
+    } else {
+      await TourAPI.create(formData)
+      toast.success('Thêm tour thành công!')
+    }
+    router.push({ name: 'tours' })
+  }
+  catch (e) {
+    console.log(e)
+  }
 })
 
 // ==================== CKEditor upload ====================
@@ -493,6 +579,69 @@ MyUploadAdapter.prototype.upload = function () {
 function MyCustomUploadAdapterPlugin(editor) {
   editor.plugins.get('FileRepository').createUploadAdapter = loader => new MyUploadAdapter(loader)
 }
+
+const getAudios = async () => {
+  try {
+    const { data } = await AudioAPI.get()
+    audioList.value = data
+  }
+  catch (e) {
+    console.log(e)
+  }
+}
+
+const getIcons = async () => {
+  try {
+    const { data } = await IconAPI.get()
+    iconList.value = data
+  }
+  catch (e) {
+    console.log(e)
+  }
+}
+
+const setFormValues = (tour) => {
+  setValues({
+    title: tour.title,
+    price: tour.price,
+    percent: tour.percent,
+    audio: tour.audio?._id || tour.audio,
+    description: tour.description,
+    days: tour.days,
+    nights: tour.nights,
+    image: tour.image,
+  })
+
+  content.value = tour.content
+
+  singleImage.value = tour.image
+  singleImageFile.value = null
+
+  diadiem.value = tour.diadiem.map(item => ({
+    name: item.name,
+    lat: item.lat,
+    lon: item.lon,
+    icon: item.icon?._id || item.icon
+  }))
+}
+
+const getTourDetail = async () => {
+  try {
+    const { data } = await TourAPI.getById(route.params.id)
+    setFormValues(data)
+  }
+  catch (e) {
+    console.log(e)
+  }
+}
+
+onMounted(() => {
+  getAudios()
+  getIcons()
+  if (isEditMode.value) {
+    getTourDetail()
+  }
+})
 </script>
 
 <style>

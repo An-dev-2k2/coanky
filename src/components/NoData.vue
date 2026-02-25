@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col gap-2 items-center justify-center h-[24rem] w-full">
+  <div class="flex flex-col gap-2 items-center justify-center h-[20rem] w-full">
     <Frown class="w-14 h-14 text-red-500" />
-    <span class="text-[var(--color-text)] font-bold text-lg">Không tìm thấy dữ liệu</span>
+    <span class="font-bold text-lg">Không tìm thấy dữ liệu</span>
   </div>
 </template>
 
