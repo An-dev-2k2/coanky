@@ -67,11 +67,12 @@ let isFirstLoad = true;
 let initialPosition = null;
 let radarSweep;
 let locateControl;
+let currentTarget = null;
 const COLLECT_RADIUS = 5; // 5 mét
 
 const humanIcon = L.icon({
   iconUrl: "https://cdn-icons-png.freepik.com/256/12569/12569178.png?semt=ais_white_label",
-  iconSize: [40, 40],
+  iconSize: [30, 30],
 });
 const defaultLocationIcon = L.icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
@@ -198,6 +199,11 @@ function drawRouteTo(target) {
 function autoFindNearest() {
   if (!userMarker) return;
 
+  // 🔥 Nếu đã có target và chưa collected thì giữ nguyên
+  if (currentTarget && !currentTarget.collected) {
+    return;
+  }
+
   const userPos = userMarker.getLatLng();
   let nearest = null;
   let minDistance = Infinity;
@@ -216,8 +222,12 @@ function autoFindNearest() {
     }
   });
 
-  if (!nearest) return;
+  if (!nearest) {
+    currentTarget = null;
+    return;
+  }
 
+  currentTarget = nearest;
   drawRouteTo(nearest);
 }
 
@@ -359,7 +369,10 @@ function checkCollection(userLat, userLon) {
 
     if (distance <= COLLECT_RADIUS) {
       location.collected = true;
-      markers[index].setStyle({ color: "green" });
+
+      if (currentTarget === location) {
+        currentTarget = null;
+      }
 
       console.log("Collected:", location.name);
     }
