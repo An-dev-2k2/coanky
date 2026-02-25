@@ -44,9 +44,15 @@
         </div>
 
         <!-- Button -->
-        <button type="submit"
-          class="w-full bg-gradient-to-r cursor-pointer from-sky-500 to-emerald-500 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition duration-300 shadow-lg">
-          Đăng nhập
+        <button type="submit" :disabled="isLoading"
+          :class="isLoading ? ' cursor-no-drop opacity-40' : ' cursor-pointer hover:opacity-90'"
+          class="w-full bg-gradient-to-r from-sky-500 to-emerald-500 text-white py-3 rounded-xl font-semibold transition duration-300 shadow-lg">
+          <template v-if="isLoading">
+            <Loader class="animate-spin w-5 mx-auto" />
+          </template>
+          <template v-else>
+            Đăng nhập
+          </template>
         </button>
       </Form>
 
@@ -59,15 +65,18 @@
 </template>
 
 <script setup>
-import { useForm, Form, Field, ErrorMessage } from 'vee-validate'
+import { useForm, Field, ErrorMessage } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import AuthAPI from '@/services/api/admin/AuthAPI'
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { Loader } from 'lucide-vue-next'
 
 const router = useRouter()
 const toast = useToast()
+const isLoading = ref(false)
 // Schema validation bằng Zod
 const schema = toTypedSchema(
   z.object({
@@ -90,6 +99,8 @@ const { handleSubmit } = useForm({
 })
 
 const onSubmit = handleSubmit(async (values) => {
+  if (isLoading.value) return
+  isLoading.value = true
   try {
     const { data } = await AuthAPI.login(values)
     sessionStorage.setItem('adminToken', data)
