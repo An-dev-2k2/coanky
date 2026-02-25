@@ -110,6 +110,8 @@ const onSubmit = handleSubmit(async (values) => {
   }
   catch (error) {
     toast.error(error?.message || 'Đăng nhập thất bại')
+  } finally {
+    isLoading.value = false
   }
 })
 </script>

@@ -41,10 +41,16 @@
 
       <!-- Logout -->
       <div class="py-4 px-2 border-t border-gray-200">
-        <button @click="logout"
-          class="w-full bg-blue-500 text-white py-2.5 rounded-xl hover:opacity-90 transition cursor-pointer">
-          <span v-if="!collapsed">Đăng xuất</span>
-          <LogOut v-else class="w-5 h-5 mx-auto" />
+        <button @click="logout" :disabled="isLoading"
+          :class="isLoading ? ' cursor-no-drop opacity-40' : ' cursor-pointer hover:opacity-90'"
+          class="w-full bg-blue-500 text-white py-2.5 rounded-xl transition">
+          <tempalte v-if="isLoading">
+            <Loader v-if="isLoading" class="animate-spin w-5 mx-auto" />
+          </tempalte>
+          <template v-else>
+            <span v-if="!collapsed">Đăng xuất</span>
+            <LogOut v-else class="w-5 h-5 mx-auto" />
+          </template>
         </button>
       </div>
     </div>
@@ -55,12 +61,13 @@
 
 <script setup>
 import { ref } from 'vue'
-import { LayoutDashboard, ChevronLeft, ChevronRight, LogOut, TicketsPlane, MapPinned, User, Handbag, Users, Settings, Landmark, BoomBox } from 'lucide-vue-next'
+import { LayoutDashboard, Loader, ChevronLeft, ChevronRight, LogOut, TicketsPlane, MapPinned, User, Handbag, Users, Settings, Landmark, BoomBox } from 'lucide-vue-next'
 import AuthAPI from '@/services/api/admin/AuthAPI'
 
 const props = defineProps({
   collapsed: Boolean
 })
+const isLoading = ref(false)
 const emit = defineEmits(['update:collapsed'])
 const menus = [
   { id: 1, name: 'Dashboard', to: '/admin/dashboard', icon: LayoutDashboard },
@@ -74,8 +81,8 @@ const menus = [
 ]
 
 const logout = async () => {
-  // localStorage.removeItem('token')
-  // window.location.href = '/admin/login'
+  if (isLoading.value) return
+  isLoading.value = true
   try {
     await AuthAPI.logout()
     sessionStorage.removeItem('adminToken')
@@ -83,6 +90,8 @@ const logout = async () => {
   }
   catch (error) {
     console.error('Logout failed:', error)
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
