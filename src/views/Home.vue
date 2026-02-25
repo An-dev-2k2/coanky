@@ -1,33 +1,50 @@
 <template>
-  <div>
-    <div v-if="isLoading" class="loading-overlay">
-      <div class="spinner"></div>
-      <p>Đang xác định vị trí...</p>
+  <div class="relative w-full h-screen overflow-hidden">
+    <div v-if="isLoading" class="absolute inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
+      <div class="w-14 h-14 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+      <p class="mt-4 text-gray-600 text-sm">Đang xác định vị trí...</p>
     </div>
-    <div class="container">
-      <div id="map"></div>
 
-      <div class="sidebar">
-        <h2>🎯 Thu Thập Ấn Ký</h2>
+    <div class="flex flex-col md:flex-row h-full">
 
-        <!-- Progress Bar -->
-        <div class="progress-wrapper">
-          <div class="progress-bar">
-            <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
+      <!-- MAP -->
+      <div class="relative w-full md:w-2/3 h-[60vh] md:h-full">
+        <div id="map" class="w-full h-full"></div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="
+      w-full md:w-1/3
+      h-[40vh] md:h-full
+      p-4
+      overflow-y-auto md:rounded-none
+      shadow-lg md:shadow-none
+    ">
+        <h2 class="text-xl font-bold mb-4">🎯 Thu Thập Ấn Ký</h2>
+
+        <!-- Progress -->
+        <div class="mb-4">
+          <div class="w-full h-4 bg-gray-300 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-green-500 to-lime-400 transition-all"
+              :style="{ width: progressPercent + '%' }"></div>
           </div>
-          <p>{{ collectedCount }} / {{ locations.length }}</p>
+          <p class="mt-2 text-sm text-gray-600">
+            {{ collectedCount }} / {{ locations.length }}
+          </p>
         </div>
 
-        <button @click="goToNearest" class="btn">
+        <button @click="goToNearest"
+          class="w-full bg-blue-500 text-white py-2 rounded-xl mb-4 active:scale-95 transition">
           🚀 Chỉ đường gần nhất
         </button>
 
-        <div v-for="(location, index) in locations" :key="index" class="item"
-          :class="{ collected: location.collected }">
-          {{ location.name }}
+        <div v-for="(location, index) in locations" :key="index" class="flex justify-between items-center py-2 border-b"
+          :class="{ 'text-green-600 font-semibold': location.collected }">
+          <span>{{ location.name }}</span>
           <span v-if="location.collected">✅</span>
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -394,7 +411,7 @@ function goToNearest() {
 </script>
 
 <style>
-.container {
+/* .container {
   display: flex;
 }
 
@@ -407,7 +424,7 @@ function goToNearest() {
   width: 30%;
   padding: 15px;
   background: #f5f5f5;
-}
+} */
 
 .progress-wrapper {
   margin-bottom: 20px;
