@@ -53,6 +53,9 @@
 import { onMounted, ref, computed } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet-routing-machine";
+import polyline from "@mapbox/polyline";
+import AppAPI from "@/services/api/client/AppAPI";
 
 const isLoading = ref(true);
 let map;
@@ -68,6 +71,7 @@ let initialPosition = null;
 let radarSweep;
 let locateControl;
 let currentTarget = null;
+let routingControl;
 const COLLECT_RADIUS = 5; // 5 mét
 
 const humanIcon = L.icon({
@@ -172,28 +176,63 @@ function createTestLocations(lat, lon) {
     },
   ];
 }
-function drawRouteTo(target) {
+async function drawRouteTo(target) {
   if (!userMarker) return;
 
   const userPos = userMarker.getLatLng();
 
-  currentRoute = [
-    [userPos.lat, userPos.lng],
-    [target.lat, target.lon],
-  ];
+  // const url = "https://api.openrouteservice.org/v2/directions/foot-walking";
 
-  if (remainingLine) map.removeLayer(remainingLine);
-  if (passedLine) map.removeLayer(passedLine);
+  try {
+    // const response = await fetch(url, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: "YOUR_ORS_API_KEY",
+    //   },
+    //   body: JSON.stringify({
+    //     coordinates: [
+    //       [userPos.lng, userPos.lat],
+    //       [target.lon, target.lat],
+    //     ],
+    //   }),
+    // });
+    const { data } = await AppAPI.map({
+      coordinates: [
+        [userPos.lng, userPos.lat],
+        [target.lon, target.lat],
+      ],
+    })
 
-  remainingLine = L.polyline(currentRoute, {
-    color: "blue",
-    weight: 6,
-  }).addTo(map);
+    // const data = await response.json();
 
-  passedLine = L.polyline([], {
-    color: "gray",
-    weight: 6,
-  }).addTo(map);
+    // if (!data.routes) {
+    //   console.error("Routing failed", data);
+    //   return;
+    // }
+
+    const encoded = data.routes[0].geometry;
+    const decoded = polyline.decode(encoded);
+
+    const latlngs = decoded.map(coord => [coord[0], coord[1]]);
+
+    // Xóa route cũ
+    if (routeLine) {
+      map.removeLayer(routeLine);
+    }
+
+    routeLine = L.polyline(latlngs, {
+      color: "#2196f3",
+      weight: 6,
+    }).addTo(map);
+
+    map.fitBounds(routeLine.getBounds(), {
+      padding: [50, 50],
+    });
+
+  } catch (err) {
+    console.error("Routing error:", err);
+  }
 }
 
 function autoFindNearest() {
@@ -405,21 +444,8 @@ function goToNearest() {
     return;
   }
 
-  if (routeLine) {
-    map.removeLayer(routeLine);
-  }
-
-  routeLine = L.polyline(
-    [
-      [userPos.lat, userPos.lng],
-      [nearest.lat, nearest.lon],
-    ],
-    { weight: 6 }
-  ).addTo(map);
-
-  map.fitBounds(routeLine.getBounds(), {
-    padding: [50, 50],
-  });
+  currentTarget = nearest;
+  drawRouteTo(nearest); // 🔥 dùng routing thật
 }
 </script>
 
