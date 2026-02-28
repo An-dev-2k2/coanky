@@ -36,6 +36,11 @@
               class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 w-full"
               placeholder="Nhập số đêm..." />
           </FormField>
+          <FormField name="role" class="col-span-3" label="Tên tour">
+            <Field name="role" as="input" type="text" id="role"
+              class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 placeholder:text-sm w-full"
+              placeholder="Nhập vai trò..." />
+          </FormField>
           <FormField name="description" class="col-span-12" label="Mô tả">
             <Field name="description" as="textarea" id="description" rows="4"
               class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 placeholder:text-sm w-full"
@@ -361,6 +366,7 @@ const schema = toTypedSchema(
         .optional()
     ),
     audio: z.string().trim().nonempty('Vui lòng chọn audio'),
+    role: z.string().trim().nonempty('Vai trò không được để trống'),
     description: z.string().trim().nonempty('Mô tả không được để trống').max(500, 'Mô tả tối đa 500 ký tự'),
     image: z
       .any()
@@ -384,7 +390,7 @@ const schema = toTypedSchema(
 )
 const { handleSubmit, resetForm, setValues } = useForm({
   validationSchema: schema,
-  initialValues: { title: '', price: '', percent: '', audio: '', image: null, description: '', days: '', nights: '' },
+  initialValues: { title: '', price: '', percent: '', audio: '', image: null, description: '', days: '', nights: '', role: '' },
 })
 
 const isSearching = ref(false)
@@ -538,6 +544,7 @@ const onSubmit = handleSubmit(async (values) => {
   formData.append('audio', values.audio)
   formData.append('days', values.days)
   formData.append('nights', values.nights)
+  formData.append('role', values.role)
   formData.append('description', values.description)
   formData.append('content', content.value)
   if (singleImageFile.value) {
@@ -609,6 +616,7 @@ const setFormValues = (tour) => {
     description: tour.description,
     days: tour.days,
     nights: tour.nights,
+    role: tour.role,
     image: tour.image,
   })
 

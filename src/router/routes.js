@@ -8,7 +8,6 @@ const routes = [
       authRequired: false,
       title: 'Trang chủ',
     },
-    component: Default,
     children: [
       {
         path: '',
@@ -20,10 +19,62 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/tours',
+    component: Default,
+    children: [
+      {
+        path: '',
+        name: 'tours',
+        meta: {
+          title: 'Danh sách tour',
+          authRequired: false,
+        },
+        component: () => import('@/views/Clients/Tours.vue'),
+      },
+      {
+        path: ':slug',
+        name: 'tour-detail',
+        meta: {
+          title: 'Chi tiết tour',
+          authRequired: true,
+        },
+        component: () => import('@/views/Clients/TourDetail.vue'),
+      },
+    ],
+  },
+  {
+    path: '/login',
+    children: [
+      {
+        path: '',
+        name: 'login',
+        meta: {
+          title: 'Đăng nhập',
+          authRequired: false,
+        },
+        component: () => import('@/views/Clients/Login.vue'),
+      },
+    ],
+  },
+  {
+    path: '/register',
+    children: [
+      {
+        path: '',
+        name: 'register',
+        meta: {
+          title: 'Đăng ký',
+          authRequired: false,
+        },
+        component: () => import('@/views/Clients/Register.vue'),
+      },
+    ],
+  },
   //admim
   {
     path: '/admin/login',
-    name: 'login',
+    name: 'login-admin',
     meta: {
       title: 'Đăng nhập',
       authRequired: false,
@@ -45,7 +96,7 @@ const routes = [
       },
       {
         path: 'tours',
-        name: 'tours',
+        name: 'tours-admin',
         meta: {
           title: 'Danh sách tour',
           authRequired: true,
