@@ -9,7 +9,7 @@
       <h2 class="text-xl font-bold mb-4">{{ tour.title }}</h2>
 
       <p>Giá tour: {{ tour.finalPrice }} VND</p>
-      <p>Số dư của bạn: {{ user.balance }} VND</p>
+      <p>Số dư của bạn: {{ user.price }} VND</p>
 
       <div class="mt-6 flex justify-end gap-3">
 
