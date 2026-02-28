@@ -1,6 +1,8 @@
 <template>
-  <CloudTransition ref="cloudRef" />
-  <router-view />
+  <div class="bg-[var(--color-text)]">
+    <CloudTransition ref="cloudRef" />
+    <router-view />
+  </div>
 </template>
 
 <script setup>

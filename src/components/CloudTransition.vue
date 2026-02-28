@@ -1,7 +1,7 @@
 <template>
   <div v-show="visible" class="cloud-wrapper">
-    <img src="/images/cloud.png" class="cloud left scale-200" :class="phase" />
-    <img src="/images/cloud.png" class="cloud right scale-200" :class="phase" />
+    <img src="/images/cloud.png" class="cloud left" :class="phase" />
+    <img src="/images/cloud.png" class="cloud right" :class="phase" />
   </div>
 </template>
 
@@ -38,7 +38,6 @@ defineExpose({ enter, leave })
   position: fixed;
   inset: 0;
   z-index: 9999;
-  overflow: hidden;
   pointer-events: none;
 }
 
@@ -55,29 +54,27 @@ defineExpose({ enter, leave })
 /* mặc định: nằm ngoài màn hình */
 .left {
   left: 0;
-  transform: translateX(-100%);
+  transform: translateX(-100%) scale(3);
 }
 
 .right {
   right: 0;
-  transform: translateX(100%) scaleX(-1);
+  transform: translateX(100%) scaleX(-1) scale(2);
 }
 
-/* bay vào */
 .enter.left {
-  transform: translateX(0%);
+  transform: translateX(0%) scale(2);
 }
 
 .enter.right {
-  transform: translateX(0%) scaleX(-1);
+  transform: translateX(0%) scaleX(-1) scale(2);
 }
 
-/* bay ra */
 .leave.left {
-  transform: translateX(-100%);
+  transform: translateX(-100%) scale(2);
 }
 
 .leave.right {
-  transform: translateX(100%) scaleX(-1);
+  transform: translateX(100%) scaleX(-1) scale(2);
 }
 </style>

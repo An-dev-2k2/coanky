@@ -46,6 +46,22 @@ const routes = [
     ],
   },
   {
+    path: '/icons',
+    component: Default,
+    children: [
+      {
+        path: '',
+        name: 'icons',
+        meta: {
+          title: 'Sổ tay ấn ký',
+          authRequired: false,
+          hideHeader: false,
+        },
+        component: () => import('@/views/Clients/Icons.vue'),
+      },
+    ],
+  },
+  {
     path: '/login',
     component: Default,
     children: [
@@ -129,7 +145,7 @@ const routes = [
       },
       {
         path: 'icons',
-        name: 'icons',
+        name: 'icons-admin',
         meta: {
           title: 'Danh sách Ấn Ký',
           authRequired: true,

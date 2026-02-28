@@ -2,7 +2,7 @@
   <div>
     <img class="h-screen w-full absolute" src="/images/bg-tour.png" alt="">
     <div class=" relative flex justify-center items-center top-10">
-      <img src="/images/lo-trinh-tam-an.png" class="w-[600px]" alt="Lo Trinh Tam An">
+      <img src="/images/lo-trinh-tam-an.png" class="3xl:w-[600px] w-[400px]" alt="Lo Trinh Tam An">
     </div>
   </div>
 </template>
