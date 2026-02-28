@@ -20,6 +20,22 @@ class TourAPI {
         .catch((err) => reject(err.response.data))
     })
   }
+  async getMap(slug) {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(this.apiEndpoint + '/' + slug + '/map')
+        .then((res) => resolve(res.data))
+        .catch((err) => reject(err.response.data))
+    })
+  }
+  async pay(slug) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post(this.apiEndpoint + '/' + slug + '/pay')
+        .then((res) => resolve(res.data))
+        .catch((err) => reject(err.response.data))
+    })
+  }
 }
 
 export default new TourAPI()

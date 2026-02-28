@@ -4,9 +4,11 @@ import router from './router'
 import './style.css'
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
+import store from './state/store'
 
 const app = createApp(App)
 
 app.use(router)
 app.use(Toast)
+app.use(store)
 app.mount('#app')

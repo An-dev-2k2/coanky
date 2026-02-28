@@ -53,8 +53,14 @@ import { useForm, Field } from 'vee-validate'
 import { z } from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
 import { ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router'
+import { useToast } from 'vue-toastification'
 import { Loader } from 'lucide-vue-next'
+import AuthAPI from '@/services/api/client/AuthAPI';
 
+const toast = useToast()
+const route = useRoute()
+const router = useRouter()
 const isLoading = ref(false)
 const schema = toTypedSchema(
   z.object({
@@ -79,13 +85,20 @@ const { handleSubmit } = useForm({
   },
 })
 
-const onSubmit = handleSubmit((values) => {
+const onSubmit = handleSubmit(async (values) => {
   isLoading.value = true
   try {
-    console.log('Login values:', values)
+    const { message, data } = await AuthAPI.login({
+      username: values.username,
+      password: values.password,
+    })
+    toast.success(message || 'Đăng nhập thành công!')
+    sessionStorage.setItem('token', data)
+    const redirectPath = route.query.redirect || '/'
+    router.push(redirectPath)
   }
   catch (error) {
-    console.error('Login error:', error)
+    toast.error(error?.message || 'Đăng nhập thất bại. Vui lòng thử lại.')
   }
   finally {
     isLoading.value = false

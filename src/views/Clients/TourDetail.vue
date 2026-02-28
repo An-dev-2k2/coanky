@@ -1,558 +1,83 @@
 <template>
-  <div class="relative w-full h-screen overflow-hidden">
-    <div v-if="isLoading" class="absolute inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
-      <div class="w-14 h-14 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
-      <p class="mt-4 text-gray-600 text-sm">Đang xác định vị trí...</p>
-    </div>
+  <div class="mt-20">
+    <button @click="showPopup = true" class="px-6 py-3 bg-green-700 text-white rounded-lg">
+      Đặt tour
+    </button>
 
-    <div class="flex flex-col md:flex-row h-full">
+    <!-- Popup -->
+    <Modal :model-value="showPopup" @update:modelValue="showPopup = $event" title="Thông tin thanh toán">
+      <h2 class="text-xl font-bold mb-4">{{ tour.title }}</h2>
 
-      <!-- MAP -->
-      <div class="relative w-full md:w-2/3 h-[60vh] md:h-full">
-        <div id="map" class="w-full h-full"></div>
-      </div>
+      <p>Giá tour: {{ tour.finalPrice }} VND</p>
+      <p>Số dư của bạn: {{ user.balance }} VND</p>
 
-      <!-- SIDEBAR -->
-      <div class="
-      w-full md:w-1/3
-      h-[40vh] md:h-full
-      p-4
-      overflow-y-auto md:rounded-none
-      shadow-lg md:shadow-none
-    ">
-        <h2 class="text-xl font-bold mb-4">🎯 Thu Thập Ấn Ký</h2>
+      <div class="mt-6 flex justify-end gap-3">
 
-        <!-- Progress -->
-        <div class="mb-4">
-          <div class="w-full h-4 bg-gray-300 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-green-500 to-lime-400 transition-all"
-              :style="{ width: progressPercent + '%' }"></div>
-          </div>
-          <p class="mt-2 text-sm text-gray-600">
-            {{ collectedCount }} / {{ locations.length }}
-          </p>
-        </div>
+        <!-- Nếu thiếu tiền -->
+        <router-link to="/nap-tien" v-if="user.price < tour.finalPrice"
+          class="px-4 py-2 bg-yellow-500 text-white rounded">
+          Nạp tiền
+        </router-link>
 
-        <button @click="goToNearest"
-          class="w-full bg-blue-500 text-white py-2 rounded-xl mb-4 active:scale-95 transition">
-          🚀 Chỉ đường gần nhất
+        <!-- Nếu đủ tiền -->
+        <button v-else class="px-4 py-2 bg-green-600 text-white rounded" @click="payTour">
+          Thanh toán
         </button>
 
-        <div v-for="(location, index) in locations" :key="index" class="flex justify-between items-center py-2 border-b"
-          :class="{ 'text-green-600 font-semibold': location.collected }">
-          <span>{{ location.name }}</span>
-          <span v-if="location.collected">✅</span>
-        </div>
-      </div>
+        <button class="px-4 py-2 bg-gray-400 text-white rounded" @click="showPopup = false">
+          Đóng
+        </button>
 
-    </div>
+      </div>
+    </Modal>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import "leaflet-routing-machine";
-import polyline from "@mapbox/polyline";
-import AppAPI from "@/services/api/client/AppAPI";
+import TourAPI from '@/services/api/client/TourAPI'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+import { useToast } from 'vue-toastification'
+import Modal from '@/components/Modal.vue'
 
-const isLoading = ref(true);
-let map;
-let userMarker;
-let radarCircle;
-let markers = [];
-let routeLine;
-let remainingLine;
-let passedLine;
-let currentRoute = [];
-let isFirstLoad = true;
-let initialPosition = null;
-let radarSweep;
-let locateControl;
-let currentTarget = null;
-let routingControl;
-const COLLECT_RADIUS = 5; // 5 mét
+const toast = useToast()
+const store = useStore()
+const me = computed(() => store.state.user.me)
+const user = ref(null)
+const route = useRoute()
+const tourSlug = route.params.slug
 
-const humanIcon = L.icon({
-  iconUrl: "https://cdn-icons-png.freepik.com/256/12569/12569178.png?semt=ais_white_label",
-  iconSize: [30, 30],
-});
-const defaultLocationIcon = L.icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
-  iconSize: [35, 35],
-});
-let currentRadarRadius = 60;
+const tour = ref({});
+const showPopup = ref(false);
 
-const locations = ref([]);
-const collectedCount = computed(() =>
-  locations.value.filter(l => l.collected).length
-);
-
-const progressPercent = computed(() =>
-  (collectedCount.value / locations.value.length) * 100
-);
-
-onMounted(() => {
-  if (!navigator.geolocation) return;
-
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const { latitude, longitude } = pos.coords;
-
-      initialPosition = [latitude, longitude];
-
-      // 🔥 Khởi tạo map đúng vị trí hiện tại
-      map = L.map("map").setView(initialPosition, 18);
-
-      addLocateButton();
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap",
-      }).addTo(map);
-
-      map.on("zoomend", updateRadarSize);
-
-      createTestLocations(latitude, longitude);
-      renderLocations();
-
-      updateUser(latitude, longitude);
-
-      isLoading.value = false;
-      startWatch();
-    },
-    (err) => {
-      console.error(err);
-      isLoading.value = false; // nếu lỗi cũng tắt loading
-    },
-    { enableHighAccuracy: true }
-  );
-});
-
-function addLocateButton() {
-  const LocateControl = L.Control.extend({
-    options: {
-      position: "bottomright",
-    },
-
-    onAdd: function () {
-      const btn = L.DomUtil.create("button", "locate-btn");
-      btn.innerHTML = "📍";
-      btn.title = "Về vị trí hiện tại";
-
-      btn.onclick = function () {
-        if (!userMarker) return;
-
-        const pos = userMarker.getLatLng();
-        map.setView(pos, 18, {
-          animate: true,
-          duration: 1,
-        });
-      };
-
-      return btn;
-    },
-  });
-
-  locateControl = new LocateControl();
-  map.addControl(locateControl);
-}
-
-function createTestLocations(lat, lon) {
-  const distanceInMeters = 70;
-  const offset = distanceInMeters / 111111;
-
-  locations.value = [
-    {
-      name: "Điểm Test 1",
-      lat: lat + offset,
-      lon: lon,
-      collected: false,
-    },
-    {
-      name: "Điểm Test 2",
-      lat: lat,
-      lon: lon + offset,
-      collected: false,
-    },
-  ];
-}
-async function drawRouteTo(target) {
-  if (!userMarker) return;
-
-  const userPos = userMarker.getLatLng();
-
+watch(me, (val) => {
+  if (val) {
+    user.value = val
+  }
+})
+const getTourDetail = async () => {
   try {
-    const { data } = await AppAPI.map({
-      coordinates: [
-        [userPos.lng, userPos.lat],
-        [target.lon, target.lat],
-      ],
-    })
-    const encoded = data.routes[0].geometry;
-    const decoded = polyline.decode(encoded);
-
-    const latlngs = decoded.map(coord => [coord[0], coord[1]]);
-
-    // Xóa route cũ
-    if (routeLine) {
-      map.removeLayer(routeLine);
-    }
-
-    routeLine = L.polyline(latlngs, {
-      color: "#2196f3",
-      weight: 6,
-    }).addTo(map);
-
-    map.fitBounds(routeLine.getBounds(), {
-      padding: [50, 50],
-    });
-
+    const { data } = await TourAPI.getDetail(tourSlug)
+    tour.value = data
+  }
+  catch (error) {
+    console.error('Error fetching tour detail:', error)
+  }
+}
+const payTour = async () => {
+  try {
+    const { data } = await TourAPI.pay(tour.value.slug);
+    store.commit('user/setPrice', data.price)
+    toast.success("Thanh toán thành công");
+    showPopup.value = false;
   } catch (err) {
-    console.error("Routing error:", err);
+    toast.error("Thanh toán thất bại");
   }
-}
-
-function autoFindNearest() {
-  if (!userMarker) return;
-
-  // 🔥 Nếu đã có target và chưa collected thì giữ nguyên
-  if (currentTarget && !currentTarget.collected) {
-    return;
-  }
-
-  const userPos = userMarker.getLatLng();
-  let nearest = null;
-  let minDistance = Infinity;
-
-  locations.value.forEach((location) => {
-    if (location.collected) return;
-
-    const distance = map.distance(
-      [userPos.lat, userPos.lng],
-      [location.lat, location.lon]
-    );
-
-    if (distance < minDistance) {
-      minDistance = distance;
-      nearest = location;
-    }
-  });
-
-  if (!nearest) {
-    currentTarget = null;
-    return;
-  }
-
-  currentTarget = nearest;
-  drawRouteTo(nearest);
-}
-
-function renderLocations() {
-  markers.forEach(m => map.removeLayer(m));
-  markers = [];
-
-  locations.value.forEach((location) => {
-
-    const icon = L.icon({
-      iconUrl: location.iconUrl || defaultLocationIcon.options.iconUrl,
-      iconSize: [35, 35],
-    });
-
-    const marker = L.marker(
-      [location.lat, location.lon],
-      { icon }
-    ).addTo(map);
-
-    markers.push(marker);
-  });
-}
-
-function startWatch() {
-  navigator.geolocation.watchPosition(
-    (pos) => {
-      const { latitude, longitude } = pos.coords;
-
-      const movedDistance = map.distance(
-        initialPosition,
-        [latitude, longitude]
-      );
-
-      updateUser(latitude, longitude);
-
-      // 🔥 Chỉ khi di chuyển > 10m mới bắt đầu collect
-      if (movedDistance > 10) {
-        isFirstLoad = false;
-      }
-
-      checkCollection(latitude, longitude);
-    },
-    console.error,
-    { enableHighAccuracy: true }
-  );
-}
-
-
-function updateRouteProgress(lat, lon) {
-  if (!currentRoute.length) return;
-
-  const start = L.latLng(currentRoute[0]);
-  const end = L.latLng(currentRoute[1]);
-  const user = L.latLng(lat, lon);
-
-  const totalDistance = map.distance(start, end);
-  const passedDistance = map.distance(start, user);
-
-  if (passedDistance > totalDistance) return;
-
-  const ratio = passedDistance / totalDistance;
-
-  const passedLat =
-    start.lat + (end.lat - start.lat) * ratio;
-  const passedLng =
-    start.lng + (end.lng - start.lng) * ratio;
-
-  passedLine.setLatLngs([
-    [start.lat, start.lng],
-    [passedLat, passedLng],
-  ]);
-
-  remainingLine.setLatLngs([
-    [passedLat, passedLng],
-    [end.lat, end.lng],
-  ]);
-}
-function updateUser(lat, lon) {
-  if (!userMarker) {
-    userMarker = L.marker([lat, lon], {
-      icon: humanIcon,
-    }).addTo(map);
-  } else {
-    userMarker.setLatLng([lat, lon]);
-  }
-
-  updateRadar(lat, lon);
-
-  autoFindNearest(); // 🔥 tự động tìm gần nhất
-  updateRouteProgress(lat, lon);
-}
-
-function updateRadar(lat, lon) {
-  const zoom = map.getZoom();
-  currentRadarRadius = 20 * (20 - zoom);
-
-  // Radar nền
-  if (!radarCircle) {
-    radarCircle = L.circle([lat, lon], {
-      radius: currentRadarRadius,
-      color: "#2196f3",
-      fillOpacity: 0.08,
-      weight: 1,
-    }).addTo(map);
-  } else {
-    radarCircle.setLatLng([lat, lon]);
-    radarCircle.setRadius(currentRadarRadius);
-  }
-
-  // Radar quét animation
-  if (!radarSweep) {
-    radarSweep = L.marker([lat, lon], {
-      icon: L.divIcon({
-        className: "radar-sweep",
-        iconSize: [currentRadarRadius * 2, currentRadarRadius * 2],
-      }),
-    }).addTo(map);
-  } else {
-    radarSweep.setLatLng([lat, lon]);
-  }
-}
-
-function updateRadarSize() {
-  if (!userMarker) return;
-  const pos = userMarker.getLatLng();
-  updateRadar(pos.lat, pos.lng);
-}
-
-function checkCollection(userLat, userLon) {
-  if (isFirstLoad) return;
-
-  locations.value.forEach((location, index) => {
-    if (location.collected) return;
-
-    const distance = map.distance(
-      [userLat, userLon],
-      [location.lat, location.lon]
-    );
-
-    if (distance <= COLLECT_RADIUS) {
-      location.collected = true;
-
-      if (currentTarget === location) {
-        currentTarget = null;
-      }
-
-      console.log("Collected:", location.name);
-    }
-  });
-}
-
-function goToNearest() {
-  if (!userMarker) return;
-
-  const userPos = userMarker.getLatLng();
-  let nearest = null;
-  let minDistance = Infinity;
-
-  locations.value.forEach((location) => {
-    if (location.collected) return;
-
-    const distance = map.distance(
-      [userPos.lat, userPos.lng],
-      [location.lat, location.lon]
-    );
-
-    if (distance < minDistance) {
-      minDistance = distance;
-      nearest = location;
-    }
-  });
-
-  if (!nearest) {
-    alert("🎉 Bạn đã thu thập hết!");
-    return;
-  }
-
-  currentTarget = nearest;
-  drawRouteTo(nearest); // 🔥 dùng routing thật
-}
+};
+onMounted(() => {
+  getTourDetail()
+})
 </script>
 
-<style>
-/* .container {
-  display: flex;
-}
-
-#map {
-  width: 70%;
-  height: 100vh;
-}
-
-.sidebar {
-  width: 30%;
-  padding: 15px;
-  background: #f5f5f5;
-} */
-
-.progress-wrapper {
-  margin-bottom: 20px;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 15px;
-  background: #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(to right, #4caf50, #8bc34a);
-  transition: width 0.3s;
-}
-
-.btn {
-  padding: 8px 12px;
-  background: blue;
-  color: white;
-  border: none;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-.item {
-  padding: 8px 0;
-}
-
-.item.collected {
-  color: green;
-  font-weight: bold;
-}
-
-.radar-sweep {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  position: relative;
-}
-
-.radar-sweep::before {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: conic-gradient(rgba(33, 150, 243, 0.4) 0deg,
-      rgba(33, 150, 243, 0.2) 60deg,
-      transparent 120deg);
-  animation: radarRotate 2s linear infinite;
-}
-
-@keyframes radarRotate {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.locate-btn {
-  background: white;
-  border: none;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-}
-
-.locate-btn:hover {
-  background: #f0f0f0;
-}
-
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.spinner {
-  width: 60px;
-  height: 60px;
-  border: 6px solid #ddd;
-  border-top: 6px solid #2196f3;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 15px;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-</style>
+<style></style>

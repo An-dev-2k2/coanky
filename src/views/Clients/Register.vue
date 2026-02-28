@@ -65,7 +65,11 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { ref } from 'vue';
 import { Loader } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
+import AuthAPI from '@/services/api/client/AuthAPI';
 
+const toast = useToast()
+const router = useRouter()
 const isLoading = ref(false)
 
 /* =========================
@@ -113,11 +117,16 @@ const { handleSubmit } = useForm({
 const onSubmit = handleSubmit(async (values) => {
   try {
     isLoading.value = true
-
-
-
+    const { data } = await AuthAPI.register({
+      username: values.username,
+      email: values.email,
+      password: values.password,
+    })
+    toast.success('Đăng ký thành công! Vui lòng đăng nhập.')
+    router.push('/login')
   } catch (error) {
     console.error('Đăng ký thất bại:', error)
+    toast.error(error?.message || 'Đăng ký thất bại. Vui lòng thử lại.')
   } finally {
     isLoading.value = false
   }

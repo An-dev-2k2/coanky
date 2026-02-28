@@ -39,9 +39,20 @@ const routes = [
         name: 'tour-detail',
         meta: {
           title: 'Chi tiết tour',
-          authRequired: true,
+          authRequired: false,
+          hideHeader: false,
         },
         component: () => import('@/views/Clients/TourDetail.vue'),
+      },
+      {
+        path: ':slug/map',
+        name: 'tour-detail-map',
+        meta: {
+          title: 'Bản đồ tour',
+          authRequired: true,
+          hideHeader: false,
+        },
+        component: () => import('@/views/Clients/Map.vue'),
       },
     ],
   },

@@ -25,3 +25,25 @@
   font-weight: normal;
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'VNGGame';
+  src: url('/fonts/FZ-VNG-Game-V1.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Cafeta';
+  src: url('/fonts/UTM Cafeta.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-cafeta {
+  font-family: 'Cafeta', sans-serif;
+}
+
+.font-title {
+  font-family: 'VNGGame', sans-serif;
+}
