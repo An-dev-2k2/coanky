@@ -66,7 +66,6 @@ import { ref } from 'vue';
 import { Loader } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const isLoading = ref(false)
 
 /* =========================

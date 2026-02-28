@@ -7,6 +7,7 @@ const routes = [
     meta: {
       authRequired: false,
       title: 'Trang chủ',
+      hideHeader: true,
     },
     children: [
       {
@@ -29,6 +30,7 @@ const routes = [
         meta: {
           title: 'Danh sách tour',
           authRequired: false,
+          hideHeader: false,
         },
         component: () => import('@/views/Clients/Tours.vue'),
       },
@@ -45,6 +47,7 @@ const routes = [
   },
   {
     path: '/login',
+    component: Default,
     children: [
       {
         path: '',
@@ -52,6 +55,7 @@ const routes = [
         meta: {
           title: 'Đăng nhập',
           authRequired: false,
+          hideHeader: false,
         },
         component: () => import('@/views/Clients/Login.vue'),
       },
@@ -59,6 +63,7 @@ const routes = [
   },
   {
     path: '/register',
+    component: Default,
     children: [
       {
         path: '',
@@ -66,6 +71,7 @@ const routes = [
         meta: {
           title: 'Đăng ký',
           authRequired: false,
+          hideHeader: false,
         },
         component: () => import('@/views/Clients/Register.vue'),
       },

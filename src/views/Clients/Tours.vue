@@ -1,7 +1,9 @@
 <template>
   <div>
-    <h1>Tour List</h1>
-    <!-- Tour list content goes here -->
+    <img class="h-screen w-full absolute" src="/images/bg-tour.png" alt="">
+    <div class=" relative flex justify-center items-center top-10">
+      <img src="/images/lo-trinh-tam-an.png" class="w-[600px]" alt="Lo Trinh Tam An">
+    </div>
   </div>
 </template>
 
@@ -21,6 +23,6 @@ const getTours = async () => {
 }
 
 onMounted(() => {
-  getTours()
+  // getTours()
 })
 </script>
