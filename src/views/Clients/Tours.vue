@@ -54,9 +54,7 @@
             </div>
           </router-link>
         </div>
-        <p
-          class="text-center text-[30px] text-[#B06C03] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          Không có tour nào.</p>
+        <p class="text-center text-[30px] text-[#B06C03] pt-20">Không có tour nào.</p>
       </div>
     </ResponsiveContainer>
   </div>
