@@ -4,7 +4,7 @@
     <ResponsiveContainer>
       <div class=" relative flex justify-center flex-col items-center top-10">
         <img src="/images/lo-trinh-tam-an.png" class="3xl:w-[600px] w-[400px]" alt="Lo Trinh Tam An">
-        <div class="grid 3xl:grid-cols-5 grid-cols-4 w-full gap-16 px-10 mt-10">
+        <div v-if="tours.length > 0" class="grid 3xl:grid-cols-5 grid-cols-4 w-full gap-16 px-10 mt-10">
           <router-link :to="'/tours/' + tour.slug"
             class="relative w-full transition-all duration-300 hover:-translate-y-1" v-for="tour in tours"
             :key="tour.id">
@@ -54,6 +54,7 @@
             </div>
           </router-link>
         </div>
+        <p class="text-center text-[30px] text-[#B06C03]">Không có tour nào.</p>
       </div>
     </ResponsiveContainer>
   </div>
