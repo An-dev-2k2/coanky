@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="font-rowdies">
     <Header v-if="showHeader" />
     <div>
       <router-view />

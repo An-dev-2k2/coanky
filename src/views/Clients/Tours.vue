@@ -35,7 +35,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                   <img src="/images/count.png" alt="Vai trò" class="w-6">
-                  <span class="text-sm text-[#700001] uppercase line-clamp-1">{{ tour.diadiem }} Điểm</span>
+                  <span class="text-sm text-[#700001] uppercase line-clamp-1">{{ tour.diadiem.length }} Điểm</span>
                 </div>
                 <div class="flex items-center gap-3">
                   <img src="/images/role.png" alt="Vai trò" class="w-6">
@@ -48,7 +48,7 @@
               </div>
               <div class="grid grid-cols-6 gap-2 mt-1">
                 <div v-for="(i, index) in tour.diadiem" :key="index">
-                  <img src="/images/flower.png" alt="Flower" class="w-full">
+                  <img src="/images/flower.png" alt="Flower" :class="!i.collected ? 'grayscale' : ''" class="w-full">
                 </div>
               </div>
             </div>

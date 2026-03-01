@@ -25,6 +25,14 @@ class AuthAPI {
         .catch((err) => reject(err.response.data))
     })
   }
+  async logout() {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('auth/logout')
+        .then((res) => resolve(res.data))
+        .catch((err) => reject(err.response.data))
+    })
+  }
 }
 
 export default new AuthAPI()

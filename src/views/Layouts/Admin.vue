@@ -1,5 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-slate-100">
+  <div class="flex min-h-screen bg-slate-100 font-gilroy">
     <!-- Sidebar -->
     <Sidebar v-model:collapsed="isCollapsed" />
 

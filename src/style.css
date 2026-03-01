@@ -4,8 +4,6 @@
 @tailwind utilities;
 
 * {
-  /* font-family: 'Gilroy', sans-serif; */
-  font-family: "Rowdies", sans-serif;
   scroll-behavior: smooth;
   box-sizing: border-box;
   scroll-behavior: smooth;
@@ -46,4 +44,12 @@
 
 .font-title {
   font-family: 'VNGGame', sans-serif;
+}
+
+.font-rowdies {
+  font-family: 'Rowdies', sans-serif;
+}
+
+.font-gilroy {
+  font-family: 'Gilroy', sans-serif;
 }

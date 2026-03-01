@@ -15,7 +15,8 @@ const cloudRef = ref(null)
 
 onMounted(() => {
   router.beforeEach(async (to, from, next) => {
-    if (cloudRef.value) {
+    const isAdminRoute = to.path.startsWith('/admin')
+    if (!isAdminRoute && cloudRef.value) {
       await cloudRef.value.enter() // mây bay vào
       next()                       // đổi route khi che kín
       await cloudRef.value.leave() // bay ra

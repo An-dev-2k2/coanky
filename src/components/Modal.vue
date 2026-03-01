@@ -1,12 +1,11 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div v-if="modelValue" class="fixed inset-0 z-[10000000] flex items-center justify-center bg-black/50"
+      <div v-if="modelValue" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
         @mousedown.self="$emit('update:modelValue', false)">
-        <div class="bg-white rounded-xl shadow-2xl w-full flex flex-col"
-          :style="{ maxWidth: width, maxHeight: '90vh' }">
+        <div :class="classForm" class="w-full flex flex-col" :style="{ maxWidth: width, maxHeight: '90vh' }">
           <!-- Header -->
-          <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 shrink-0">
+          <div v-if="isTitle" class="flex items-center justify-between px-5 py-4 border-b border-slate-200 shrink-0">
             <h5 class="font-semibold text-base">{{ title }}</h5>
             <button type="button" @click="$emit('update:modelValue', false)"
               class="text-slate-400 hover:text-slate-600 cursor-pointer transition-colors">
@@ -15,7 +14,7 @@
           </div>
 
           <!-- Body -->
-          <div class="overflow-y-auto px-5 py-4 flex-1">
+          <div class="overflow-y-auto px-5 py-4 flex-1 relative">
             <slot />
           </div>
 
@@ -36,6 +35,8 @@ defineProps({
   modelValue: { type: Boolean, default: false },
   title: { type: String, default: '' },
   width: { type: String, default: '500px' },
+  isTitle: { type: Boolean, default: true },
+  classForm: { type: String, default: 'bg-white rounded-xl shadow-2xl' }
 })
 
 defineEmits(['update:modelValue'])

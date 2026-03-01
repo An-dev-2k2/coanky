@@ -2,63 +2,68 @@
   <div>
     <div class="bg-[#FFF7E0] flex items-center justify-center flex-col relative h-screen">
       <img src="/images/background.png" alt="map" class=" absolute top-0 left-0 w-full h-screen">
-      <div class="z-100 3xl:w-[1500px] w-[1200px] left-[246px] absolute 3xl:top-[450px] top-[400px] -translate-y-1/2">
+      <div
+        class="z-100 3xl:w-[1500px] xl:w-[1200px] w-[340px] 3xl:right-[10px] xl:right-[80px] right-[20px] absolute 3xl:top-[450px] top-[400px] -translate-y-1/2">
         <img src="/images/line-dashes.png" class="" alt="line">
       </div>
-      <img src="/images/mountain1.png" class=" absolute left-20 bottom-20 z-10 3xl:w-[816px] w-[600px] opacity-30"
+      <img src="/images/mountain1.png"
+        class=" absolute 3xl:left-20 left-3 bottom-20 z-10 3xl:w-[816px] xl:w-[600px] w-[200px] opacity-30"
         alt="mountain1">
-      <img src="/images/mountain2.png" class=" absolute right-20 bottom-20 z-10 3xl:w-[1000px] w-[750px] opacity-30"
+      <img src="/images/mountain2.png"
+        class=" absolute 3xl:right-20 right-3 bottom-20 z-10 3xl:w-[1000px] xl:w-[750px] w-[250px] opacity-30"
         alt="mountain2">
-      <img src="/images/mountain-line1.png" class=" absolute left-32 top-40 z-10 3xl:w-[216px] w-[180px] opacity-30"
+      <img src="/images/mountain-line1.png"
+        class=" absolute 3xl:left-32 left-6 top-40 z-10 3xl:w-[216px] xl:w-[180px] w-[60px] opacity-30"
         alt="mountain-line1">
       <img src="/images/mountain-line4.png"
-        class=" absolute left-[213px] 3xl:bottom-[290px] bottom-[250px] z-10 w-[120px] opacity-30" alt="mountain-line1">
+        class=" absolute 3xl:left-[213px] left-7 3xl:bottom-[290px] bottom-[250px] z-10 3xl:w-[120px] w-[80px] opacity-30"
+        alt="mountain-line1">
       <img src="/images/mountain-line3.png"
-        class=" absolute 3xl:left-[590px] left-[500px] 3xl:top-[500px] top-[400px] z-10 w-[150px] opacity-30"
+        class=" absolute 3xl:left-[590px] xl:left-[500px] left-32 3xl:top-[500px] top-[400px] z-10 3xl:w-[150px] w-[70px] opacity-30"
         alt="mountain-line1">
       <img src="/images/mountain-line2.png"
-        class=" absolute 3xl:left-[917px] left-[750px] 3xl:top-[138px] top-[100px] z-10 3xl:w-[232px] w-[180px] opacity-30"
+        class=" absolute 3xl:left-[917px] xl:left-[750px] left-[170px] 3xl:top-[138px] top-[100px] z-10 3xl:w-[232px] xl:w-[180px] w-[60px] opacity-30"
         alt="mountain-line1">
       <img src="/images/mountain-line4.png"
-        class=" absolute 3xl:left-[1200px] left-[1000px] 3xl:top-[540px] top-[400px] z-10 3xl:w-[120px] w-[90px] opacity-30"
+        class=" absolute 3xl:left-[1200px] xl:left-[1000px] left-[250px] 3xl:top-[540px] top-[400px] z-10 3xl:w-[120px] xl:w-[90px] w-[40px] opacity-30"
         alt="mountain-line1">
       <img src="/images/mountain-line1.png"
-        class=" absolute 3xl:left-[1565px] left-[1200px] 3xl:top-[258px] top-[200px] z-10 3xl:w-[216px] w-[180px] opacity-30"
+        class=" absolute 3xl:left-[1565px] xl:left-[1200px] left-[280px] 3xl:top-[258px] top-[200px] z-10 3xl:w-[216px] xl:w-[180px] w-[60px] opacity-30"
         alt="mountain-line1">
       <img src="/images/icon.png" :class="isStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
-        class="map-icon transition-all duration-500 absolute 3xl:left-[250px] left-[240px] 3xl:top-[390px] top-[370px] z-10 3xl:w-[120px] w-[90px] opacity-30"
+        class="map-icon transition-all duration-500 absolute 3xl:left-[250px] xl:left-[240px] left-[20px] 3xl:top-[390px] top-[370px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
         alt="icon">
       <img src="/images/icon.png" :class="isStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
-        class="map-icon transition-all duration-500 absolute left-[497px] top-[130px] z-10 3xl:w-[120px] w-[90px] opacity-30"
+        class="map-icon transition-all duration-500 absolute xl:left-[497px] left-[100px] 3xl:top-[130px] top-[310px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
         alt="icon">
       <img src="/images/icon.png" :class="isStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
-        class="map-icon transition-all duration-500 absolute 3xl:left-[900px] left-[800px] top-[246px] z-10 3xl:w-[120px] w-[90px] opacity-30"
+        class="map-icon transition-all duration-500 absolute 3xl:left-[900px] xl:left-[800px] left-[170px] 3xl:top-[246px] top-[330px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
         alt="icon">
       <img src="/images/icon.png" :class="isStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
-        class="map-icon transition-all duration-500 absolute 3xl:left-[1345px] left-[1100px] 3xl:top-[128px] top-[170px] z-10 3xl:w-[120px] w-[90px] opacity-30"
+        class="map-icon transition-all duration-500 absolute 3xl:left-[1345px] xl:left-[1100px] left-[250px] 3xl:top-[128px] xl:top-[170px] top-[310px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
         alt="icon">
       <img src="/images/icon.png" :class="isStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
-        class="map-icon transition-all duration-500 absolute 3xl:left-[1540px] left-[1250px] 3xl:top-[450px] top-[400px] z-10 3xl:w-[120px] w-[90px] opacity-30"
+        class="map-icon transition-all duration-500 absolute 3xl:left-[1540px] xl:left-[1250px] left-[300px] 3xl:top-[450px] top-[400px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
         alt="icon">
       <div :class="isStarted ? 'z-[200]' : 'z-0'"
         class="3xl:bottom-[250px] bottom-[200px] absolute flex items-center gap-10">
         <router-link to="/tours" class="hover:brightness-110 transition-all duration-700"
           :class="isStarted ? 'translate-x-0 opacity-100 visible' : '-translate-x-40 opacity-0 invisible'">
-          <img src="/images/lotrinh.png" class="3xl:w-[250px] w-[180px]" />
+          <img src="/images/lotrinh.png" class="3xl:w-[250px] xl:w-[180px] w-[100px]" />
         </router-link>
 
         <router-link to="/icons" class="hover:brightness-110 transition-all duration-700"
           :class="isStarted ? 'translate-x-0 opacity-100' : 'translate-x-40 opacity-0 invisible'">
-          <img src="/images/sotay.png" class="3xl:w-[250px] w-[180px]" />
+          <img src="/images/sotay.png" class="3xl:w-[250px] xl:w-[180px] w-[100px]" />
         </router-link>
       </div>
     </div>
     <div :class="!isStarted ? 'bg-[#FFF7E0]/70' : 'bg-transparent'" class=" fixed w-full top-0 left-0 h-screen z-[100]">
       <div class="flex justify-center items-center flex-col h-full">
-        <img src="/images/logo.png" ref="logoRef" alt="logo" class="w-[650px]">
+        <img src="/images/logo.png" ref="logoRef" alt="logo" class="3xl:w-[650px] w-[100px]">
         <img src="/images/start-app.png" ref="startBtnRef" @click="startApp" alt="start app"
           class="w-[120px] cursor-pointer">
-        <div ref="actionBtnsRef" class="flex justify-center items-center gap-5 mt-10">
+        <div v-if="!token" ref="actionBtnsRef" class="flex justify-center items-center gap-5 mt-10">
           <router-link to="/login"
             class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
             <img src="/images/btn.png" class="w-full absolute" alt="">
@@ -70,13 +75,29 @@
             <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đăng Ký</span>
           </router-link>
         </div>
+        <div v-else ref="actionBtnsRef" class="flex justify-center items-center gap-5 mt-10">
+          <button @click="logout"
+            class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
+            <img src="/images/btn.png" class="w-full absolute" alt="">
+            <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đăng Xuất</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, inject, nextTick } from 'vue'
+import { ref, inject, nextTick, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { useToast } from 'vue-toastification'
+import AuthAPI from '@/services/api/client/AuthAPI'
+
+const toast = useToast()
+const store = useStore()
+const router = useRouter()
 
 const showHeader = inject('showHeader')
 
@@ -84,6 +105,7 @@ const logoRef = ref(null)
 const startBtnRef = ref(null)
 const actionBtnsRef = ref(null)
 const isStarted = ref(false)
+const token = ref(sessionStorage.getItem('token'))
 
 const startApp = async () => {
   if (isStarted.value) return
@@ -121,6 +143,18 @@ const startApp = async () => {
 
   showHeader.value = true
 }
-</script>
 
-<style></style>
+const logout = async () => {
+  try {
+    await AuthAPI.logout()
+    sessionStorage.removeItem('token')
+    // router.push('/login')
+    token.value = null
+    store.commit('user/setMe', {})
+    toast.success('Đăng xuất thành công')
+  }
+  catch (err) {
+    console.log(err)
+  }
+}
+</script>

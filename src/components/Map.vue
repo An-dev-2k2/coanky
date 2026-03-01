@@ -1,11 +1,11 @@
 <template>
-  <div class="relative w-full h-screen overflow-hidden">
+  <div class="relative w-full h-screen p-20 overflow-hidden">
     <div v-if="isLoading" class="absolute inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
       <div class="w-14 h-14 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
       <p class="mt-4 text-gray-600 text-sm">Đang xác định vị trí...</p>
     </div>
 
-    <div class=" relative h-full">
+    <div class=" h-full">
       <div v-if="!isAuthorized" class="absolute inset-0 flex items-center justify-center bg-gray-100">
         <div class="bg-white p-8 rounded-xl shadow-xl text-center">
           <h2 class="text-red-500 font-bold text-xl mb-3">🚫 Không thể truy cập</h2>
@@ -13,41 +13,79 @@
         </div>
       </div>
       <div v-else class="flex flex-col md:flex-row h-full">
-        <div class="relative w-full md:w-2/3 h-[60vh] md:h-full">
+        <div class="relative rounded-xl overflow-hidden w-full h-[60vh] md:h-full">
           <div id="map" class="w-full h-full"></div>
         </div>
 
         <!-- SIDEBAR -->
-        <div class="
-        w-full md:w-1/3
-        h-[40vh] md:h-full
-        p-4
-        overflow-y-auto md:rounded-none
-        shadow-lg md:shadow-none
-      ">
-          <h2 class="text-xl font-bold mb-4">🎯 Thu Thập Ấn Ký</h2>
+        <div :class="isSidebarOpen ? 'translate-x-0' : 'translate-x-full'" class="absolute top-0 right-0 h-full w-80 md:w-1/3
+           bg-white shadow-lg
+           transition-transform duration-500 ease-in-out
+           z-[1000]">
 
-          <!-- Progress -->
-          <div class="mb-4">
-            <div class="w-full h-4 bg-gray-300 rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-green-500 to-lime-400 transition-all"
-                :style="{ width: progressPercent + '%' }"></div>
-            </div>
-            <p class="mt-2 text-sm text-gray-600">
-              {{ collectedCount }} / {{ locations.length }}
-            </p>
-          </div>
-
-          <button @click="goToNearest"
-            class="w-full bg-blue-500 text-white py-2 rounded-xl mb-4 active:scale-95 transition">
-            🚀 Chỉ đường gần nhất
+          <!-- BUTTON (NẰM TRONG SIDEBAR) -->
+          <button @click="toggleSidebar" class="absolute top-1/2 -translate-y-1/2 -left-10
+             bg-white w-10 h-12 rounded-l-xl
+             flex items-center justify-center
+             hover:scale-105 transition">
+            <ChevronLeft :class="isSidebarOpen ? 'rotate-180' : ''" class="transition-transform duration-300" />
           </button>
 
-          <div v-for="(location, index) in locations" :key="index"
-            class="flex justify-between items-center py-2 border-b"
-            :class="{ 'text-green-600 font-semibold': location.collected }">
-            <span>{{ location.name }}</span>
-            <span v-if="location.collected">✅</span>
+          <div class="p-4 h-full overflow-y-auto">
+
+            <h2 class="text-xl font-bold mb-4">🎯 Thu Thập Ấn Ký</h2>
+
+            <!-- Progress -->
+            <div class="mb-4">
+              <div class="w-full h-4 bg-gray-300 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-green-500 to-lime-400 transition-all"
+                  :style="{ width: progressPercent + '%' }"></div>
+              </div>
+              <p class="mt-2 text-sm text-gray-600">
+                {{ collectedCount }} / {{ locations.length }}
+              </p>
+            </div>
+
+            <div class="mt-6">
+              <h2 class="text-xl font-bold mb-4">🏅 Ấn Ký</h2>
+              <div class="grid grid-cols-4 gap-3">
+                <div v-for="(location, index) in locations" :key="index" class="flex flex-col items-center gap-1">
+                  <div class="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-500" :class="location.collected
+                    ? 'bg-green-100 shadow-lg shadow-green-300'
+                    : 'bg-gray-100'">
+                    <img :src="location.icon?.image" :alt="location.name"
+                      class="w-10 h-10 object-contain transition-all duration-500" :class="location.collected
+                        ? 'opacity-100 scale-110 drop-shadow-[0_0_6px_#4caf50]'
+                        : 'grayscale brightness-50 opacity-60'" />
+                  </div>
+                  <span class="text-xs text-center line-clamp-2 text-gray-500 leading-tight">
+                    {{ location.name }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-center mt-6">
+              <button @click="goToNearest" :disabled="isLoadingSearch"
+                :class="isLoadingSearch ? ' cursor-no-drop opacity-40' : ''"
+                class="w-[300px] text-white flex justify-center items-center py-2 mb-4 active:scale-95 transition">
+                <img src="/images/btn-search.png" alt="">
+                <template v-if="isLoadingSearch">
+                  <Loader class="w-5 absolute animate-spin" />
+                </template>
+                <template v-else>
+                  <p class=" absolute">Tìm đường đi gần nhất</p>
+                </template>
+              </button>
+            </div>
+
+            <div v-for="(location, index) in locations" :key="index"
+              class="flex justify-between items-center py-2 border-b"
+              :class="{ 'text-green-600 font-semibold': location.collected }">
+              <span>{{ location.name }}</span>
+              <span v-if="location.collected">✅</span>
+            </div>
+
           </div>
         </div>
 
@@ -65,9 +103,19 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
 import polyline from "@mapbox/polyline";
 import AppAPI from "@/services/api/client/AppAPI";
+import { ChevronLeft, ChevronRight, Loader } from "lucide-vue-next";
+import TourAPI from "@/services/api/client/TourAPI";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
+const slug = route.params.slug;
 const isLoading = ref(true);
+const isLoadingSearch = ref(false);
+const isSidebarOpen = ref(false)
 
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value
+}
 const props = defineProps({
   isAuthorized: Boolean,
   errorMessage: String,
@@ -90,6 +138,7 @@ let radarSweep;
 let locateControl;
 let currentTarget = null;
 let routingControl;
+const stampingSet = new Set();
 const COLLECT_RADIUS = 5; // 5 mét
 
 const humanIcon = L.icon({
@@ -417,11 +466,35 @@ function updateRadarSize() {
   updateRadar(pos.lat, pos.lng);
 }
 
-function checkCollection(userLat, userLon) {
+// function checkCollection(userLat, userLon) {
+//   if (isFirstLoad) return;
+
+//   props.locations.forEach((location, index) => {
+//     if (location.collected) return;
+
+//     const distance = map.distance(
+//       [userLat, userLon],
+//       [location.lat, location.lon]
+//     );
+
+//     if (distance <= COLLECT_RADIUS) {
+//       location.collected = true;
+
+//       if (currentTarget === location) {
+//         currentTarget = null;
+//       }
+
+//       console.log("Collected:", location.name);
+//     }
+//   });
+// }
+
+async function checkCollection(userLat, userLon) {
   if (isFirstLoad) return;
 
-  props.locations.forEach((location, index) => {
-    if (location.collected) return;
+  for (const [index, location] of props.locations.entries()) {
+    if (location.collected) continue;
+    if (stampingSet.has(index)) continue; // đang xử lý
 
     const distance = map.distance(
       [userLat, userLon],
@@ -429,20 +502,35 @@ function checkCollection(userLat, userLon) {
     );
 
     if (distance <= COLLECT_RADIUS) {
-      location.collected = true;
+      stampingSet.add(index);
 
-      if (currentTarget === location) {
-        currentTarget = null;
+      try {
+        // Gọi API lưu tiến trình
+        await TourAPI.updateMap(slug, {
+          iconId: location.icon._id,
+          locationIndex: index
+        });
+
+        // Cập nhật UI sau khi API thành công
+        location.collected = true;
+        renderLocations(); // re-render marker trên map
+
+        if (currentTarget === location) {
+          currentTarget = null;
+        }
+
+        console.log("✅ Collected:", location.name);
+      } catch (err) {
+        console.error("❌ Stamp failed:", err);
+        stampingSet.delete(index); // cho phép thử lại nếu lỗi
       }
-
-      console.log("Collected:", location.name);
     }
-  });
+  }
 }
 
-function goToNearest() {
-  if (!userMarker) return;
-
+async function goToNearest() {
+  if (!userMarker || isLoadingSearch.value) return;
+  isLoadingSearch.value = true;
   const userPos = userMarker.getLatLng();
   let nearest = null;
   let minDistance = Infinity;
@@ -463,11 +551,15 @@ function goToNearest() {
 
   if (!nearest) {
     alert("🎉 Bạn đã thu thập hết!");
+    isLoadingSearch.value = false;
     return;
   }
 
   currentTarget = nearest;
-  drawRouteTo(nearest); // 🔥 dùng routing thật
+  await drawRouteTo(nearest); // 🔥 dùng routing thật
+  setTimeout(() => {
+    isLoadingSearch.value = false;
+  }, 800);
 }
 </script>
 

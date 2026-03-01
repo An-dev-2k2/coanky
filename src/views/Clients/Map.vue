@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <div class="">
+    <img class="h-screen w-full fixed" src="/images/bg-tour.png" alt="">
+
     <Map :isAuthorized="isAuthorized" :errorMessage="errorMessage" :locations="locations" />
   </div>
 </template>
