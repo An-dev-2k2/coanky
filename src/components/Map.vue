@@ -153,7 +153,7 @@ function animateIconToSidebar(location, index) {
     endY =
       sidebarRect.top +
       120 +
-      index * 70; // vị trí theo index icon
+      index * 70;
   }
 
   const flyingIcon = document.createElement("img");
