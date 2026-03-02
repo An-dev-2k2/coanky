@@ -293,7 +293,7 @@ async function animateCollectedOnLoad() {
 
       }
     });
-  }, 300); // đợi sidebar & grid render
+  }, 2000); // đợi sidebar & grid render
 }
 watch(
   () => props.isAuthorized,
