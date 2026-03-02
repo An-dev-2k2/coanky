@@ -18,7 +18,7 @@
         </div>
 
         <!-- SIDEBAR -->
-        <div :class="isSidebarOpen ? 'translate-x-0' : 'translate-x-full'" class="absolute top-0 right-0 h-full w-80 md:w-1/3
+        <div ref="sidebarRef" :class="isSidebarOpen ? 'translate-x-0' : 'translate-x-full'" class="absolute top-0 right-0 h-full w-80 md:w-1/3
            bg-white shadow-lg
            transition-transform duration-500 ease-in-out
            z-[1000]">
@@ -113,6 +113,7 @@ const isLoading = ref(true);
 const isLoadingSearch = ref(false);
 const isSidebarOpen = ref(false)
 const sidebarIconRefs = ref({})
+const sidebarRef = ref(null)
 
 function setSidebarIconRef(el, index) {
   if (el) {
@@ -121,19 +122,39 @@ function setSidebarIconRef(el, index) {
 }
 
 function animateIconToSidebar(location, index) {
-  if (!map || !sidebarIconRefs.value[index]) return;
+  if (!map || !sidebarRef.value) return;
 
   const markerLatLng = L.latLng(location.lat, location.lon);
   const point = map.latLngToContainerPoint(markerLatLng);
-
   const mapRect = map.getContainer().getBoundingClientRect();
+
   const startX = mapRect.left + point.x;
   const startY = mapRect.top + point.y;
 
-  const targetRect = sidebarIconRefs.value[index].getBoundingClientRect();
+  const sidebarRect = sidebarRef.value.getBoundingClientRect();
 
-  const endX = targetRect.left + targetRect.width / 2;
-  const endY = targetRect.top + targetRect.height / 2;
+  let endX;
+  let endY;
+
+  if (isSidebarOpen.value) {
+    // Sidebar đang mở → lấy vị trí icon thật
+    const targetRect = sidebarIconRefs.value[index].getBoundingClientRect();
+    endX = targetRect.left + targetRect.width / 2;
+    endY = targetRect.top + targetRect.height / 2;
+  } else {
+    // Sidebar đang đóng → tính vị trí ảo bên ngoài màn hình
+    const sidebarWidth = sidebarRect.width;
+
+    endX =
+      sidebarRect.left +
+      sidebarWidth +
+      40; // bay vào giữa sidebar (ước lượng)
+
+    endY =
+      sidebarRect.top +
+      120 +
+      index * 70; // vị trí theo index icon
+  }
 
   const flyingIcon = document.createElement("img");
   flyingIcon.src = location.icon?.image;
@@ -144,16 +165,17 @@ function animateIconToSidebar(location, index) {
   flyingIcon.style.height = "40px";
   flyingIcon.style.zIndex = "99999";
   flyingIcon.style.pointerEvents = "none";
+  flyingIcon.style.transform = "scale(1.2)";
   flyingIcon.style.transition =
-    "transform 1.8s cubic-bezier(0.65, 0, 0.35, 1), left 1.8s, top 1.8s, opacity 1.8s";
+    "all 1.8s cubic-bezier(0.65, 0, 0.35, 1)";
 
   document.body.appendChild(flyingIcon);
 
   requestAnimationFrame(() => {
     flyingIcon.style.left = endX + "px";
     flyingIcon.style.top = endY + "px";
-    flyingIcon.style.transform = "scale(0.6)";
-    flyingIcon.style.opacity = "0.5";
+    flyingIcon.style.transform = "scale(0.5) rotate(360deg)";
+    flyingIcon.style.opacity = "0.6";
   });
 
   flyingIcon.addEventListener("transitionend", () => {
