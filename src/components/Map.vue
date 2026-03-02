@@ -135,7 +135,6 @@ function animateIconToSidebar(location, index) {
   const endX = targetRect.left + targetRect.width / 2;
   const endY = targetRect.top + targetRect.height / 2;
 
-  // Tạo icon clone
   const flyingIcon = document.createElement("img");
   flyingIcon.src = location.icon?.image;
   flyingIcon.style.position = "fixed";
@@ -144,23 +143,22 @@ function animateIconToSidebar(location, index) {
   flyingIcon.style.width = "40px";
   flyingIcon.style.height = "40px";
   flyingIcon.style.zIndex = "99999";
-  flyingIcon.style.transition = "all 3s cubic-bezier(0.65, 0, 0.35, 1)";
   flyingIcon.style.pointerEvents = "none";
+  flyingIcon.style.transition =
+    "transform 1.8s cubic-bezier(0.65, 0, 0.35, 1), left 1.8s, top 1.8s, opacity 1.8s";
 
   document.body.appendChild(flyingIcon);
 
-  // Trigger animation
   requestAnimationFrame(() => {
     flyingIcon.style.left = endX + "px";
     flyingIcon.style.top = endY + "px";
     flyingIcon.style.transform = "scale(0.6)";
-    flyingIcon.style.opacity = "0.6";
+    flyingIcon.style.opacity = "0.5";
   });
 
-  // Remove sau khi xong
-  setTimeout(() => {
+  flyingIcon.addEventListener("transitionend", () => {
     flyingIcon.remove();
-  }, 900);
+  });
 }
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
@@ -221,7 +219,7 @@ const initMap = () => {
   if (!navigator.geolocation) return;
 
   navigator.geolocation.getCurrentPosition(
-    (pos) => {
+    async (pos) => {
       const { latitude, longitude } = pos.coords;
 
       initialPosition = [latitude, longitude];
@@ -239,6 +237,8 @@ const initMap = () => {
       // createTestLocations(latitude, longitude);
       renderLocations();
 
+      await nextTick();
+      animateCollectedOnLoad();
       updateUser(latitude, longitude);
 
       isLoading.value = false;
@@ -251,7 +251,17 @@ const initMap = () => {
     { enableHighAccuracy: true }
   );
 }
+async function animateCollectedOnLoad() {
+  await nextTick();
 
+  props.locations.forEach((location, index) => {
+    if (location.collected) {
+      setTimeout(() => {
+        animateIconToSidebar(location, index);
+      }, index * 300); // bay lần lượt
+    }
+  });
+}
 watch(
   () => props.isAuthorized,
   async (val) => {
