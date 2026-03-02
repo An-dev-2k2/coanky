@@ -114,7 +114,15 @@ const isLoadingSearch = ref(false);
 const isSidebarOpen = ref(false)
 const sidebarIconRefs = ref({})
 const sidebarRef = ref(null)
+const locationsState = ref([]);
 
+watch(
+  () => props.locations,
+  (val) => {
+    locationsState.value = val.map(l => ({ ...l }));
+  },
+  { immediate: true }
+);
 function setSidebarIconRef(el, index) {
   if (el) {
     sidebarIconRefs.value[index] = el
@@ -224,11 +232,11 @@ let currentRadarRadius = 60;
 
 // const locations = ref([]);
 const collectedCount = computed(() =>
-  props.locations.filter(l => l.collected).length
+  locationsState.value.filter(l => l.collected).length
 );
 
 const progressPercent = computed(() =>
-  (collectedCount.value / props.locations.length) * 100
+  (collectedCount.value / locationsState.value.length) * 100
 );
 
 onMounted(() => {
@@ -278,7 +286,7 @@ async function animateCollectedOnLoad() {
 
   // Đợi DOM thực sự ổn định
   setTimeout(() => {
-    props.locations.forEach((location, index) => {
+    locationsState.value.forEach((location, index) => {
       if (location.collected) {
 
         // 🔥 Nếu icon ref chưa tồn tại thì bỏ qua
@@ -293,7 +301,7 @@ async function animateCollectedOnLoad() {
 
       }
     });
-  }, 2000); // đợi sidebar & grid render
+  }, 1000); // đợi sidebar & grid render
 }
 watch(
   () => props.isAuthorized,
@@ -403,7 +411,7 @@ function autoFindNearest() {
   let nearest = null;
   let minDistance = Infinity;
 
-  props.locations.forEach((location) => {
+  locationsState.value.forEach((location) => {
     if (location.collected) return;
 
     const distance = map.distance(
@@ -430,7 +438,7 @@ function renderLocations() {
   markers.forEach(m => map.removeLayer(m));
   markers = [];
 
-  props.locations.forEach((location) => {
+  locationsState.value.forEach((location) => {
 
     const iconUrl =
       location.icon?.image || defaultLocationIcon.options.iconUrl;
@@ -569,7 +577,7 @@ function updateRadarSize() {
 // function checkCollection(userLat, userLon) {
 //   if (isFirstLoad) return;
 
-//   props.locations.forEach((location, index) => {
+//   locationsState.value.forEach((location, index) => {
 //     if (location.collected) return;
 
 //     const distance = map.distance(
@@ -592,7 +600,7 @@ function updateRadarSize() {
 async function checkCollection(userLat, userLon) {
   // if (isFirstLoad) return;
 
-  for (const [index, location] of props.locations.entries()) {
+  for (const [index, location] of locationsState.value.entries()) {
     if (location.collected) continue;
     if (stampingSet.has(index)) continue; // đang xử lý
 
@@ -612,7 +620,7 @@ async function checkCollection(userLat, userLon) {
         });
 
         // ✅ Update state
-        props.locations[index].collected = true;
+        locationsState.value[index].collected = true;
 
         await nextTick();
         // ✅ Animation
@@ -647,7 +655,7 @@ async function goToNearest() {
   let nearest = null;
   let minDistance = Infinity;
 
-  props.locations.forEach((location) => {
+  locationsState.value.forEach((location) => {
     if (location.collected) return;
 
     const distance = map.distance(
