@@ -188,7 +188,7 @@ let locateControl;
 let currentTarget = null;
 let routingControl;
 const stampingSet = new Set();
-const COLLECT_RADIUS = 5; // 5 mét
+const COLLECT_RADIUS = 500; // 5 mét
 
 const humanIcon = L.icon({
   iconUrl: "https://cdn-icons-png.freepik.com/256/12569/12569178.png?semt=ais_white_label",
