@@ -144,7 +144,7 @@ function animateIconToSidebar(location, index) {
   flyingIcon.style.width = "40px";
   flyingIcon.style.height = "40px";
   flyingIcon.style.zIndex = "99999";
-  flyingIcon.style.transition = "all 0.8s cubic-bezier(0.65, 0, 0.35, 1)";
+  flyingIcon.style.transition = "all 3s cubic-bezier(0.65, 0, 0.35, 1)";
   flyingIcon.style.pointerEvents = "none";
 
   document.body.appendChild(flyingIcon);
