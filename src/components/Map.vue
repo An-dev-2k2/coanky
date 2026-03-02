@@ -181,14 +181,16 @@ let routeLine;
 let remainingLine;
 let passedLine;
 let currentRoute = [];
-let isFirstLoad = true;
 let initialPosition = null;
 let radarSweep;
 let locateControl;
 let currentTarget = null;
 let routingControl;
+let hasReceivedFirstPosition = false;
+let lastCheckTime = 0;
+const CHECK_INTERVAL = 1000;
 const stampingSet = new Set();
-const COLLECT_RADIUS = 500; // 5 mét
+const COLLECT_RADIUS = 500; // 500 mét
 
 const humanIcon = L.icon({
   iconUrl: "https://cdn-icons-png.freepik.com/256/12569/12569178.png?semt=ais_white_label",
@@ -411,23 +413,23 @@ function renderLocations() {
 }
 
 function startWatch() {
-  console.log("🔥 startWatch called");
   navigator.geolocation.watchPosition(
     (pos) => {
-      console.log("New position:", pos.coords.latitude, pos.coords.longitude);
       const { latitude, longitude } = pos.coords;
-
-      const movedDistance = map.distance(
-        initialPosition,
-        [latitude, longitude]
-      );
+      console.log("📍 New position:", latitude, longitude);
 
       updateUser(latitude, longitude);
 
-      // 🔥 Chỉ khi di chuyển > 10m mới bắt đầu collect
-      if (movedDistance > 10) {
-        isFirstLoad = false;
+      // Bỏ lần đầu để tránh auto collect ngay khi load
+      if (!hasReceivedFirstPosition) {
+        hasReceivedFirstPosition = true;
+        return;
       }
+
+      // Throttle check để tránh spam API
+      const now = Date.now();
+      if (now - lastCheckTime < CHECK_INTERVAL) return;
+      lastCheckTime = now;
 
       checkCollection(latitude, longitude);
     },
@@ -545,7 +547,7 @@ function updateRadarSize() {
 // }
 
 async function checkCollection(userLat, userLon) {
-  if (isFirstLoad) return;
+  // if (isFirstLoad) return;
 
   for (const [index, location] of props.locations.entries()) {
     if (location.collected) continue;
@@ -566,14 +568,24 @@ async function checkCollection(userLat, userLon) {
           locationIndex: index
         });
 
-        animateIconToSidebar(location, index);
-        // Cập nhật UI sau khi API thành công
-        location.collected = true;
-        renderLocations(); // re-render marker trên map
+        // ✅ Update state
+        props.locations[index].collected = true;
 
+        // ✅ Animation
+        animateIconToSidebar(location, index);
+
+        // ✅ Render lại marker
+        renderLocations();
+
+        // ✅ Reset target nếu đang là target
         if (currentTarget === location) {
           currentTarget = null;
         }
+
+        // ✅ Tự động tìm điểm mới
+        setTimeout(() => {
+          autoFindNearest();
+        }, 500);
 
         console.log("✅ Collected:", location.name);
       } catch (err) {
