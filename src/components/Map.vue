@@ -445,10 +445,11 @@ function autoFindNearest() {
 }
 
 function renderLocations() {
+  // Xóa marker cũ
   markers.forEach(m => map.removeLayer(m));
   markers = [];
 
-  locationsState.value.forEach((location) => {
+  locationsState.value.forEach((location, index) => {
 
     const iconUrl =
       location.icon?.image || defaultLocationIcon.options.iconUrl;
@@ -469,7 +470,18 @@ function renderLocations() {
       }
     ).addTo(map);
 
+    // 🔥 Lưu marker vào location để animation dùng
+    location._leafletMarker = marker;
+
     markers.push(marker);
+
+    // 🔥 Nếu đã collected mà chưa animate thì animate
+    if (location.collected && !animatedSet.value.has(location._id)) {
+      setTimeout(() => {
+        animateIconToSidebar(location, index);
+        animatedSet.value.add(location._id);
+      }, 300);
+    }
   });
 }
 
@@ -632,13 +644,18 @@ async function checkCollection(userLat, userLon) {
         // ✅ Update state
         locationsState.value[index].collected = true;
 
+        // Ẩn icon sidebar trước
         animatedSet.value.delete(index);
+
         await nextTick();
-        // ✅ Animation
+
+        // 🔥 Animation trước
         animateIconToSidebar(locationsState.value[index], index);
 
-        // ✅ Render lại marker
-        renderLocations();
+        // 🔥 Delay rồi mới render lại marker
+        setTimeout(() => {
+          renderLocations();
+        }, 1800); // = thời gian transition
 
         // ✅ Reset target nếu đang là target
         if (currentTarget === location) {
