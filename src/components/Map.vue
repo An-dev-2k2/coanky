@@ -42,14 +42,14 @@
                   :style="{ width: progressPercent + '%' }"></div>
               </div>
               <p class="mt-2 text-sm text-gray-600">
-                {{ collectedCount }} / {{ locations.length }}
+                {{ collectedCount }} / {{ locationsState.length }}
               </p>
             </div>
 
             <div class="mt-6">
               <h2 class="text-xl font-bold mb-4">🏅 Ấn Ký</h2>
               <div class="grid grid-cols-4 gap-3">
-                <div v-for="(location, index) in locations" :key="index" class="flex flex-col items-center gap-1">
+                <div v-for="(location, index) in locationsState" :key="index" class="flex flex-col items-center gap-1">
                   <div class="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-500" :class="location.collected
                     ? 'bg-green-100 shadow-lg shadow-green-300'
                     : 'bg-gray-100'">
@@ -79,7 +79,7 @@
               </button>
             </div>
 
-            <div v-for="(location, index) in locations" :key="index"
+            <div v-for="(location, index) in locationsState" :key="index"
               class="flex justify-between items-center py-2 border-b"
               :class="{ 'text-green-600 font-semibold': location.collected }">
               <span>{{ location.name }}</span>
