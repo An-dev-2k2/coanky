@@ -571,6 +571,7 @@ async function checkCollection(userLat, userLon) {
         // ✅ Update state
         props.locations[index].collected = true;
 
+        await nextTick();
         // ✅ Animation
         animateIconToSidebar(location, index);
 
