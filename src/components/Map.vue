@@ -54,9 +54,11 @@
                     ? 'bg-green-100 shadow-lg shadow-green-300'
                     : 'bg-gray-100'">
                     <img :ref="el => setSidebarIconRef(el, index)" :src="location.icon?.image" :alt="location.name"
-                      class="w-10 h-10 object-contain transition-all duration-500" :class="location.collected
-                        ? 'opacity-100 scale-110 drop-shadow-[0_0_6px_#4caf50]'
-                        : 'grayscale brightness-50 opacity-60'" />
+                      class="w-10 h-10 object-contain transition-all duration-500" :class="[
+                        location.collected && animatedSet.has(index)
+                          ? 'opacity-100 scale-110 drop-shadow-[0_0_6px_#4caf50]'
+                          : 'opacity-0'
+                      ]" />
                   </div>
                   <span class="text-xs text-center line-clamp-2 text-gray-500 leading-tight">
                     {{ location.name }}
@@ -115,6 +117,7 @@ const isSidebarOpen = ref(true)
 const sidebarIconRefs = ref({})
 const sidebarRef = ref(null)
 const locationsState = ref([]);
+const animatedSet = ref(new Set());
 
 const props = defineProps({
   isAuthorized: Boolean,
@@ -202,6 +205,7 @@ function animateIconToSidebar(location, index) {
   });
 
   flyingIcon.addEventListener("transitionend", () => {
+    animatedSet.value.add(index); // 🔥 cho phép icon thật hiện ra
     flyingIcon.remove();
   });
 }
@@ -292,6 +296,7 @@ const initMap = () => {
 async function animateCollectedOnLoad() {
   await nextTick();
 
+  animatedSet.value.clear();
   // Đợi DOM thực sự ổn định
   setTimeout(() => {
     locationsState.value.forEach((location, index) => {
