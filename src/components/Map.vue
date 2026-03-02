@@ -116,6 +116,15 @@ const sidebarIconRefs = ref({})
 const sidebarRef = ref(null)
 const locationsState = ref([]);
 
+const props = defineProps({
+  isAuthorized: Boolean,
+  errorMessage: String,
+  locations: {
+    type: Array,
+    default: () => []
+  }
+})
+
 watch(
   () => props.locations,
   (val) => {
@@ -193,14 +202,7 @@ function animateIconToSidebar(location, index) {
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
-const props = defineProps({
-  isAuthorized: Boolean,
-  errorMessage: String,
-  locations: {
-    type: Array,
-    default: () => []
-  }
-})
+
 let map;
 let userMarker;
 let radarCircle;
