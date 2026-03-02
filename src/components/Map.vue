@@ -42,23 +42,21 @@
                   :style="{ width: progressPercent + '%' }"></div>
               </div>
               <p class="mt-2 text-sm text-gray-600">
-                {{ collectedCount }} / {{ locationsState.length }}
+                {{ collectedCount }} / {{ locations.length }}
               </p>
             </div>
 
             <div class="mt-6">
               <h2 class="text-xl font-bold mb-4">🏅 Ấn Ký</h2>
               <div class="grid grid-cols-4 gap-3">
-                <div v-for="(location, index) in locationsState" :key="index" class="flex flex-col items-center gap-1">
+                <div v-for="(location, index) in locations" :key="index" class="flex flex-col items-center gap-1">
                   <div class="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-500" :class="location.collected
                     ? 'bg-green-100 shadow-lg shadow-green-300'
                     : 'bg-gray-100'">
                     <img :ref="el => setSidebarIconRef(el, index)" :src="location.icon?.image" :alt="location.name"
-                      class="w-10 h-10 object-contain transition-all duration-500" :class="[
-                        location.collected && animatedSet.has(index)
-                          ? 'opacity-100 scale-110 drop-shadow-[0_0_6px_#4caf50]'
-                          : 'opacity-0'
-                      ]" />
+                      class="w-10 h-10 object-contain transition-all duration-500" :class="location.collected
+                        ? 'opacity-100 scale-110 drop-shadow-[0_0_6px_#4caf50]'
+                        : 'grayscale brightness-50 opacity-60'" />
                   </div>
                   <span class="text-xs text-center line-clamp-2 text-gray-500 leading-tight">
                     {{ location.name }}
@@ -81,7 +79,7 @@
               </button>
             </div>
 
-            <div v-for="(location, index) in locationsState" :key="index"
+            <div v-for="(location, index) in locations" :key="index"
               class="flex justify-between items-center py-2 border-b"
               :class="{ 'text-green-600 font-semibold': location.collected }">
               <span>{{ location.name }}</span>
@@ -113,28 +111,10 @@ const route = useRoute();
 const slug = route.params.slug;
 const isLoading = ref(true);
 const isLoadingSearch = ref(false);
-const isSidebarOpen = ref(true)
+const isSidebarOpen = ref(false)
 const sidebarIconRefs = ref({})
 const sidebarRef = ref(null)
-const locationsState = ref([]);
-const animatedSet = ref(new Set());
 
-const props = defineProps({
-  isAuthorized: Boolean,
-  errorMessage: String,
-  locations: {
-    type: Array,
-    default: () => []
-  }
-})
-
-watch(
-  () => props.locations,
-  (val) => {
-    locationsState.value = val.map(l => ({ ...l }));
-  },
-  { immediate: true }
-);
 function setSidebarIconRef(el, index) {
   if (el) {
     sidebarIconRefs.value[index] = el
@@ -158,20 +138,17 @@ function animateIconToSidebar(location, index) {
 
   if (isSidebarOpen.value) {
     // Sidebar đang mở → lấy vị trí icon thật
-    const targetEl = sidebarIconRefs.value[index];
-    if (!targetEl) {
-      console.log("⚠️ Missing sidebar icon ref:", index);
-      return;
-    }
-
-    const targetRect = targetEl.getBoundingClientRect();
+    const targetRect = sidebarIconRefs.value[index].getBoundingClientRect();
     endX = targetRect.left + targetRect.width / 2;
     endY = targetRect.top + targetRect.height / 2;
   } else {
     // Sidebar đang đóng → tính vị trí ảo bên ngoài màn hình
     const sidebarWidth = sidebarRect.width;
 
-    endX = window.innerWidth - sidebarRect.width / 2;
+    endX =
+      sidebarRect.left +
+      sidebarWidth +
+      40; // bay vào giữa sidebar (ước lượng)
 
     endY =
       sidebarRect.top +
@@ -202,14 +179,20 @@ function animateIconToSidebar(location, index) {
   });
 
   flyingIcon.addEventListener("transitionend", () => {
-    animatedSet.value.add(index); // 🔥 cho phép icon thật hiện ra
     flyingIcon.remove();
   });
 }
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
-
+const props = defineProps({
+  isAuthorized: Boolean,
+  errorMessage: String,
+  locations: {
+    type: Array,
+    default: () => []
+  }
+})
 let map;
 let userMarker;
 let radarCircle;
@@ -241,11 +224,11 @@ let currentRadarRadius = 60;
 
 // const locations = ref([]);
 const collectedCount = computed(() =>
-  locationsState.value.filter(l => l.collected).length
+  props.locations.filter(l => l.collected).length
 );
 
 const progressPercent = computed(() =>
-  (collectedCount.value / locationsState.value.length) * 100
+  (collectedCount.value / props.locations.length) * 100
 );
 
 onMounted(() => {
@@ -293,10 +276,9 @@ const initMap = () => {
 async function animateCollectedOnLoad() {
   await nextTick();
 
-  animatedSet.value.clear();
   // Đợi DOM thực sự ổn định
   setTimeout(() => {
-    locationsState.value.forEach((location, index) => {
+    props.locations.forEach((location, index) => {
       if (location.collected) {
 
         // 🔥 Nếu icon ref chưa tồn tại thì bỏ qua
@@ -311,7 +293,7 @@ async function animateCollectedOnLoad() {
 
       }
     });
-  }, 1000); // đợi sidebar & grid render
+  }, 300); // đợi sidebar & grid render
 }
 watch(
   () => props.isAuthorized,
@@ -421,7 +403,7 @@ function autoFindNearest() {
   let nearest = null;
   let minDistance = Infinity;
 
-  locationsState.value.forEach((location) => {
+  props.locations.forEach((location) => {
     if (location.collected) return;
 
     const distance = map.distance(
@@ -445,11 +427,10 @@ function autoFindNearest() {
 }
 
 function renderLocations() {
-  // Xóa marker cũ
   markers.forEach(m => map.removeLayer(m));
   markers = [];
 
-  locationsState.value.forEach((location, index) => {
+  props.locations.forEach((location) => {
 
     const iconUrl =
       location.icon?.image || defaultLocationIcon.options.iconUrl;
@@ -470,18 +451,7 @@ function renderLocations() {
       }
     ).addTo(map);
 
-    // 🔥 Lưu marker vào location để animation dùng
-    location._leafletMarker = marker;
-
     markers.push(marker);
-
-    // 🔥 Nếu đã collected mà chưa animate thì animate
-    if (location.collected && !animatedSet.value.has(location._id)) {
-      setTimeout(() => {
-        animateIconToSidebar(location, index);
-        animatedSet.value.add(location._id);
-      }, 300);
-    }
   });
 }
 
@@ -599,7 +569,7 @@ function updateRadarSize() {
 // function checkCollection(userLat, userLon) {
 //   if (isFirstLoad) return;
 
-//   locationsState.value.forEach((location, index) => {
+//   props.locations.forEach((location, index) => {
 //     if (location.collected) return;
 
 //     const distance = map.distance(
@@ -622,7 +592,7 @@ function updateRadarSize() {
 async function checkCollection(userLat, userLon) {
   // if (isFirstLoad) return;
 
-  for (const [index, location] of locationsState.value.entries()) {
+  for (const [index, location] of props.locations.entries()) {
     if (location.collected) continue;
     if (stampingSet.has(index)) continue; // đang xử lý
 
@@ -642,20 +612,14 @@ async function checkCollection(userLat, userLon) {
         });
 
         // ✅ Update state
-        locationsState.value[index].collected = true;
-
-        // Ẩn icon sidebar trước
-        animatedSet.value.delete(index);
+        props.locations[index].collected = true;
 
         await nextTick();
+        // ✅ Animation
+        animateIconToSidebar(location, index);
 
-        // 🔥 Animation trước
-        animateIconToSidebar(locationsState.value[index], index);
-
-        // 🔥 Delay rồi mới render lại marker
-        setTimeout(() => {
-          renderLocations();
-        }, 1800); // = thời gian transition
+        // ✅ Render lại marker
+        renderLocations();
 
         // ✅ Reset target nếu đang là target
         if (currentTarget === location) {
@@ -683,7 +647,7 @@ async function goToNearest() {
   let nearest = null;
   let minDistance = Infinity;
 
-  locationsState.value.forEach((location) => {
+  props.locations.forEach((location) => {
     if (location.collected) return;
 
     const distance = map.distance(
