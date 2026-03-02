@@ -276,13 +276,24 @@ const initMap = () => {
 async function animateCollectedOnLoad() {
   await nextTick();
 
-  props.locations.forEach((location, index) => {
-    if (location.collected) {
-      setTimeout(() => {
-        animateIconToSidebar(location, index);
-      }, index * 300); // bay lần lượt
-    }
-  });
+  // Đợi DOM thực sự ổn định
+  setTimeout(() => {
+    props.locations.forEach((location, index) => {
+      if (location.collected) {
+
+        // 🔥 Nếu icon ref chưa tồn tại thì bỏ qua
+        if (!sidebarIconRefs.value[index]) {
+          console.log("Icon ref missing:", index);
+          return;
+        }
+
+        setTimeout(() => {
+          animateIconToSidebar(location, index);
+        }, index * 400);
+
+      }
+    });
+  }, 300); // đợi sidebar & grid render
 }
 watch(
   () => props.isAuthorized,
