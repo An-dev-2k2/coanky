@@ -171,10 +171,7 @@ function animateIconToSidebar(location, index) {
     // Sidebar đang đóng → tính vị trí ảo bên ngoài màn hình
     const sidebarWidth = sidebarRect.width;
 
-    endX =
-      sidebarRect.left +
-      sidebarWidth +
-      40; // bay vào giữa sidebar (ước lượng)
+    endX = window.innerWidth - sidebarRect.width / 2;
 
     endY =
       sidebarRect.top +
@@ -635,6 +632,7 @@ async function checkCollection(userLat, userLon) {
         // ✅ Update state
         locationsState.value[index].collected = true;
 
+        animatedSet.value.delete(index);
         await nextTick();
         // ✅ Animation
         animateIconToSidebar(locationsState.value[index], index);
