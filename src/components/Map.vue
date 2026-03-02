@@ -111,7 +111,7 @@ const route = useRoute();
 const slug = route.params.slug;
 const isLoading = ref(true);
 const isLoadingSearch = ref(false);
-const isSidebarOpen = ref(false)
+const isSidebarOpen = ref(true)
 const sidebarIconRefs = ref({})
 const sidebarRef = ref(null)
 const locationsState = ref([]);
@@ -155,7 +155,13 @@ function animateIconToSidebar(location, index) {
 
   if (isSidebarOpen.value) {
     // Sidebar đang mở → lấy vị trí icon thật
-    const targetRect = sidebarIconRefs.value[index].getBoundingClientRect();
+    const targetEl = sidebarIconRefs.value[index];
+    if (!targetEl) {
+      console.log("⚠️ Missing sidebar icon ref:", index);
+      return;
+    }
+
+    const targetRect = targetEl.getBoundingClientRect();
     endX = targetRect.left + targetRect.width / 2;
     endY = targetRect.top + targetRect.height / 2;
   } else {
@@ -626,7 +632,7 @@ async function checkCollection(userLat, userLon) {
 
         await nextTick();
         // ✅ Animation
-        animateIconToSidebar(location, index);
+        animateIconToSidebar(locationsState.value[index], index);
 
         // ✅ Render lại marker
         renderLocations();
