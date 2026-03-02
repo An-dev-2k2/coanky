@@ -13,7 +13,7 @@
         </div>
       </div>
       <div v-else class="flex flex-col md:flex-row h-full">
-        <div class="relative rounded-xl overflow-hidden w-full h-full md:h-full">
+        <div class="relative rounded-xl bg-gray-300 overflow-hidden w-full h-full md:h-full">
           <div id="map" class="w-full h-full"></div>
         </div>
 
@@ -53,7 +53,7 @@
                   <div class="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-500" :class="location.collected
                     ? 'bg-green-100 shadow-lg shadow-green-300'
                     : 'bg-gray-100'">
-                    <img :src="location.icon?.image" :alt="location.name"
+                    <img :ref="el => setSidebarIconRef(el, index)" :src="location.icon?.image" :alt="location.name"
                       class="w-10 h-10 object-contain transition-all duration-500" :class="location.collected
                         ? 'opacity-100 scale-110 drop-shadow-[0_0_6px_#4caf50]'
                         : 'grayscale brightness-50 opacity-60'" />
@@ -112,7 +112,56 @@ const slug = route.params.slug;
 const isLoading = ref(true);
 const isLoadingSearch = ref(false);
 const isSidebarOpen = ref(false)
+const sidebarIconRefs = ref({})
 
+function setSidebarIconRef(el, index) {
+  if (el) {
+    sidebarIconRefs.value[index] = el
+  }
+}
+
+function animateIconToSidebar(location, index) {
+  if (!map || !sidebarIconRefs.value[index]) return;
+
+  const markerLatLng = L.latLng(location.lat, location.lon);
+  const point = map.latLngToContainerPoint(markerLatLng);
+
+  const mapRect = map.getContainer().getBoundingClientRect();
+  const startX = mapRect.left + point.x;
+  const startY = mapRect.top + point.y;
+
+  const targetRect = sidebarIconRefs.value[index].getBoundingClientRect();
+
+  const endX = targetRect.left + targetRect.width / 2;
+  const endY = targetRect.top + targetRect.height / 2;
+
+  // Tạo icon clone
+  const flyingIcon = document.createElement("img");
+  flyingIcon.src = location.icon?.image;
+  flyingIcon.style.position = "fixed";
+  flyingIcon.style.left = startX + "px";
+  flyingIcon.style.top = startY + "px";
+  flyingIcon.style.width = "40px";
+  flyingIcon.style.height = "40px";
+  flyingIcon.style.zIndex = "99999";
+  flyingIcon.style.transition = "all 0.8s cubic-bezier(0.65, 0, 0.35, 1)";
+  flyingIcon.style.pointerEvents = "none";
+
+  document.body.appendChild(flyingIcon);
+
+  // Trigger animation
+  requestAnimationFrame(() => {
+    flyingIcon.style.left = endX + "px";
+    flyingIcon.style.top = endY + "px";
+    flyingIcon.style.transform = "scale(0.6)";
+    flyingIcon.style.opacity = "0.6";
+  });
+
+  // Remove sau khi xong
+  setTimeout(() => {
+    flyingIcon.remove();
+  }, 900);
+}
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
@@ -362,8 +411,10 @@ function renderLocations() {
 }
 
 function startWatch() {
+  console.log("🔥 startWatch called");
   navigator.geolocation.watchPosition(
     (pos) => {
+      console.log("New position:", pos.coords.latitude, pos.coords.longitude);
       const { latitude, longitude } = pos.coords;
 
       const movedDistance = map.distance(
@@ -380,8 +431,12 @@ function startWatch() {
 
       checkCollection(latitude, longitude);
     },
-    console.error,
-    { enableHighAccuracy: true }
+    (err) => console.error(err),
+    {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 10000
+    }
   );
 }
 
@@ -511,6 +566,7 @@ async function checkCollection(userLat, userLon) {
           locationIndex: index
         });
 
+        animateIconToSidebar(location, index);
         // Cập nhật UI sau khi API thành công
         location.collected = true;
         renderLocations(); // re-render marker trên map

@@ -78,9 +78,15 @@
               </div>
               <div class="flex justify-center items-center relative pt-4">
                 <img src="/images/bg-qr.png" class="w-[280px]" alt="">
-                <img
-                  src="https://img.vietqr.io/image/acb-44412187-print.jpg?addInfo=${'ok'}&accountName=Nguyen tan hung"
-                  alt="" class="w-32 absolute">
+                <template v-if="descQR">
+                  <img
+                    :src="`https://img.vietqr.io/image/acb-44412187-print.jpg?addInfo=${descQR}&accountName=Nguyen tan hung`"
+                    alt="" class="w-32 absolute">
+                </template>
+                <template v-else>
+                  <p class=" absolute text-sm text-[#B06C03] px-8 text-center">Bạn không có QR. Vui lòng liên hệ admin
+                  </p>
+                </template>
               </div>
               <p class="mt-3 text-[#B06C03]">Quét QR để nạp tiền</p>
             </div>
@@ -109,6 +115,7 @@ const me = computed(() => store.state.user.me)
 const user = ref(null)
 const route = useRoute()
 const tourSlug = route.params.slug
+const descQR = ref('')
 
 const tour = ref({});
 const showPopup = ref(false);
@@ -116,6 +123,7 @@ const showPopup = ref(false);
 watch(me, (val) => {
   if (val) {
     user.value = val
+    descQR.value = val?.deposit_identifier ? 'NAP TIEN ' + val?.deposit_identifier : ''
   }
 })
 const getTourDetail = async () => {

@@ -571,7 +571,7 @@ const onSubmit = handleSubmit(async (values) => {
       await TourAPI.create(formData)
       toast.success('Thêm tour thành công!')
     }
-    router.push({ name: 'tours' })
+    router.push({ name: 'tours-admin' })
   }
   catch (e) {
     console.log(e)
