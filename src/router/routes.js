@@ -199,15 +199,15 @@ const routes = [
         },
         component: () => import('@/views/Admin/Transactions.vue'),
       },
-      {
-        path: 'settings',
-        name: 'settings',
-        meta: {
-          title: 'Cài đặt',
-          authRequired: true,
-        },
-        component: () => import('@/views/Admin/Settings.vue'),
-      },
+      // {
+      //   path: 'settings',
+      //   name: 'settings',
+      //   meta: {
+      //     title: 'Cài đặt',
+      //     authRequired: true,
+      //   },
+      //   component: () => import('@/views/Admin/Settings.vue'),
+      // },
     ],
   },
 ]

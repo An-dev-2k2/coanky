@@ -46,7 +46,7 @@
         class="map-icon transition-all duration-500 absolute 3xl:left-[1540px] xl:left-[1250px] left-[300px] 3xl:top-[450px] top-[400px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
         alt="icon">
       <div :class="isStarted ? 'z-[200]' : 'z-0'"
-        class="3xl:bottom-[250px] bottom-[200px] absolute flex items-center gap-10">
+        class="3xl:bottom-[250px] bottom-[200px] absolute w-full flex items-center justify-center gap-10">
         <router-link to="/tours" class="hover:brightness-110 transition-all duration-700"
           :class="isStarted ? 'translate-x-0 opacity-100 visible' : '-translate-x-40 opacity-0 invisible'">
           <img src="/images/lotrinh.png" class="3xl:w-[250px] xl:w-[180px] w-[100px]" />

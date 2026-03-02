@@ -11,12 +11,14 @@
         <template #user="{ value }">
           <div class="flex gap-1.5 items-center">
             <div class="w-9 h-9 rounded-md bg-slate-100 overflow-hidden">
-              <img :src="value.avatar" :alt="value.name" class="w-full h-full object-cover" />
+              <img :src="value.avatar || `https://ui-avatars.com/api/?background=random&name=${value?.name}`"
+                :alt="value.name" class="w-full h-full object-cover" />
             </div>
             <div class="flex flex-col">
               <div class="flex items-center gap-2">
                 <p class="font-semibold">{{ value.name }}</p>
-                <span class="bg-blue-100 text-xs text-blue-900 rounded-sm px-1 py-0.5">{{ value.role }}</span>
+                <span class="bg-blue-100 text-xs text-blue-900 rounded-sm px-1 py-0.5">{{ roleNameMap[value.role]
+                }}</span>
               </div>
               <span class="text-xs text-slate-500">{{ value.email }}</span>
             </div>
@@ -30,7 +32,7 @@
           <p class="text-blue-500 font-medium">{{ formatDate(value) }}</p>
           <span class="text-xs text-gray-400">{{ formatTimeOnly(value) }}</span>
         </template>
-        <template #actions="{ item, index }">
+        <!-- <template #actions="{ item, index }">
           <div class="flex items-center gap-2">
             <Button variant="primary" class="!p-2">
               <Pen class="w-4 h-4" />
@@ -39,7 +41,7 @@
               <Trash2 class="w-4 h-4" />
             </Button>
           </div>
-        </template>
+        </template> -->
       </Table>
     </Card>
   </div>
@@ -51,7 +53,11 @@ import Table from '@/components/Table.vue';
 import Button from '@/components/Button.vue';
 import { Pen, Trash2 } from 'lucide-vue-next';
 import { useFormat } from '@/composables/useFormat';
+import { useToast } from 'vue-toastification';
+import AuthAPI from '@/services/api/admin/AuthAPI';
+import { onMounted, ref } from 'vue';
 
+const toast = useToast()
 const { formatPrice, formatDate, formatTimeOnly } = useFormat()
 const fields = [
   { key: 'index', label: "STT" },
@@ -59,21 +65,41 @@ const fields = [
   { key: 'price', label: "Tài sản" },
   { key: 'createdAt', label: "Ngày tạo" },
   { key: 'updatedAt', label: "Ngày cập nhật" },
-  { key: 'actions', label: "Thao tác" },
+  // { key: 'actions', label: "Thao tác" },
 ]
-const data = [
-  {
-    user: {
-      avatar: 'https://thumbs.dreamstime.com/b/funny-avatar-cunning-emoji-flat-vector-illustration-comic-yellow-social-media-sticker-humorous-cartoon-face-smiling-mouth-162122340.jpg',
-      name: 'Nguyen Van A',
-      role: 'Người dùng',
-      email: 'andev@gmail.com'
-    },
-    price: 1000000,
-    createdAt: '2026-02-22T10:03:58.745+00:00',
-    updatedAt: '2026-02-22T10:03:58.745+00:00',
-  },
-]
+// const data = [
+//   {
+//     user: {
+//       avatar: 'https://thumbs.dreamstime.com/b/funny-avatar-cunning-emoji-flat-vector-illustration-comic-yellow-social-media-sticker-humorous-cartoon-face-smiling-mouth-162122340.jpg',
+//       name: 'Nguyen Van A',
+//       role: 'Người dùng',
+//       email: 'andev@gmail.com'
+//     },
+//     price: 1000000,
+//     createdAt: '2026-02-22T10:03:58.745+00:00',
+//     updatedAt: '2026-02-22T10:03:58.745+00:00',
+//   },
+// ]
+
+const data = ref([])
+const roleNameMap = {
+  'admin': ' Quản trị viên',
+  'user': ' Người dùng'
+}
+
+const getUsers = async () => {
+  try {
+    const { data: d } = await AuthAPI.getUsers();
+    data.value = d
+  }
+  catch (err) {
+    toast.error(err?.message)
+  }
+}
+
+onMounted(() => {
+  getUsers()
+})
 </script>
 
 <style></style>

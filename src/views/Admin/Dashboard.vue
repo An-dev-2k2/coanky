@@ -6,7 +6,7 @@
         <Card v-for="stat in stats" :key="stat.id">
           <div class="flex items-center gap-3 font-bold">
             <div class="w-8 h-8 rounded-full shadow flex justify-center items-center" :class="stat.background">
-              <component :is="stat.icon" class="w-4 h-4 text-white"></component>
+              <component :is="iconStatMap[stat.icon]" class="w-4 h-4 text-white"></component>
             </div>
             <span>{{ stat.title }}</span>
           </div>
@@ -66,25 +66,33 @@ import ChartRevenueAndTours from '@/components/admin/ChartRevenueAndTours.vue';
 import ChartRevenueByYear from '@/components/admin/ChartRevenueByYear.vue';
 import ChartTourStatus from '@/components/admin/ChartTourStatus.vue';
 import Table from '@/components/Table.vue';
+import AppAPI from '@/services/api/admin/AppAPI';
 
-const stats = [
-  { id: 1, title: "Tổng doanh thu", color: '#01f195', background: "bg-gradient-to-b to-[#007e83] from-[#01f195]", icon: DollarSign, current: "0", previous: "0", proportion: "0" },
-  { id: 3, title: "Tổng tour", color: '#a85139', background: "bg-gradient-to-b to-[#a85139] from-[#e0a79a]", icon: TicketsPlane, current: "0", previous: "0", proportion: "0" },
-  { id: 2, title: "Lượt đặt", color: '#ffa600', background: "bg-gradient-to-b to-[#ffa600] from-[#ffd60b]", icon: Handbag, current: "0", previous: "0", proportion: "0" },
-  { id: 4, title: "Khách hàng", color: '#4fadfe', background: "bg-gradient-to-b to-[#4fadfe] from-[#01f1fe]", icon: Users, current: "0", previous: "0", proportion: "0" },
-]
+// const stats = [
+//   { id: 1, title: "Tổng doanh thu", color: '#01f195', background: "bg-gradient-to-b to-[#007e83] from-[#01f195]", icon: DollarSign, current: "0", previous: "0", proportion: "0" },
+//   { id: 3, title: "Tổng tour", color: '#a85139', background: "bg-gradient-to-b to-[#a85139] from-[#e0a79a]", icon: TicketsPlane, current: "0", previous: "0", proportion: "0" },
+//   { id: 2, title: "Lượt đặt", color: '#ffa600', background: "bg-gradient-to-b to-[#ffa600] from-[#ffd60b]", icon: Handbag, current: "0", previous: "0", proportion: "0" },
+//   { id: 4, title: "Khách hàng", color: '#4fadfe', background: "bg-gradient-to-b to-[#4fadfe] from-[#01f1fe]", icon: Users, current: "0", previous: "0", proportion: "0" },
+// ]
+
+const iconStatMap = {
+  'DollarSign': DollarSign,
+  'TicketsPlane': TicketsPlane,
+  'Handbag': Handbag,
+  'Users': Users
+}
+
+const stats = ref([])
 
 const fieldsIconStatus = [
   { key: 'index', label: 'STT' },
+  { key: 'user', label: 'Khách hàng' },
   { key: 'name', label: 'Tên ấn ký' },
   { key: 'tour', label: 'Tour' },
   { key: 'updatedAt', label: 'Ngày cập nhật' },
-  { key: 'status', label: 'Trạng thái' },
 ]
 
-const dataIconStatus = [
-
-]
+const dataIconStatus = ref([])
 
 const revenueByDate = ref({
   dates: [],
@@ -111,83 +119,97 @@ const tourStatus = ref({
 const startOfMonth = ref(moment().startOf('month').format('YYYY-MM-DD'))
 const endOfToday = ref(moment().format('YYYY-MM-DD'))
 
-const generateRevenueByDate = () => {
-  const start = moment(startOfMonth.value)
-  const end = moment(endOfToday.value)
+// const generateRevenueByDate = () => {
+//   const start = moment(startOfMonth.value)
+//   const end = moment(endOfToday.value)
 
-  const dates = []
-  const revenues = []
+//   const dates = []
+//   const revenues = []
 
-  let current = start.clone()
+//   let current = start.clone()
 
-  while (current.isSameOrBefore(end)) {
-    dates.push(current.format('YYYY-MM-DD'))
-    revenues.push(0)
-    current.add(1, 'day')
+//   while (current.isSameOrBefore(end)) {
+//     dates.push(current.format('YYYY-MM-DD'))
+//     revenues.push(0)
+//     current.add(1, 'day')
+//   }
+
+//   revenueByDate.value = {
+//     dates,
+//     revenues
+//   }
+// }
+
+// const generateRevenueAndTours = () => {
+//   const currentMonth = moment().month() + 1
+
+//   const months = []
+//   const revenues = []
+//   const tours = []
+
+//   for (let i = 1; i <= currentMonth; i++) {
+//     months.push(`T${i}`)
+//     revenues.push(Math.floor(Math.random() * 1000) + 500)
+//     tours.push(Math.floor(Math.random() * 200) + 50)
+//   }
+
+//   revenueAndTours.value = {
+//     months,
+//     revenues,
+//     tours
+//   }
+// }
+
+// const generateRevenueByYear = () => {
+//   const currentMonth = moment().month() + 1
+
+//   const months = []
+//   const currentYear = []
+//   const previousYear = []
+
+//   for (let i = 1; i <= currentMonth; i++) {
+//     months.push(`T${i}`)
+//     currentYear.push(Math.floor(Math.random() * 1000) + 500)
+//     previousYear.push(Math.floor(Math.random() * 800) + 400)
+//   }
+
+//   revenueByYear.value = {
+//     months,
+//     currentYear,
+//     previousYear
+//   }
+// }
+
+// const generateTourStatus = () => {
+//   const completed = 120
+//   const notCompleted = 30
+
+//   tourStatus.value = {
+//     completed,
+//     notCompleted
+//   }
+// }
+
+const getDashboard = async () => {
+  try {
+    const body = {
+      startDate: startOfMonth.value,
+      endDate: endOfToday.value
+    }
+    const { data } = await AppAPI.getDashboard(body)
+    stats.value = data.stats
+    revenueByDate.value = data.revenueByDate
+    revenueAndTours.value = data.revenueAndTours
+    revenueByYear.value = data.revenueCompare
+    tourStatus.value = data.tourStatus
+    dataIconStatus.value = data.userIcons
   }
-
-  revenueByDate.value = {
-    dates,
-    revenues
+  catch (err) {
+    console.log(err)
   }
 }
 
-const generateRevenueAndTours = () => {
-  const currentMonth = moment().month() + 1
-
-  const months = []
-  const revenues = []
-  const tours = []
-
-  for (let i = 1; i <= currentMonth; i++) {
-    months.push(`T${i}`)
-    revenues.push(Math.floor(Math.random() * 1000) + 500)
-    tours.push(Math.floor(Math.random() * 200) + 50)
-  }
-
-  revenueAndTours.value = {
-    months,
-    revenues,
-    tours
-  }
-}
-
-const generateRevenueByYear = () => {
-  const currentMonth = moment().month() + 1
-
-  const months = []
-  const currentYear = []
-  const previousYear = []
-
-  for (let i = 1; i <= currentMonth; i++) {
-    months.push(`T${i}`)
-    currentYear.push(Math.floor(Math.random() * 1000) + 500)
-    previousYear.push(Math.floor(Math.random() * 800) + 400)
-  }
-
-  revenueByYear.value = {
-    months,
-    currentYear,
-    previousYear
-  }
-}
-
-const generateTourStatus = () => {
-  const completed = 120
-  const notCompleted = 30
-
-  tourStatus.value = {
-    completed,
-    notCompleted
-  }
-}
-
-onMounted(() => {
-  generateRevenueByDate()
-  generateRevenueAndTours()
-  generateRevenueByYear()
-  generateTourStatus()
+onMounted(async () => {
+  await getDashboard()
 })
 </script>
-
-<style></style>

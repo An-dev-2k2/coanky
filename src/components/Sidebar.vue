@@ -77,7 +77,7 @@ const menus = [
   { id: 5, name: 'Đơn hàng', to: '/admin/orders', icon: Handbag },
   { id: 6, name: 'Người dùng', to: '/admin/users', icon: Users },
   { id: 7, name: 'Lịch sử giao dịch', to: '/admin/transactions', icon: Landmark },
-  { id: 8, name: 'Cài đặt', to: '/admin/settings', icon: Settings },
+  // { id: 8, name: 'Cài đặt', to: '/admin/settings', icon: Settings },
 ]
 
 const logout = async () => {
