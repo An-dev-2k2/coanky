@@ -2,19 +2,142 @@
   <div>
     <img class="h-screen w-full absolute" src="/images/bg-tour.png" alt="">
     <img class="h-screen w-full absolute" src="/images/bg-icon.png" alt="">
-    <div class=" relative flex justify-center items-center flex-col top-10">
-      <img src="/images/so-tay-an-ky.png" class="3xl:w-[600px] w-[400px]" alt="Lo Trinh Tam An">
-      <div class=" relative inline-block">
-        <img src="/images/book.png" class="3xl:w-[1380px] w-[1200px] block" alt="">
-        <div class="absolute inset-0
-         ml-20 mr-36 mt-20 mb-16
-         grid grid-cols-6
+    <div class=" relative flex justify-center items-center flex-col xl:top-10 top-20">
+      <img src="/images/so-tay-an-ky.png" class="3xl:w-[600px] xl:w-[400px] w-[280px]" alt="Lo Trinh Tam An">
+      <div class=" relative xl:inline-block">
+        <img src="/images/book.png" class="3xl:w-[1380px] w-[1200px] xl:block hidden" alt="">
+        <div class="xl:absolute inset-0
+         xl:ml-20 xl:mr-36 xl:mt-20 mt-5 ml-5 mr-5 xl:mb-16
+         grid xl:grid-cols-6 grid-cols-3
          auto-rows-max
          content-start
          gap-4
+         xl:h-auto
+         h-[60vh]
          overflow-y-auto">
           <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
-            <p class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 text-sm">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
+              {{
+                icon.name }}</p>
+            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+          </div>
+          <div v-for="icon in icons" :key="icon._id" class="bg-black/30 group cursor-pointer grid place-content-center">
+            <p
+              class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
               {{
                 icon.name }}</p>
             <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"

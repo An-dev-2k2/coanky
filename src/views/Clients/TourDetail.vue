@@ -1,9 +1,10 @@
 <template>
   <div>
-    <div class="fixed bottom-0 left-0 z-10">
-      <img src="/images/bg-footer-price.png" alt="">
-      <div class=" absolute flex justify-center items-center gap-5 top-0 left-0 w-full h-full">
-        <p class="text-[#980000] text-lg"><span class="text-[#B06C0380]">Giá: </span><b>{{
+    <div class="fixed bottom-0 left-0 right-0 z-10">
+      <img src="/images/bg-footer-price.png" class="xl:block hidden" alt="bg footer price">
+      <div
+        class=" xl:absolute xl:bg-transparent bg-[#F4DBAB] xl:py-0 py-2 flex justify-center items-center gap-5 top-0 left-0 w-full h-full">
+        <p class="text-[#980000] xl:text-lg text-sm"><span class="text-[#B06C0380]">Giá: </span><b>{{
           formatPrice(tour?.price) }}
             VNĐ</b></p>
         <span class="text-[#B06C0380] line-through">-{{ tour?.percent }}%</span>
@@ -18,18 +19,19 @@
       </div>
     </div>
     <img class="h-screen w-full absolute" src="/images/bg-detail-tour.jpg" alt="">
-    <div class="relative pt-20 px-40">
+    <div class="relative xl:pt-20 xl:px-40 pt-24">
       <img src="/images/cuon-tren.png" class="relative z-10" />
-      <div class="px-[48px] -translate-y-5 relative z-5">
-        <div class="bg-[url('/images/cuon-giua.png')] bg-cover bg-center bg-no-repeat px-28 py-5">
-          <p class="text-[#B06C03] flex items-center gap-1 text-xs">
-            <Clock class="w-4" />
+      <div class="xl:px-[48px] px-[15px] -translate-y-5 relative z-5">
+        <div
+          class="bg-[url('/images/cuon-giua.png')] bg-cover bg-center bg-no-repeat xl:px-28 px-10 pt-5 xl:pb-5 pb-10">
+          <p class="text-[#B06C03] flex items-center gap-1 xl:text-xs text-[10px]">
+            <Clock class="xl:w-4 w-2.5" />
             <span>Ngày đăng: {{ formatDate(tour?.createdAt) }} {{ formatTimeOnly(tour?.createdAt) }}</span>
           </p>
-          <p class="text-center pt-5 text-3xl text-[#B06C03] uppercase">{{ tour?.title }}</p>
-          <p class="text-center text-sm mt-4 text-[#B06C03]">"{{ tour?.description }}"</p>
-          <div class="flex justify-center mt-5">
-            <img src="/images/line.png" class="w-[200px]" alt="line">
+          <p class="text-center xl:pt-5 pt-3 xl:text-3xl text-lg text-[#B06C03] uppercase">{{ tour?.title }}</p>
+          <p class="text-center xl:text-sm text-[11px] xl:mt-4 text-[#B06C03]">"{{ tour?.description }}"</p>
+          <div class="flex justify-center xl:mt-5 mt-2">
+            <img src="/images/line.png" class="xl:w-[200px] w-[100px]" alt="line">
           </div>
         </div>
       </div>

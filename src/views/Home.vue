@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-[#FFF7E0] flex items-center justify-center flex-col relative h-screen">
+    <div class="bg-[#FFF7E0] flex items-center justify-center overflow-hidden flex-col relative h-screen">
       <img src="/images/background.png" alt="map" class=" absolute top-0 left-0 w-full h-screen">
       <div
         class="z-100 3xl:w-[1500px] xl:w-[1200px] w-[340px] 3xl:right-[10px] xl:right-[80px] right-[20px] absolute 3xl:top-[450px] top-[400px] -translate-y-1/2">
@@ -60,9 +60,9 @@
     </div>
     <div :class="!isStarted ? 'bg-[#FFF7E0]/70' : 'bg-transparent'" class=" fixed w-full top-0 left-0 h-screen z-[100]">
       <div class="flex justify-center items-center flex-col h-full">
-        <img src="/images/logo.png" ref="logoRef" alt="logo" class="3xl:w-[650px] w-[100px]">
+        <img src="/images/logo.png" ref="logoRef" alt="logo" class="3xl:w-[650px] xl:w-[500px] w-[270px]">
         <img src="/images/start-app.png" ref="startBtnRef" @click="startApp" alt="start app"
-          class="w-[120px] cursor-pointer">
+          class="3xl:w-[120px] xl:w-[120px] w-[90px] cursor-pointer">
         <div v-if="!token" ref="actionBtnsRef" class="flex justify-center items-center gap-5 mt-10">
           <router-link to="/login"
             class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">

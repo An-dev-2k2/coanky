@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full h-screen p-20 overflow-hidden">
+  <div class="relative w-full h-screen xl:px-20 py-20 px-4 overflow-hidden">
     <div v-if="isLoading" class="absolute inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
       <div class="w-14 h-14 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
       <p class="mt-4 text-gray-600 text-sm">Đang xác định vị trí...</p>
@@ -13,7 +13,7 @@
         </div>
       </div>
       <div v-else class="flex flex-col md:flex-row h-full">
-        <div class="relative rounded-xl overflow-hidden w-full h-[60vh] md:h-full">
+        <div class="relative rounded-xl overflow-hidden w-full h-full md:h-full">
           <div id="map" class="w-full h-full"></div>
         </div>
 
