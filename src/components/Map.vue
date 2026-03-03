@@ -181,7 +181,7 @@ function animateIconToSidebar(location, index) {
         left: endX + "px",
         top: endY + "px",
         transform: "scale(0.4) rotate(360deg)",
-        opacity: "0",
+        opacity: "1",
       });
     });
   });
