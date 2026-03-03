@@ -400,7 +400,7 @@ let hasReceivedFirstPosition = false;
 let lastCheckTime = 0;
 const CHECK_INTERVAL = 1000;
 const stampingSet = new Set();
-const COLLECT_RADIUS = 500; // 500 mét
+const COLLECT_RADIUS = 50; // 50 mét
 
 const humanIcon = L.icon({
   iconUrl: "https://cdn-icons-png.freepik.com/256/12569/12569178.png?semt=ais_white_label",
