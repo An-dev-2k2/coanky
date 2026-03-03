@@ -19,9 +19,12 @@
         </div>
 
         <!-- SIDEBAR -->
-        <div ref="sidebarRef" :class="isSidebarOpen ? 'translate-x-0' : 'translate-x-full'" class="absolute top-0 right-0 h-full w-80 md:w-1/3
+        <div ref="sidebarRef" :class="[
+          isSidebarOpen ? 'translate-x-0' : 'translate-x-full',
+          isCompleted ? 'opacity-60 pointer-events-none' : ''
+        ]" class="absolute top-0 right-0 h-full w-80 md:w-1/3
            bg-white shadow-lg
-           transition-transform duration-500 ease-in-out
+           transition-all duration-500 ease-in-out
            z-[1000]">
 
           <!-- BUTTON (NẰM TRONG SIDEBAR) -->
@@ -69,7 +72,7 @@
             <div class="flex justify-center mt-6">
               <button @click="goToNearest" :disabled="isLoadingSearch"
                 :class="isLoadingSearch ? ' cursor-no-drop opacity-40' : ''"
-                class="w-[300px] text-white flex justify-center items-center py-2 mb-4 active:scale-95 transition">
+                class="w-[300px] text-white relative flex justify-center items-center py-2 mb-4 active:scale-95 transition">
                 <img src="/images/btn-search.png" alt="">
                 <template v-if="isLoadingSearch">
                   <Loader class="w-5 absolute animate-spin" />
@@ -350,6 +353,11 @@ function animateIconToSidebar(location, index) {
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
 }
+
+const isCompleted = computed(() =>
+  props.locations.length > 0 &&
+  props.locations.every(l => l.collected)
+)
 const props = defineProps({
   isAuthorized: Boolean,
   errorMessage: String,
