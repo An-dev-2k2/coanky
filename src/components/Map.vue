@@ -29,9 +29,19 @@
           <div v-if="isCompleted"
             class="absolute inset-0 z-[2000] flex items-center justify-center bg-white/70 backdrop-blur-sm">
 
-            <h2 class="text-3xl font-bold text-red-600 drop-shadow-lg animate-pulse">
-              Đã Hoàn Thành
-            </h2>
+            <div class="stamp-animation
+           border-8 border-red-600
+           text-red-600
+           text-4xl font-extrabold
+           px-10 py-4
+           rounded-xl
+           bg-white
+           shadow-2xl
+           tracking-widest">
+
+              ĐÃ HOÀN THÀNH
+
+            </div>
 
           </div>
           <!-- BUTTON (NẰM TRONG SIDEBAR) -->
@@ -1070,5 +1080,29 @@ async function goToNearest() {
   to {
     filter: drop-shadow(0 0 12px #8bc34a);
   }
+}
+
+@keyframes stampEffect {
+  0% {
+    transform: scale(3) rotate(-20deg);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(0.9) rotate(5deg);
+    opacity: 1;
+  }
+
+  80% {
+    transform: scale(1.05) rotate(-2deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.stamp-animation {
+  animation: stampEffect 0.6s ease-out forwards;
 }
 </style>
