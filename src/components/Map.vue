@@ -131,51 +131,49 @@ function animateIconToSidebar(location, index) {
   const startX = mapRect.left + point.x;
   const startY = mapRect.top + point.y;
 
-  const sidebarRect = sidebarRef.value.getBoundingClientRect();
-
-  let endX;
-  let endY;
+  let endX, endY;
 
   if (isSidebarOpen.value) {
-    // Sidebar đang mở → lấy vị trí icon thật
-    const targetRect = sidebarIconRefs.value[index].getBoundingClientRect();
+    const targetEl = sidebarIconRefs.value[index];
+    if (!targetEl) return;
+    const targetRect = targetEl.getBoundingClientRect();
     endX = targetRect.left + targetRect.width / 2;
     endY = targetRect.top + targetRect.height / 2;
   } else {
-    // Sidebar đang đóng → tính vị trí ảo bên ngoài màn hình
-    const sidebarWidth = sidebarRect.width;
-
-    endX =
-      sidebarRect.left +
-      sidebarWidth +
-      40; // bay vào giữa sidebar (ước lượng)
-
-    endY =
-      sidebarRect.top +
-      120 +
-      index * 70;
+    endX = window.innerWidth + 40;
+    endY = 120 + index * 70;
   }
 
   const flyingIcon = document.createElement("img");
   flyingIcon.src = location.icon?.image;
-  flyingIcon.style.position = "fixed";
-  flyingIcon.style.left = startX + "px";
-  flyingIcon.style.top = startY + "px";
-  flyingIcon.style.width = "40px";
-  flyingIcon.style.height = "40px";
-  flyingIcon.style.zIndex = "99999";
-  flyingIcon.style.pointerEvents = "none";
-  flyingIcon.style.transform = "scale(1.2)";
-  flyingIcon.style.transition =
-    "all 1.8s cubic-bezier(0.65, 0, 0.35, 1)";
+
+  // Set vị trí ban đầu TRƯỚC khi append
+  Object.assign(flyingIcon.style, {
+    position: "fixed",
+    left: startX + "px",
+    top: startY + "px",
+    width: "40px",
+    height: "40px",
+    zIndex: "99999",
+    pointerEvents: "none",
+    transform: "scale(1.2)",
+    opacity: "1",
+    transition: "none", // ❌ Tắt transition lúc set vị trí đầu
+  });
 
   document.body.appendChild(flyingIcon);
 
+  // ✅ Double RAF: đảm bảo browser đã paint element ở vị trí ban đầu
   requestAnimationFrame(() => {
-    flyingIcon.style.left = endX + "px";
-    flyingIcon.style.top = endY + "px";
-    flyingIcon.style.transform = "scale(0.5) rotate(360deg)";
-    flyingIcon.style.opacity = "0.6";
+    requestAnimationFrame(() => {
+      Object.assign(flyingIcon.style, {
+        transition: "all 1.8s cubic-bezier(0.65, 0, 0.35, 1)",
+        left: endX + "px",
+        top: endY + "px",
+        transform: "scale(0.5) rotate(360deg)",
+        opacity: "0.6",
+      });
+    });
   });
 
   flyingIcon.addEventListener("transitionend", () => {
@@ -276,24 +274,19 @@ const initMap = () => {
 async function animateCollectedOnLoad() {
   await nextTick();
 
-  // Đợi DOM thực sự ổn định
-  setTimeout(() => {
-    props.locations.forEach((location, index) => {
-      if (location.collected) {
-
-        // 🔥 Nếu icon ref chưa tồn tại thì bỏ qua
-        if (!sidebarIconRefs.value[index]) {
-          console.log("Icon ref missing:", index);
-          return;
-        }
+  // ✅ Đợi map render xong hoàn toàn
+  map.once("idle", () => {
+    setTimeout(() => {
+      props.locations.forEach((location, index) => {
+        if (!location.collected) return;
+        if (!sidebarIconRefs.value[index]) return;
 
         setTimeout(() => {
           animateIconToSidebar(location, index);
         }, index * 400);
-
-      }
-    });
-  }, 300); // đợi sidebar & grid render
+      });
+    }, 300);
+  });
 }
 watch(
   () => props.isAuthorized,
