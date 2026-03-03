@@ -123,6 +123,7 @@ function setSidebarIconRef(el, index) {
 
 function animateIconToSidebar(location, index) {
   console.log("🚀 animateIconToSidebar called", { location, index, map: !!map, sidebar: !!sidebarRef.value });
+
   if (!map || !sidebarRef.value) {
     console.warn("❌ map or sidebarRef missing");
     return;
@@ -132,58 +133,65 @@ function animateIconToSidebar(location, index) {
   const point = map.latLngToContainerPoint(markerLatLng);
   const mapRect = map.getContainer().getBoundingClientRect();
 
-  const startX = mapRect.left + point.x;
-  const startY = mapRect.top + point.y;
+  const startX = mapRect.left + point.x - 20;
+  const startY = mapRect.top + point.y - 20;
 
   let endX, endY;
 
   if (isSidebarOpen.value) {
     const targetEl = sidebarIconRefs.value[index];
-    if (!targetEl) return;
-    const targetRect = targetEl.getBoundingClientRect();
-    endX = targetRect.left + targetRect.width / 2;
-    endY = targetRect.top + targetRect.height / 2;
+    if (!targetEl) {
+      // Sidebar mở nhưng ref chưa có → bay ra ngoài phải
+      endX = window.innerWidth + 60;
+      endY = startY;
+    } else {
+      const targetRect = targetEl.getBoundingClientRect();
+      endX = targetRect.left + targetRect.width / 2 - 20;
+      endY = targetRect.top + targetRect.height / 2 - 20;
+    }
   } else {
-    endX = window.innerWidth + 40;
-    endY = 120 + index * 70;
+    // ✅ Sidebar đóng → bay ra ngoài màn hình bên phải
+    endX = window.innerWidth + 60;
+    endY = startY;
   }
-  console.log("📍 startX/Y:", startX, startY, "endX/Y:", endX, endY);
+
+  console.log("📍 startX/Y:", startX, startY, "→ endX/Y:", endX, endY);
 
   const flyingIcon = document.createElement("img");
   flyingIcon.src = location.icon?.image;
 
-  // Set vị trí ban đầu TRƯỚC khi append
   Object.assign(flyingIcon.style, {
     position: "fixed",
     left: startX + "px",
     top: startY + "px",
     width: "40px",
     height: "40px",
-    zIndex: "99999",
+    zIndex: "999999",
     pointerEvents: "none",
     transform: "scale(1.2)",
     opacity: "1",
-    transition: "none", // ❌ Tắt transition lúc set vị trí đầu
+    transition: "none",
   });
 
   document.body.appendChild(flyingIcon);
 
-  // ✅ Double RAF: đảm bảo browser đã paint element ở vị trí ban đầu
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       Object.assign(flyingIcon.style, {
-        transition: "all 1.8s cubic-bezier(0.65, 0, 0.35, 1)",
+        transition: "left 1.8s cubic-bezier(0.65, 0, 0.35, 1), top 1.8s cubic-bezier(0.65, 0, 0.35, 1), transform 1.8s ease, opacity 1.8s ease",
         left: endX + "px",
         top: endY + "px",
-        transform: "scale(0.5) rotate(360deg)",
-        opacity: "0.6",
+        transform: "scale(0.4) rotate(360deg)",
+        opacity: "0",
       });
     });
   });
 
+  const cleanup = setTimeout(() => flyingIcon.remove(), 2200);
   flyingIcon.addEventListener("transitionend", () => {
+    clearTimeout(cleanup);
     flyingIcon.remove();
-  });
+  }, { once: true });
 }
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
@@ -279,18 +287,19 @@ const initMap = () => {
 async function animateCollectedOnLoad() {
   await nextTick();
 
-  // ✅ Đợi map render xong hoàn toàn
-  map.once("idle", () => {
+  map.whenReady(() => {
     setTimeout(() => {
       props.locations.forEach((location, index) => {
         if (!location.collected) return;
-        if (!sidebarIconRefs.value[index]) return;
+
+        // ✅ Bỏ check sidebarIconRefs ở đây
+        // Vì sidebar đang đóng → animateIconToSidebar sẽ tự bay ra ngoài màn hình
 
         setTimeout(() => {
           animateIconToSidebar(location, index);
-        }, index * 400);
+        }, index * 500);
       });
-    }, 300);
+    }, 800); // tăng lên 800ms để map tiles và Vue DOM đều sẵn sàng
   });
 }
 watch(
