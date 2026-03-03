@@ -13,7 +13,7 @@
         </div>
       </div>
       <div v-else class="flex flex-col md:flex-row h-full">
-        <div class="relative rounded-xl bg-gray-300 overflow-hidden w-full h-full md:h-full">
+        <div class="relative rounded-xl w-full h-full md:h-full">
           <div id="map" class="w-full h-full"></div>
         </div>
 
