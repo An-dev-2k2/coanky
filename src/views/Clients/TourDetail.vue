@@ -84,7 +84,7 @@
                 <img src="/images/bg-qr.png" class="w-[280px]" alt="">
                 <template v-if="descQR">
                   <img
-                    :src="`https://img.vietqr.io/image/acb-44412187-print.jpg?addInfo=${descQR}&accountName=Nguyen tan hung`"
+                    :src="`https://img.vietqr.io/image/MB-0150320032628-print.jpg?addInfo=${descQR}&accountName=NGUYEN PHUONG THAO`"
                     alt="" class="w-32 absolute">
                 </template>
                 <template v-else>
@@ -110,7 +110,7 @@ import { useToast } from 'vue-toastification'
 import { Clock, Loader } from 'lucide-vue-next'
 import Modal from '@/components/Modal.vue'
 import { useFormat } from '@/composables/useFormat';
-
+import socket from '@/services/socket'
 
 const { formatPrice, formatDate, formatTimeOnly } = useFormat()
 const toast = useToast()
@@ -129,6 +129,7 @@ watch(me, (val) => {
   if (val) {
     user.value = val
     descQR.value = val?.deposit_identifier ? 'NAP TIEN ' + val?.deposit_identifier : ''
+    socket.emit("join_user_room", val._id);
   }
 })
 const getTourDetail = async () => {
@@ -162,6 +163,18 @@ const payTour = async () => {
 };
 onMounted(() => {
   getTourDetail()
+
+  if (user.value?._id) {
+    socket.emit("join_user_room", user.value._id);
+  }
+
+  socket.on("deposit_success", (data) => {
+    store.commit("user/setPrice", data.newBalance);
+
+    toast.success(
+      `Nạp tiền thành công +${formatPrice(data.amount)} VNĐ`
+    );
+  });
 })
 </script>
 
