@@ -46,7 +46,7 @@
               </p>
             </div>
 
-            <div class="mt-6">
+            <!-- <div class="mt-6">
               <h2 class="text-xl font-bold mb-4">🏅 Ấn Ký</h2>
               <div class="grid grid-cols-4 gap-3">
                 <div v-for="(location, index) in locations" :key="index" class="flex flex-col items-center gap-1">
@@ -63,7 +63,7 @@
                   </span>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <div class="flex justify-center mt-6">
               <button @click="goToNearest" :disabled="isLoadingSearch"
@@ -79,11 +79,107 @@
               </button>
             </div>
 
-            <div v-for="(location, index) in locations" :key="index"
-              class="flex justify-between items-center py-2 border-b"
-              :class="{ 'text-green-600 font-semibold': location.collected }">
-              <span>{{ location.name }}</span>
-              <span v-if="location.collected">✅</span>
+            <div class="flex flex-col gap-3">
+              <h2 class="text-base font-bold">🏅 Ấn Ký</h2>
+
+              <div v-for="(location, index) in locations" :key="index"
+                class="rounded-xl border transition-all duration-300" :class="location.collected
+                  ? 'border-green-300 bg-green-50 shadow-sm shadow-green-100'
+                  : 'border-gray-200 bg-gray-50'">
+
+                <div class="flex items-center gap-3 p-3">
+                  <!-- Icon ấn ký -->
+                  <div
+                    class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-500"
+                    :class="location.collected ? 'bg-green-100 shadow-md shadow-green-200' : 'bg-gray-200'">
+                    <img :ref="el => setSidebarIconRef(el, index)" :src="location.icon?.image" :alt="location.name"
+                      class="w-9 h-9 object-contain transition-all duration-500" :class="location.collected
+                        ? 'opacity-100 scale-110 drop-shadow-[0_0_6px_#4caf50]'
+                        : 'grayscale brightness-50 opacity-50'" />
+                  </div>
+
+                  <!-- Tên + trạng thái -->
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold truncate"
+                      :class="location.collected ? 'text-green-700' : 'text-gray-500'">
+                      {{ location.name }}
+                    </p>
+                    <p class="text-xs mt-0.5" :class="location.collected ? 'text-green-500' : 'text-gray-400'">
+                      {{ location.collected ? '✅ Đã thu thập' : '🔒 Chưa thu thập' }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Audio player -->
+                <div v-if="location.audio" class="px-3 pb-3">
+                  <div class="flex items-center gap-2 rounded-lg px-3 py-2 transition-all duration-300"
+                    :class="location.collected ? 'bg-white border border-green-200' : 'bg-gray-100'">
+
+                    <!-- Play button -->
+                    <button :disabled="!location.collected" @click="toggleAudio(index)"
+                      class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all" :class="location.collected
+                        ? 'bg-green-500 hover:bg-green-600 text-white shadow-sm active:scale-95'
+                        : 'bg-gray-300 text-gray-400 cursor-not-allowed'">
+                      <svg v-if="playingIndex !== index" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                        viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                      <svg v-else xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                        fill="currentColor">
+                        <rect x="6" y="4" width="4" height="16" />
+                        <rect x="14" y="4" width="4" height="16" />
+                      </svg>
+                    </button>
+
+                    <!-- Waveform / progress -->
+                    <div class="flex-1">
+                      <div class="w-full h-1.5 rounded-full overflow-hidden"
+                        :class="location.collected ? 'bg-green-100' : 'bg-gray-200'">
+                        <div class="h-full bg-green-400 rounded-full transition-all duration-300"
+                          :style="{ width: playingIndex === index ? audioProgress + '%' : '0%' }"></div>
+                      </div>
+                      <p class="text-xs mt-1" :class="location.collected ? 'text-gray-500' : 'text-gray-400'">
+                        {{ location.collected ? (playingIndex === index ? '🔊 Đang phát...' : '🎵 Nhấn để nghe') :
+                          '🔒Thu thập để mở khóa' }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <h3 class="text-sm font-semibold mb-2 text-gray-700">
+                📋 Danh sách thu thập
+              </h3>
+
+              <div class="space-y-2">
+                <div v-for="(location, index) in locations" :key="'collection-' + index"
+                  class="flex items-center justify-between px-3 py-2 rounded-lg border transition-all duration-300"
+                  :class="location.collected
+                    ? 'bg-green-50 border-green-200 shadow-sm'
+                    : 'bg-gray-50 border-gray-200 opacity-70'">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <!-- Chấm trạng thái -->
+                    <span class="w-2.5 h-2.5 rounded-full"
+                      :class="location.collected ? 'bg-green-500 animate-pulse' : 'bg-gray-300'"></span>
+
+                    <span class="text-sm truncate line-clamp-1" :class="location.collected
+                      ? 'text-green-700 font-semibold'
+                      : 'text-gray-500'">
+                      {{ location.name }}
+                    </span>
+                  </div>
+
+                  <!-- Badge -->
+                  <!-- <span class="text-xs px-2 py-0.5 rounded-full font-medium" :class="location.collected
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-gray-200 text-gray-500'">
+                    {{ location.collected ? 'Đã thu thập' : 'Chưa thu thập' }}
+                  </span> -->
+                </div>
+              </div>
             </div>
 
           </div>
@@ -114,6 +210,10 @@ const isLoadingSearch = ref(false);
 const isSidebarOpen = ref(false)
 const sidebarIconRefs = ref({})
 const sidebarRef = ref(null)
+const playingIndex = ref(-1)
+const audioProgress = ref(0)
+let currentAudio = null
+let progressInterval = null
 
 function setSidebarIconRef(el, index) {
   if (el) {
@@ -121,6 +221,43 @@ function setSidebarIconRef(el, index) {
   }
 }
 
+function toggleAudio(index) {
+  const location = props.locations[index]
+  if (!location.collected || !location.audio) return
+
+  // Đang phát cùng bài → pause
+  if (playingIndex.value === index) {
+    currentAudio?.pause()
+    clearInterval(progressInterval)
+    playingIndex.value = -1
+    return
+  }
+
+  // Dừng bài đang phát (nếu có)
+  if (currentAudio) {
+    currentAudio.pause()
+    currentAudio.currentTime = 0
+    clearInterval(progressInterval)
+  }
+
+  // Phát bài mới
+  currentAudio = new Audio(location.audio)
+  playingIndex.value = index
+  audioProgress.value = 0
+
+  currentAudio.play()
+
+  progressInterval = setInterval(() => {
+    if (!currentAudio || currentAudio.duration === 0) return
+    audioProgress.value = (currentAudio.currentTime / currentAudio.duration) * 100
+  }, 200)
+
+  currentAudio.onended = () => {
+    playingIndex.value = -1
+    audioProgress.value = 0
+    clearInterval(progressInterval)
+  }
+}
 function animateIconToSidebar(location, index) {
   if (!map || !sidebarRef.value) return;
 
@@ -342,21 +479,50 @@ function addLocateButton() {
     },
 
     onAdd: function () {
-      const btn = L.DomUtil.create("button", "locate-btn");
-      btn.innerHTML = "📍";
-      btn.title = "Về vị trí hiện tại";
+      const container = L.DomUtil.create("div", "flex flex-col gap-2 relative");
 
-      btn.onclick = function () {
+      // ── Nút 1: Về vị trí hiện tại ──
+      const btnLocate = L.DomUtil.create("button", "locate-btn relative", container);
+      btnLocate.title = "Về vị trí hiện tại";
+      btnLocate.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+          fill="none" stroke="#2196f3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+      `;
+      btnLocate.onclick = function () {
         if (!userMarker) return;
-
         const pos = userMarker.getLatLng();
-        map.setView(pos, 18, {
-          animate: true,
-          duration: 1,
-        });
+        map.setView(pos, 18, { animate: true, duration: 1 });
       };
 
-      return btn;
+      // ── Nút 2: Zoom về user + điểm gần nhất ──
+      const btnFit = L.DomUtil.create("button", "locate-btn relative", container);
+      btnFit.title = "Xem đường đến điểm gần nhất";
+      btnFit.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+          fill="none" stroke="#4caf50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.3-4.3"/>
+          <path d="M11 8v6"/>
+          <path d="M8 11h6"/>
+        </svg>
+      `;
+      btnFit.onclick = function () {
+        if (!userMarker || !currentTarget) return;
+
+        const userPos = userMarker.getLatLng();
+        const targetPos = L.latLng(currentTarget.lat, currentTarget.lon);
+
+        // Zoom vừa đủ để thấy cả 2 điểm
+        const bounds = L.latLngBounds([userPos, targetPos]);
+        map.fitBounds(bounds, { padding: [60, 60], animate: true, duration: 1 });
+      };
+
+      return container;
     },
   });
 

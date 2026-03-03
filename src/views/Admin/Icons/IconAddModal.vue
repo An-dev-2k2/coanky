@@ -33,7 +33,16 @@
     <template #footer>
       <div class="flex justify-end gap-2">
         <Button variant="outline" @click="close">Huỷ</Button>
-        <Button @click="onSubmit">{{ nameBtn }}</Button>
+        <Button @click="onSubmit" class="flex justify-center items-center" :disabled="isLoading"
+          :class="isLoading && ' cursor-no-drop opacity-40'">
+          <template v-if="isLoading">
+            <Loader class="w-4 animate-spin" />
+            <span class="ml-2">{{ mode === 'create' ? 'Đang thêm' : 'Đang cập nhật' }}</span>
+          </template>
+          <template v-else>
+            {{ nameBtn }}
+          </template>
+        </Button>
       </div>
     </template>
   </Modal>
@@ -41,7 +50,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { Upload } from 'lucide-vue-next'
+import { Upload, Loader } from 'lucide-vue-next'
 import Modal from '@/components/Modal.vue'
 import Button from '@/components/Button.vue'
 import FormField from '@/components/FormField.vue'
@@ -65,6 +74,7 @@ const emit = defineEmits(['update:modelValue', 'close', 'submit'])
 const isDragging = ref(false)
 const imageFile = ref(null)
 const previewUrl = ref('')
+const isLoading = ref(false)
 
 const schema = toTypedSchema(
   z.object({
@@ -104,6 +114,8 @@ function handleFile(file) {
 }
 
 const onSubmit = handleSubmit(async (values) => {
+  if (isLoading.value) return
+  isLoading.value = true
   const formData = new FormData()
   formData.append('name', values.name)
   if (imageFile.value instanceof File) {
@@ -126,13 +138,14 @@ const createIcon = async (formData) => {
   }
   catch (e) {
     const errors = e?.errors
-
     if (errors && Array.isArray(errors)) {
       errors.forEach(err => {
         setFieldError(err.path, err.message)
       })
     }
-    console.log(e)
+    toast.error("Thêm ấn ký thất bại")
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -144,7 +157,9 @@ const updateIcon = async (formData) => {
     resetState()
   }
   catch (e) {
-    console.log(e)
+    toast.error("Cập nhật ấn ký thất bại")
+  } finally {
+    isLoading.value = false
   }
 }
 

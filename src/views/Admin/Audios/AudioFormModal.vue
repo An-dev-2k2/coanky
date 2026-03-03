@@ -69,7 +69,15 @@
     <template #footer>
       <div class="flex justify-end gap-2">
         <Button variant="outline" @click="close">Huỷ</Button>
-        <Button @click="onSubmit">{{ nameBtn }}</Button>
+        <Button @click="onSubmit" class="flex justify-center items-center" :disabled="isLoading"
+          :class="isLoading && ' cursor-no-drop opacity-40'">
+          <template v-if="isLoading">
+            <Loader class="w-4 animate-spin" />
+            <span class="ml-2">{{ mode === 'create' ? 'Đang thêm' : 'Đang cập nhật' }}</span>
+          </template>
+          <template v-else>
+            {{ nameBtn }}
+          </template></Button>
       </div>
     </template>
   </Modal>
@@ -77,7 +85,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { Upload } from 'lucide-vue-next'
+import { Upload, Loader } from 'lucide-vue-next'
 import Modal from '@/components/Modal.vue'
 import Button from '@/components/Button.vue'
 import FormField from '@/components/FormField.vue'
@@ -106,6 +114,7 @@ const audioPreview = ref('')
 const isDraggingImage = ref(false)
 const imageFile = ref(null)
 const imagePreview = ref('')
+const isLoading = ref(false)
 
 const schema = toTypedSchema(
   z.object({
@@ -167,6 +176,8 @@ function onDropAudio(e) {
 }
 
 const onSubmit = handleSubmit(async (values) => {
+  if (isLoading.value) return
+  isLoading.value = true
   const formData = new FormData()
   formData.append('name', values.name)
 
@@ -189,7 +200,9 @@ async function createAudio(formData) {
     emit('submit', data)
     resetState()
   } catch (e) {
-    console.log(e)
+    toast.error("Thêm audio thất bại")
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -200,7 +213,9 @@ async function updateAudio(formData) {
     emit('submit', data)
     resetState()
   } catch (e) {
-    console.log(e)
+    toast.error("Cập nhật audio thất bại")
+  } finally {
+    isLoading.value = false
   }
 }
 

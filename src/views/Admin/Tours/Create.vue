@@ -19,12 +19,12 @@
               class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 placeholder:text-sm w-full"
               placeholder="Nhập % giảm giá..." />
           </FormField>
-          <FormField name="audio" class="col-span-3" label="Audio">
+          <!-- <FormField name="audio" class="col-span-3" label="Audio">
             <Field name="audio" v-slot="{ value, handleChange }">
               <Select :modelValue="value" @update:modelValue="handleChange" :options="audioOptions"
                 placeholder="Chọn audio" />
             </Field>
-          </FormField>
+          </FormField> -->
           <FormField name="days" class="col-span-3" label="Số ngày">
             <Field name="days" as="input" type="number"
               class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 w-full"
@@ -136,7 +136,7 @@
                 ✕ Xoá
               </button>
 
-              <div class="grid grid-cols-3 gap-3">
+              <div class="grid grid-cols-4 gap-3">
                 <!-- Tên địa điểm -->
                 <div>
                   <label class="block text-xs font-medium text-slate-600 mb-1">Tên địa điểm</label>
@@ -157,6 +157,14 @@
                   </button>
                 </div>
 
+                <!-- Audio -->
+                <div>
+                  <label class="block text-xs font-medium text-slate-600 mb-1">
+                    Audio
+                  </label>
+
+                  <Select v-model="item.audio" :options="audioOptions" placeholder="Chọn audio" class="w-full" />
+                </div>
                 <!-- Icon -->
                 <div>
                   <label class="block text-xs font-medium text-slate-600 mb-1">Icon</label>
@@ -184,7 +192,16 @@
         </div>
 
         <div class="flex justify-end">
-          <Button type="submit">{{ isEditMode ? 'Cập nhật' : 'Thêm' }}</Button>
+          <Button type="submit" :disabled="isLoading" :class="isLoading && ' cursor-no-drop opacity-40'"
+            class="flex justify-center items-center">
+            <template v-if="isLoading">
+              <Loader class="w-4 animate-spin" />
+              <span class="ml-2">{{ isEditMode ? 'Đang cập nhật' : 'Đang thêm' }}</span>
+            </template>
+            <template v-else>
+              {{ isEditMode ? 'Cập nhật' : 'Thêm' }}
+            </template>
+          </Button>
         </div>
       </form>
     </div>
@@ -258,7 +275,7 @@ import { Ckeditor } from '@ckeditor/ckeditor5-vue'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { Upload, Trash2, Image as ImageIcon } from 'lucide-vue-next'
+import { Upload, Trash2, Image as ImageIcon, Loader } from 'lucide-vue-next'
 import AudioAPI from '@/services/api/admin/AudioAPI'
 import IconAPI from '@/services/api/admin/IconAPI'
 import TourAPI from '@/services/api/admin/TourAPI'
@@ -268,6 +285,7 @@ import { useRouter, useRoute } from 'vue-router'
 const toast = useToast()
 const router = useRouter()
 const route = useRoute()
+const isLoading = ref(false)
 const isEditMode = computed(() => !!route.params.id)
 // ==================== CKEditor ====================
 const editor = ClassicEditor
@@ -328,7 +346,7 @@ function removeSingleImage() {
 // ==================== Vee-validate ====================
 const schema = toTypedSchema(
   z.object({
-    title: z.string().trim().nonempty('Tên tour không được để trống').max(100, 'Tên tour tối đa 100 ký tự'),
+    title: z.string().trim().nonempty('Tên tour không được để trống').min(3, 'Tên tour tối thiểu 3 ký tự').max(100, 'Tên tour tối đa 100 ký tự'),
     price: z.preprocess(
       (val) => {
         if (val === '' || val === null || val === undefined) {
@@ -370,10 +388,10 @@ const schema = toTypedSchema(
         .max(100, '% giảm giá không được vượt quá 100')
         .optional()
     ),
-    audio: z.string().trim().nonempty('Vui lòng chọn audio'),
+    // audio: z.string().trim().nonempty('Vui lòng chọn audio'),
     role: z.string().trim().nonempty('Vai trò không được để trống'),
     master: z.string().trim().nonempty('Master Seal không được để trống'),
-    description: z.string().trim().nonempty('Mô tả không được để trống').max(500, 'Mô tả tối đa 500 ký tự'),
+    description: z.string().trim().nonempty('Mô tả không được để trống').min(3, 'Mô tả tối thiểu 3 ký tự').max(500, 'Mô tả tối đa 500 ký tự'),
     image: z
       .any()
       .refine(file => typeof file === 'string' || file instanceof File, { message: 'Vui lòng chọn ảnh' }),
@@ -394,9 +412,9 @@ const schema = toTypedSchema(
     ),
   })
 )
-const { handleSubmit, resetForm, setValues } = useForm({
+const { handleSubmit, resetForm, setValues, setFieldError } = useForm({
   validationSchema: schema,
-  initialValues: { title: '', price: '', percent: '', audio: '', image: null, description: '', days: '', nights: '', role: '', master: '' },
+  initialValues: { title: '', price: '', percent: '', image: null, description: '', days: '', nights: '', role: '', master: '' },
 })
 
 const isSearching = ref(false)
@@ -404,7 +422,7 @@ const isSearching = ref(false)
 const diadiem = ref([])
 
 function addDiaDiem() {
-  diadiem.value.push({ name: '', lon: null, lat: null, icon: '' })
+  diadiem.value.push({ name: '', lon: null, lat: null, icon: '', audio: '' })
 }
 
 function removeDiaDiem(index) {
@@ -543,11 +561,13 @@ onBeforeUnmount(() => destroyMap())
 
 // ==================== Submit ====================
 const onSubmit = handleSubmit(async (values) => {
+  if (isLoading.value) return
+  isLoading.value = true
   const formData = new FormData()
   formData.append('title', values.title)
   formData.append('price', values.price)
   formData.append('percent', values.percent)
-  formData.append('audio', values.audio)
+  // formData.append('audio', values.audio)
   formData.append('days', values.days)
   formData.append('nights', values.nights)
   formData.append('role', values.role)
@@ -562,6 +582,7 @@ const onSubmit = handleSubmit(async (values) => {
     lon: item.lon,
     lat: item.lat,
     icon: item.icon || null,
+    audio: item.audio || null
   }))))
   try {
     if (isEditMode.value) {
@@ -574,7 +595,15 @@ const onSubmit = handleSubmit(async (values) => {
     router.push({ name: 'tours-admin' })
   }
   catch (e) {
-    console.log(e)
+    const errors = e?.errors
+    if (errors && Array.isArray(errors)) {
+      errors.forEach(err => {
+        setFieldError(err.path, err.message)
+      })
+    }
+    toast.error(isEditMode ? "Cập nhật tour thất bại" : "Thêm tour thất bại")
+  } finally {
+    isLoading.value = false
   }
 })
 
@@ -619,7 +648,7 @@ const setFormValues = (tour) => {
     title: tour.title,
     price: tour.price,
     percent: tour.percent,
-    audio: tour.audio?._id || tour.audio,
+    // audio: tour.audio?._id || tour.audio,
     description: tour.description,
     days: tour.days,
     nights: tour.nights,
@@ -637,7 +666,8 @@ const setFormValues = (tour) => {
     name: item.name,
     lat: item.lat,
     lon: item.lon,
-    icon: item.icon?._id || item.icon
+    icon: item.icon?._id || item.icon,
+    audio: item.audio?._id || item.audio
   }))
 }
 
