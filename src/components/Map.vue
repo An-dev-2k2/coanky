@@ -260,6 +260,7 @@ const initMap = () => {
       // 🔥 Khởi tạo map đúng vị trí hiện tại
       map = L.map("map").setView(initialPosition, 18);
 
+      setTimeout(() => map.invalidateSize(), 100);
       addLocateButton();
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap",
@@ -287,20 +288,21 @@ const initMap = () => {
 async function animateCollectedOnLoad() {
   await nextTick();
 
-  map.whenReady(() => {
-    setTimeout(() => {
-      props.locations.forEach((location, index) => {
-        if (!location.collected) return;
+  // ✅ Dùng 'moveend' hoặc 'load' thay vì whenReady
+  // vì whenReady chạy quá sớm, map chưa có kích thước thật
+  map.invalidateSize(); // force map tính lại kích thước
 
-        // ✅ Bỏ check sidebarIconRefs ở đây
-        // Vì sidebar đang đóng → animateIconToSidebar sẽ tự bay ra ngoài màn hình
+  setTimeout(() => {
+    map.invalidateSize();
 
-        setTimeout(() => {
-          animateIconToSidebar(location, index);
-        }, index * 500);
-      });
-    }, 800); // tăng lên 800ms để map tiles và Vue DOM đều sẵn sàng
-  });
+    props.locations.forEach((location, index) => {
+      if (!location.collected) return;
+
+      setTimeout(() => {
+        animateIconToSidebar(location, index);
+      }, index * 500);
+    });
+  }, 1000); // đợi map container có kích thước thật
 }
 watch(
   () => props.isAuthorized,
