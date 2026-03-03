@@ -1,6 +1,7 @@
 <template>
   <div class="relative w-full h-screen xl:px-20 py-20 px-4 overflow-hidden">
-    <div v-if="isLoading" class="absolute inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
+    <div v-if="isLoading || !isMapReady"
+      class="absolute inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
       <div class="w-14 h-14 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
       <p class="mt-4 text-gray-600 text-sm">Đang xác định vị trí...</p>
     </div>
@@ -13,7 +14,7 @@
         </div>
       </div>
       <div v-else class="flex flex-col md:flex-row h-full">
-        <div class="relative rounded-xl w-full h-full md:h-full">
+        <div class="relative rounded-xl bg-gray-200 overflow-hidden w-full h-full md:h-full">
           <div id="map" class="w-full h-full"></div>
         </div>
 
@@ -212,6 +213,7 @@ const sidebarIconRefs = ref({})
 const sidebarRef = ref(null)
 const playingIndex = ref(-1)
 const audioProgress = ref(0)
+const isMapReady = ref(false)
 let currentAudio = null
 let progressInterval = null
 
@@ -411,9 +413,24 @@ const initMap = () => {
       map = L.map("map").setView(initialPosition, 18);
 
       addLocateButton();
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap",
-      }).addTo(map);
+      const tileLayer = L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          attribution: "&copy; OpenStreetMap",
+        }
+      ).addTo(map);
+
+      tileLayer.on("load", async () => {
+        isMapReady.value = true;
+
+        await nextTick();
+        map.invalidateSize();
+
+        setTimeout(() => {
+          map.invalidateSize();
+          animateCollectedOnLoad();
+        }, 300);
+      });
 
       map.on("zoomend", updateRadarSize);
       renderLocations();

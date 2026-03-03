@@ -62,11 +62,15 @@
                 <h2 class="font-bold text-[#00634F]">{{ formatPrice(tour?.finalPrice) }} VNĐ</h2>
               </div>
               <div class="flex justify-center items-center flex-col mt-10">
-                <button :disabled="user?.price < tour.finalPrice" @click="payTour"
-                  :class="user?.price < tour.finalPrice ? ' grayscale cursor-no-drop' : 'hover:brightness-110'"
-                  class=" relative flex justify-center items-center transition-all duration-300">
+                <button :disabled="user?.price < tour.finalPrice || isLoadingPay" @click="payTour" :class="[
+                  user?.price < tour.finalPrice ? 'grayscale' : '',
+                  (user?.price < tour.finalPrice || isLoadingPay)
+                    ? 'cursor-no-drop opacity-40'
+                    : 'hover:brightness-110'
+                ]" class=" relative flex justify-center items-center transition-all duration-300">
                   <img src="/images/btn-green.png" class="w-52" alt="btn green">
-                  <p class=" absolute text-white text-2xl">Thanh toán</p>
+                  <Loader v-if="isLoadingPay" class="w-4 absolute animate-spin text-white" />
+                  <p v-else class=" absolute text-white text-2xl">Thanh toán</p>
                 </button>
                 <p class="text-[#B06C03] mt-10 text-sm">*Lưu ý: Nạp tiền trước để đủ số dư thanh toán</p>
               </div>
@@ -103,7 +107,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { useToast } from 'vue-toastification'
-import { Clock } from 'lucide-vue-next'
+import { Clock, Loader } from 'lucide-vue-next'
 import Modal from '@/components/Modal.vue'
 import { useFormat } from '@/composables/useFormat';
 
@@ -119,6 +123,7 @@ const descQR = ref('')
 
 const tour = ref({});
 const showPopup = ref(false);
+const isLoadingPay = ref(false)
 
 watch(me, (val) => {
   if (val) {
@@ -136,7 +141,10 @@ const getTourDetail = async () => {
   }
 }
 const payTour = async () => {
+  if (isLoadingPay.value) return
+  isLoadingPay.value = true
   if (user.value?.price < tour.value?.finalPrice) {
+    isLoadingPay.value = false
     toast.error("Vui lòng nạp tiền trước khi thanh toán")
     return
   }
@@ -144,9 +152,12 @@ const payTour = async () => {
     const { data } = await TourAPI.pay(tour.value.slug);
     store.commit('user/setPrice', data.price)
     toast.success("Thanh toán thành công");
+    tour.value.isMap = true
     showPopup.value = false;
   } catch (err) {
     toast.error(err?.message || "Thanh toán thất bại");
+  } finally {
+    isLoadingPay.value = false
   }
 };
 onMounted(() => {
