@@ -254,55 +254,69 @@ const initMap = () => {
   navigator.geolocation.getCurrentPosition(
     async (pos) => {
       const { latitude, longitude } = pos.coords;
-
       initialPosition = [latitude, longitude];
 
-      // 🔥 Khởi tạo map đúng vị trí hiện tại
       map = L.map("map").setView(initialPosition, 18);
 
-      setTimeout(() => map.invalidateSize(), 100);
       addLocateButton();
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap",
       }).addTo(map);
 
       map.on("zoomend", updateRadarSize);
-
-      // createTestLocations(latitude, longitude);
       renderLocations();
-
-      await nextTick();
-      animateCollectedOnLoad();
       updateUser(latitude, longitude);
 
+      // ✅ Tắt loading TRƯỚC
       isLoading.value = false;
+
+      // ✅ Đợi Vue render xong (loading overlay ẩn đi) rồi mới invalidateSize + animate
+      await nextTick();
+      map.invalidateSize();
+
+      // ✅ Thêm delay nhỏ để browser repaint hoàn toàn
+      setTimeout(() => {
+        map.invalidateSize();
+        animateCollectedOnLoad();
+      }, 300);
+
       startWatch();
     },
     (err) => {
       console.error(err);
-      isLoading.value = false; // nếu lỗi cũng tắt loading
+      isLoading.value = false;
     },
     { enableHighAccuracy: true }
   );
 }
+// async function animateCollectedOnLoad() {
+//   await nextTick();
+
+//   // ✅ Dùng 'moveend' hoặc 'load' thay vì whenReady
+//   // vì whenReady chạy quá sớm, map chưa có kích thước thật
+//   map.invalidateSize(); // force map tính lại kích thước
+
+//   setTimeout(() => {
+//     map.invalidateSize();
+
+//     props.locations.forEach((location, index) => {
+//       if (!location.collected) return;
+
+//       setTimeout(() => {
+//         animateIconToSidebar(location, index);
+//       }, index * 500);
+//     });
+//   }, 1000); // đợi map container có kích thước thật
+// }
 async function animateCollectedOnLoad() {
-  await nextTick();
+  // Map đã có kích thước đúng ở đây
+  props.locations.forEach((location, index) => {
+    if (!location.collected) return;
 
-  // ✅ Dùng 'moveend' hoặc 'load' thay vì whenReady
-  // vì whenReady chạy quá sớm, map chưa có kích thước thật
-  map.invalidateSize(); // force map tính lại kích thước
-
-  setTimeout(() => {
-    map.invalidateSize();
-
-    props.locations.forEach((location, index) => {
-      if (!location.collected) return;
-
-      setTimeout(() => {
-        animateIconToSidebar(location, index);
-      }, index * 500);
-    });
-  }, 1000); // đợi map container có kích thước thật
+    setTimeout(() => {
+      animateIconToSidebar(location, index);
+    }, index * 500);
+  });
 }
 watch(
   () => props.isAuthorized,
