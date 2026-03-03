@@ -33,6 +33,7 @@
           <div class="flex justify-center xl:mt-5 mt-2">
             <img src="/images/line.png" class="xl:w-[200px] w-[100px]" alt="line">
           </div>
+          <div class="xl:mt-3 mt-2" v-html="tour.content"></div>
         </div>
       </div>
       <img src="/images/cuon-duoi.png" class="relative z-0 -translate-y-14" />
