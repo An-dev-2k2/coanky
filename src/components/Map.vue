@@ -131,7 +131,6 @@ function animateIconToSidebar(location, index) {
   const rawX = mapRect.left + point.x - 20;
   const rawY = mapRect.top + point.y - 20;
 
-  // ✅ Nếu marker nằm ngoài viewport → dùng vị trí trung tâm map làm điểm xuất phát
   const isOutOfView =
     rawX < mapRect.left || rawX > mapRect.right ||
     rawY < mapRect.top || rawY > mapRect.bottom;
@@ -139,13 +138,16 @@ function animateIconToSidebar(location, index) {
   const startX = isOutOfView ? mapRect.left + mapRect.width / 2 - 20 : rawX;
   const startY = isOutOfView ? mapRect.top + mapRect.height / 2 - 20 : rawY;
 
-  let endX, endY;
+  // ✅ Điểm giữa màn hình
+  const midX = window.innerWidth / 2 - 40;
+  const midY = window.innerHeight / 2 - 40;
 
+  let endX, endY;
   if (isSidebarOpen.value) {
     const targetEl = sidebarIconRefs.value[index];
     if (!targetEl) {
       endX = window.innerWidth + 60;
-      endY = startY;
+      endY = midY;
     } else {
       const targetRect = targetEl.getBoundingClientRect();
       endX = targetRect.left + targetRect.width / 2 - 20;
@@ -153,7 +155,7 @@ function animateIconToSidebar(location, index) {
     }
   } else {
     endX = window.innerWidth + 60;
-    endY = startY;
+    endY = midY;
   }
 
   const flyingIcon = document.createElement("img");
@@ -167,30 +169,44 @@ function animateIconToSidebar(location, index) {
     height: "40px",
     zIndex: "999999",
     pointerEvents: "none",
-    transform: "scale(1.2)",
+    transform: "scale(1)",
     opacity: "1",
     transition: "none",
+    borderRadius: "12px",
+    filter: "none",
   });
 
   document.body.appendChild(flyingIcon);
 
+  // ── PHASE 1: Bay lên giữa màn hình + zoom to + sáng lên ──
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       Object.assign(flyingIcon.style, {
-        transition: "left 1.8s cubic-bezier(0.65, 0, 0.35, 1), top 1.8s cubic-bezier(0.65, 0, 0.35, 1), transform 1.8s ease, opacity 1.8s ease",
-        left: endX + "px",
-        top: endY + "px",
-        transform: "scale(0.4) rotate(360deg)",
-        opacity: "1",
+        transition: "left 0.6s ease-out, top 0.6s ease-out, transform 0.6s ease-out, filter 0.6s ease-out",
+        left: midX + "px",
+        top: midY + "px",
+        transform: "scale(2.5)",
+        filter: "brightness(1.8) drop-shadow(0 0 16px #ffe066) drop-shadow(0 0 32px #ffd700)",
       });
     });
   });
 
-  const cleanup = setTimeout(() => flyingIcon.remove(), 2200);
-  flyingIcon.addEventListener("transitionend", () => {
-    clearTimeout(cleanup);
+  // ── PHASE 2: Sau khi đến giữa màn hình → bay vào sidebar ──
+  setTimeout(() => {
+    Object.assign(flyingIcon.style, {
+      transition: "left 1s cubic-bezier(0.65, 0, 0.35, 1), top 1s cubic-bezier(0.65, 0, 0.35, 1), transform 1s ease-in, filter 1s ease-in, opacity 1s ease-in",
+      left: endX + "px",
+      top: endY + "px",
+      transform: "scale(0.4) rotate(360deg)",
+      filter: "none",
+      opacity: "0",
+    });
+  }, 700); // đợi phase 1 xong (600ms + buffer nhỏ)
+
+  // ── Dọn dẹp sau khi animation kết thúc ──
+  setTimeout(() => {
     flyingIcon.remove();
-  }, { once: true });
+  }, 1800); // 700 + 1000 + buffer
 }
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
