@@ -122,7 +122,11 @@ function setSidebarIconRef(el, index) {
 }
 
 function animateIconToSidebar(location, index) {
-  if (!map || !sidebarRef.value) return;
+  console.log("🚀 animateIconToSidebar called", { location, index, map: !!map, sidebar: !!sidebarRef.value });
+  if (!map || !sidebarRef.value) {
+    console.warn("❌ map or sidebarRef missing");
+    return;
+  }
 
   const markerLatLng = L.latLng(location.lat, location.lon);
   const point = map.latLngToContainerPoint(markerLatLng);
@@ -143,6 +147,7 @@ function animateIconToSidebar(location, index) {
     endX = window.innerWidth + 40;
     endY = 120 + index * 70;
   }
+  console.log("📍 startX/Y:", startX, startY, "endX/Y:", endX, endY);
 
   const flyingIcon = document.createElement("img");
   flyingIcon.src = location.icon?.image;
