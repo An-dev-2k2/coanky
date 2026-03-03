@@ -26,7 +26,14 @@
            bg-white shadow-lg
            transition-all duration-500 ease-in-out
            z-[1000]">
+          <div v-if="isCompleted"
+            class="absolute inset-0 z-[2000] flex items-center justify-center bg-white/70 backdrop-blur-sm">
 
+            <h2 class="text-3xl font-bold text-red-600 drop-shadow-lg animate-pulse">
+              Đã Hoàn Thành
+            </h2>
+
+          </div>
           <!-- BUTTON (NẰM TRONG SIDEBAR) -->
           <button @click="toggleSidebar" class="absolute top-1/2 -translate-y-1/2 -left-10
              bg-white w-10 h-12 rounded-l-xl
