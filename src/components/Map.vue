@@ -122,26 +122,28 @@ function setSidebarIconRef(el, index) {
 }
 
 function animateIconToSidebar(location, index) {
-  console.log("🚀 animateIconToSidebar called", { location, index, map: !!map, sidebar: !!sidebarRef.value });
-
-  if (!map || !sidebarRef.value) {
-    console.warn("❌ map or sidebarRef missing");
-    return;
-  }
+  if (!map || !sidebarRef.value) return;
 
   const markerLatLng = L.latLng(location.lat, location.lon);
   const point = map.latLngToContainerPoint(markerLatLng);
   const mapRect = map.getContainer().getBoundingClientRect();
 
-  const startX = mapRect.left + point.x - 20;
-  const startY = mapRect.top + point.y - 20;
+  const rawX = mapRect.left + point.x - 20;
+  const rawY = mapRect.top + point.y - 20;
+
+  // ✅ Nếu marker nằm ngoài viewport → dùng vị trí trung tâm map làm điểm xuất phát
+  const isOutOfView =
+    rawX < mapRect.left || rawX > mapRect.right ||
+    rawY < mapRect.top || rawY > mapRect.bottom;
+
+  const startX = isOutOfView ? mapRect.left + mapRect.width / 2 - 20 : rawX;
+  const startY = isOutOfView ? mapRect.top + mapRect.height / 2 - 20 : rawY;
 
   let endX, endY;
 
   if (isSidebarOpen.value) {
     const targetEl = sidebarIconRefs.value[index];
     if (!targetEl) {
-      // Sidebar mở nhưng ref chưa có → bay ra ngoài phải
       endX = window.innerWidth + 60;
       endY = startY;
     } else {
@@ -150,12 +152,9 @@ function animateIconToSidebar(location, index) {
       endY = targetRect.top + targetRect.height / 2 - 20;
     }
   } else {
-    // ✅ Sidebar đóng → bay ra ngoài màn hình bên phải
     endX = window.innerWidth + 60;
     endY = startY;
   }
-
-  console.log("📍 startX/Y:", startX, startY, "→ endX/Y:", endX, endY);
 
   const flyingIcon = document.createElement("img");
   flyingIcon.src = location.icon?.image;
@@ -289,34 +288,24 @@ const initMap = () => {
     { enableHighAccuracy: true }
   );
 }
-// async function animateCollectedOnLoad() {
-//   await nextTick();
-
-//   // ✅ Dùng 'moveend' hoặc 'load' thay vì whenReady
-//   // vì whenReady chạy quá sớm, map chưa có kích thước thật
-//   map.invalidateSize(); // force map tính lại kích thước
-
-//   setTimeout(() => {
-//     map.invalidateSize();
-
-//     props.locations.forEach((location, index) => {
-//       if (!location.collected) return;
-
-//       setTimeout(() => {
-//         animateIconToSidebar(location, index);
-//       }, index * 500);
-//     });
-//   }, 1000); // đợi map container có kích thước thật
-// }
 async function animateCollectedOnLoad() {
-  // Map đã có kích thước đúng ở đây
-  props.locations.forEach((location, index) => {
-    if (!location.collected) return;
+  await nextTick();
 
-    setTimeout(() => {
-      animateIconToSidebar(location, index);
-    }, index * 500);
-  });
+  // ✅ Dùng 'moveend' hoặc 'load' thay vì whenReady
+  // vì whenReady chạy quá sớm, map chưa có kích thước thật
+  map.invalidateSize(); // force map tính lại kích thước
+
+  setTimeout(() => {
+    map.invalidateSize();
+
+    props.locations.forEach((location, index) => {
+      if (!location.collected) return;
+
+      setTimeout(() => {
+        animateIconToSidebar(location, index);
+      }, index * 500);
+    });
+  }, 1000); // đợi map container có kích thước thật
 }
 watch(
   () => props.isAuthorized,
