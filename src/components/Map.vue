@@ -237,6 +237,15 @@ const isMapReady = ref(false)
 let currentAudio = null
 let progressInterval = null
 
+const props = defineProps({
+  isAuthorized: Boolean,
+  errorMessage: String,
+  locations: {
+    type: Array,
+    default: () => []
+  }
+})
+
 function setSidebarIconRef(el, index) {
   if (el) {
     sidebarIconRefs.value[index] = el
@@ -375,14 +384,7 @@ const isCompleted = computed(() =>
   props.locations.length > 0 &&
   props.locations.every(l => l.collected)
 )
-const props = defineProps({
-  isAuthorized: Boolean,
-  errorMessage: String,
-  locations: {
-    type: Array,
-    default: () => []
-  }
-})
+
 let map;
 let userMarker;
 let radarCircle;
