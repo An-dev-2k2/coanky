@@ -32,7 +32,7 @@
             <div class="stamp-animation
            border-8 border-red-600
            text-red-600
-           text-4xl font-extrabold
+           text-3xl font-extrabold
            px-10 py-4
            rounded-xl
            bg-white
@@ -1098,7 +1098,7 @@ async function goToNearest() {
   }
 
   100% {
-    transform: scale(1) rotate(0deg);
+    transform: scale(1) rotate(-2deg);
   }
 }
 
