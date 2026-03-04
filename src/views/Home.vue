@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="font-rowdies">
     <div class="bg-[#FFF7E0] flex items-center justify-center overflow-hidden flex-col relative h-screen">
       <img src="/images/background.png" alt="map" class=" absolute top-0 left-0 w-full h-screen">
       <div
@@ -61,9 +61,18 @@
     <div :class="!isStarted ? 'bg-[#FFF7E0]/70' : 'bg-transparent'" class=" fixed w-full top-0 left-0 h-screen z-[100]">
       <div class="flex justify-center items-center flex-col h-full">
         <img src="/images/logo.png" ref="logoRef" alt="logo" class="3xl:w-[650px] xl:w-[500px] w-[270px]">
-        <img src="/images/start-app.png" ref="startBtnRef" @click="startApp" alt="start app"
-          class="3xl:w-[120px] xl:w-[120px] w-[90px] cursor-pointer">
-        <div v-if="!token" ref="actionBtnsRef" class="flex justify-center items-center gap-5 mt-10">
+        <div ref="startBtnRef"
+          class=" relative cursor-pointer flex justify-center items-center group xl:-translate-y-10 hover:-translate-y-12 transition-all duration-300"
+          @click="startApp">
+          <img src="/images/start-app.png" alt="start app" class="3xl:w-[120px] xl:w-[120px] w-[90px]">
+          <p
+            class="absolute top-0 left-0 text-[#980000] group-hover:text-[#FF4D00] transition-all duration-300 xl:text-2xl text-base xl:pt-20 pt-16 px-5 text-center">
+            Bắt đầu
+            hành
+            trình
+          </p>
+        </div>
+        <div v-if="!token" ref="actionBtnsRef" class="flex justify-center items-center gap-5 xl:mt-5 mt-10">
           <router-link to="/login"
             class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
             <img src="/images/btn.png" class="w-full absolute" alt="">
@@ -130,7 +139,7 @@ const startApp = async () => {
   `
 
   // Ẩn start button
-  startBtnRef.value.style.transition = 'opacity 0.5s'
+  startBtnRef.value.style.transition = 'opacity 0.2s'
   startBtnRef.value.style.opacity = 0
   startBtnRef.value.style.visibility = 'hidden'
 

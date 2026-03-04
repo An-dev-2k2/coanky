@@ -46,15 +46,17 @@
 
       <Modal :is-title="false" :class-form="''" width="1000px" :model-value="showPopup"
         @update:modelValue="showPopup = $event" title="Thông tin thanh toán">
-        <img src="/images/bg-pay.png" alt="">
-        <div class=" absolute top-0 left-0 pt-28 pb-24 pl-28 pr-24 w-full h-full font-rowdies">
+        <img src="/images/bg-pay.png" class="xl:bloack hidden" alt="">
+        <div
+          class=" xl:absolute top-0 xl:bg-transparent bg-white xl:rounded-none rounded-xl left-0 xl:pt-28 pt-3 xl:pb-24 pb-3 xl:pl-28 pl-3 xl:pr-24 pr-3 w-full h-full font-rowdies">
           <div class="flex items-center gap-1">
             <img src="/images/hoavan.png" class="w-6" />
             <span class="text-[#B06C03] text-xl">Thông tin thanh toán</span>
           </div>
-          <div class="grid grid-cols-12">
-            <div class="col-span-7 pt-10 flex flex-col gap-4">
-              <div class="flex items-center gap-5 text-2xl">
+          <div class="grid grid-cols-12 xl:gap-0 gap-4">
+            <div
+              class="xl:col-span-7 col-span-12 border-b-[1px] border-[#B06C03] pt-10 xl:pb-0 pb-5 flex flex-col gap-4">
+              <div class="flex items-center gap-5 xl:text-2xl text-xl">
                 <span class="text-[#B06C03]">Tour:</span>
                 <h2 class="font-bold text-[#00634F]">{{ tour.title }}</h2>
               </div>
@@ -62,21 +64,21 @@
                 <span class="text-[#B06C03]">Giá:</span>
                 <h2 class="font-bold text-[#00634F]">{{ formatPrice(tour?.finalPrice) }} VNĐ</h2>
               </div>
-              <div class="flex justify-center items-center flex-col mt-10">
+              <div class="flex justify-center items-center flex-col xl:mt-10 mt-5">
                 <button :disabled="user?.price < tour.finalPrice || isLoadingPay" @click="payTour" :class="[
                   user?.price < tour.finalPrice ? 'grayscale' : '',
                   (user?.price < tour.finalPrice || isLoadingPay)
                     ? 'cursor-no-drop opacity-40'
                     : 'hover:brightness-110'
                 ]" class=" relative flex justify-center items-center transition-all duration-300">
-                  <img src="/images/btn-green.png" class="w-52" alt="btn green">
+                  <img src="/images/btn-green.png" class="xl:w-52 w-44" alt="btn green">
                   <Loader v-if="isLoadingPay" class="w-4 absolute animate-spin text-white" />
-                  <p v-else class=" absolute text-white text-2xl">Thanh toán</p>
+                  <p v-else class=" absolute text-white xl:text-2xl text-lg">Thanh toán</p>
                 </button>
                 <p class="text-[#B06C03] mt-10 text-sm">*Lưu ý: Nạp tiền trước để đủ số dư thanh toán</p>
               </div>
             </div>
-            <div class="col-span-5 flex flex-col items-center">
+            <div class="xl:col-span-5 col-span-12 flex flex-col items-center">
               <div class="flex justify-center items-center relative">
                 <img src="/images/btn-balance.png" alt="btn balance" class="w-[280px]">
                 <p class=" absolute font-bold text-[#B06C03] text-lg">Số dư: {{ formatPrice(user?.price) }} VNĐ</p>
@@ -93,7 +95,7 @@
                   </p>
                 </template>
               </div>
-              <p class="mt-3 text-[#B06C03]">Quét QR để nạp tiền</p>
+              <p class="mt-3 text-[#B06C03] xl:text-base text-sm">Quét QR để nạp tiền</p>
             </div>
           </div>
         </div>
