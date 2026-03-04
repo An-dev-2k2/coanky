@@ -7,19 +7,19 @@
         <img src="/images/line-dashes.png" class="" alt="line">
       </div>
       <img src="/images/mountain1.png"
-        class=" absolute 3xl:left-20 left-3 bottom-20 z-10 3xl:w-[816px] xl:w-[600px] w-[200px] opacity-30"
+        class="absolute 3xl:left-20 xl:left-20 left-3 bottom-20 z-10 3xl:w-[816px] xl:w-[600px] w-[200px] opacity-30"
         alt="mountain1">
       <img src="/images/mountain2.png"
         class=" absolute 3xl:right-20 right-3 bottom-20 z-10 3xl:w-[1000px] xl:w-[750px] w-[250px] opacity-30"
         alt="mountain2">
       <img src="/images/mountain-line1.png"
-        class=" absolute 3xl:left-32 left-6 top-40 z-10 3xl:w-[216px] xl:w-[180px] w-[60px] opacity-30"
+        class=" absolute xl:left-32 left-6 top-40 z-10 3xl:w-[216px] xl:w-[180px] w-[60px] opacity-30"
         alt="mountain-line1">
       <img src="/images/mountain-line4.png"
-        class=" absolute 3xl:left-[213px] left-7 3xl:bottom-[290px] bottom-[250px] z-10 3xl:w-[120px] w-[80px] opacity-30"
+        class=" absolute xl:left-[213px] left-7 3xl:bottom-[290px] bottom-[250px] z-10 3xl:w-[120px] w-[80px] opacity-30"
         alt="mountain-line1">
       <img src="/images/mountain-line3.png"
-        class=" absolute 3xl:left-[590px] xl:left-[500px] left-32 3xl:top-[500px] top-[400px] z-10 3xl:w-[150px] w-[70px] opacity-30"
+        class=" absolute 3xl:left-[590px] xl:left-[500px] left-32 3xl:top-[500px] top-[400px] z-10 xl:w-[150px] w-[70px] opacity-30"
         alt="mountain-line1">
       <img src="/images/mountain-line2.png"
         class=" absolute 3xl:left-[917px] xl:left-[750px] left-[170px] 3xl:top-[138px] top-[100px] z-10 3xl:w-[232px] xl:w-[180px] w-[60px] opacity-30"
@@ -34,10 +34,10 @@
         class="map-icon transition-all duration-500 absolute 3xl:left-[250px] xl:left-[240px] left-[20px] 3xl:top-[390px] top-[370px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
         alt="icon">
       <img src="/images/icon.png" :class="isStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
-        class="map-icon transition-all duration-500 absolute xl:left-[497px] left-[100px] 3xl:top-[130px] top-[310px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
+        class="map-icon transition-all duration-500 absolute xl:left-[497px] left-[100px] 3xl:top-[130px] xl:top-[130px] top-[310px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
         alt="icon">
       <img src="/images/icon.png" :class="isStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
-        class="map-icon transition-all duration-500 absolute 3xl:left-[900px] xl:left-[800px] left-[170px] 3xl:top-[246px] top-[330px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
+        class="map-icon transition-all duration-500 absolute 3xl:left-[900px] xl:left-[800px] left-[170px] 3xl:top-[246px] xl:top-[246px] top-[330px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
         alt="icon">
       <img src="/images/icon.png" :class="isStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
         class="map-icon transition-all duration-500 absolute 3xl:left-[1345px] xl:left-[1100px] left-[250px] 3xl:top-[128px] xl:top-[170px] top-[310px] z-10 3xl:w-[120px] xl:w-[90px] w-[50px] opacity-30"
