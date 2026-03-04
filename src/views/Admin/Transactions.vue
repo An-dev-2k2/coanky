@@ -10,17 +10,31 @@
 <script setup>
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
+import AppAPI from '@/services/api/admin/AppAPI';
+import { onMounted, ref } from 'vue';
 
 const fields = [
   { key: 'index', label: 'STT' },
-  { key: 'user', label: 'Khách hàng' },
-  { key: 'price', label: 'Số tiền' },
+  { key: 'username', label: 'Khách hàng' },
+  { key: 'amount', label: 'Số tiền' },
   { key: 'description', label: 'Nội dung chuyển khoản' },
   { key: 'status', label: 'Trạng thái' },
   { key: 'createdAt', label: "Ngày tạo" },
 ]
 
-const data = []
-</script>
+const data = ref([])
 
-<style></style>
+const getTransactions = async () => {
+  try {
+    const { data: d } = await AppAPI.getTransactions()
+    data.value = d
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+onMounted(() => {
+  getTransactions()
+})
+</script>

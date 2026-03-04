@@ -13,6 +13,14 @@ class AppAPI {
         .catch((err) => reject(err.response.data))
     })
   }
+  async getTransactions() {
+    return new Promise((resolve, reject) => {
+      axios
+        .get(this.apiEndpoint + '/transactions')
+        .then((res) => resolve(res.data))
+        .catch((err) => reject(err.response.data))
+    })
+  }
 }
 
 export default new AppAPI()
