@@ -3,11 +3,12 @@
     <img class="h-screen w-full fixed" src="/images/bg-tour.png" alt="">
     <ResponsiveContainer>
       <div class=" relative flex justify-center flex-col items-center xl:top-10 top-20">
-        <img src="/images/lo-trinh-tam-an.png" class="3xl:w-[600px] xl:w-[400px] w-[280px]" alt="Lo Trinh Tam An">
+        <img data-aos="zoom-out" data-aos-delay="700" data-aos-duration="200" src="/images/lo-trinh-tam-an.png"
+          class="3xl:w-[600px] xl:w-[400px] w-[280px]" alt="Lo Trinh Tam An">
         <div v-if="tours.length > 0" class="grid 3xl:grid-cols-5 xl:grid-cols-4 grid-cols-1 w-full gap-16 px-10 mt-10">
-          <router-link :to="'/tours/' + tour.slug"
-            class="relative w-full transition-all duration-300 hover:-translate-y-1" v-for="tour in tours"
-            :key="tour.id">
+          <router-link data-aos="fade-up" :data-aos-delay="(index + 1) * 1000" data-aos-duration="500"
+            :to="'/tours/' + tour.slug" class="relative w-full transition-all duration-300 hover:-translate-y-1"
+            v-for="(tour, index) in tours" :key="tour.id">
             <img src="/images/bg-card.png" alt="Card Background" class="w-full absolute top-0 left-0">
             <div class="pt-28 px-6 relative z-10">
               <p class="text-center text-[50px] line-clamp-2

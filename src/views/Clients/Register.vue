@@ -3,9 +3,9 @@
            bg-[url('/images/bg-login1.png')] 
            bg-cover bg-center bg-no-repeat">
     <div class="xl:w-[1024px] w-full relative">
-      <router-link to="/">
+      <a href="/">
         <img src="/images/back.png" alt="btn-back" class="absolute z-10 top-10 right-20 w-10 cursor-pointer">
-      </router-link>
+      </a>
       <img src="/images/bg-login2.png" class="xl:block hidden w-full h-full" alt="">
       <div class="xl:absolute top-0 left-0 w-full xl:px-32 xl:py-20 px-10 py-10 xl:grid xl:grid-cols-2">
         <div class="flex justify-center items-center">

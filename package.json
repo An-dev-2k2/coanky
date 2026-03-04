@@ -16,6 +16,7 @@
     "@mapbox/polyline": "^1.2.1",
     "@tailwindcss/vite": "^4.2.0",
     "@vee-validate/zod": "^4.15.1",
+    "aos": "^2.3.4",
     "axios": "^1.13.5",
     "echarts": "^6.0.0",
     "leaflet": "^1.9.4",

@@ -46,7 +46,7 @@
 
       <Modal :is-title="false" :class-form="''" width="1000px" :model-value="showPopup"
         @update:modelValue="showPopup = $event" title="Thông tin thanh toán">
-        <img src="/images/bg-pay.png" class="xl:bloack hidden" alt="">
+        <img src="/images/bg-pay.png" class="xl:block hidden" alt="">
         <div
           class=" xl:absolute top-0 xl:bg-transparent bg-white xl:rounded-none rounded-xl left-0 xl:pt-28 pt-3 xl:pb-24 pb-3 xl:pl-28 pl-3 xl:pr-24 pr-3 w-full h-full font-rowdies">
           <div class="flex items-center gap-1">
@@ -65,16 +65,22 @@
                 <h2 class="font-bold text-[#00634F]">{{ formatPrice(tour?.finalPrice) }} VNĐ</h2>
               </div>
               <div class="flex justify-center items-center flex-col xl:mt-10 mt-5">
-                <button :disabled="user?.price < tour.finalPrice || isLoadingPay" @click="payTour" :class="[
-                  user?.price < tour.finalPrice ? 'grayscale' : '',
-                  (user?.price < tour.finalPrice || isLoadingPay)
-                    ? 'cursor-no-drop opacity-40'
-                    : 'hover:brightness-110'
-                ]" class=" relative flex justify-center items-center transition-all duration-300">
+                <button v-if="isToken" :disabled="user?.price < tour.finalPrice || isLoadingPay" @click="payTour"
+                  :class="[
+                    user?.price < tour.finalPrice ? 'grayscale' : '',
+                    (user?.price < tour.finalPrice || isLoadingPay)
+                      ? 'cursor-no-drop opacity-40'
+                      : 'hover:brightness-110'
+                  ]" class=" relative flex justify-center items-center transition-all duration-300">
                   <img src="/images/btn-green.png" class="xl:w-52 w-44" alt="btn green">
                   <Loader v-if="isLoadingPay" class="w-4 absolute animate-spin text-white" />
                   <p v-else class=" absolute text-white xl:text-2xl text-lg">Thanh toán</p>
                 </button>
+                <a href="/login" v-else
+                  class="relative flex justify-center items-center transition-all duration-300 hover:brightness-110">
+                  <img src="/images/btn-green.png" class="xl:w-52 w-44" alt="btn green">
+                  <p class=" absolute text-white xl:text-2xl text-lg">Đăng nhập</p>
+                </a>
                 <p class="text-[#B06C03] mt-10 text-sm">*Lưu ý: Nạp tiền trước để đủ số dư thanh toán</p>
               </div>
             </div>
@@ -123,6 +129,7 @@ const user = ref(null)
 const route = useRoute()
 const tourSlug = route.params.slug
 const descQR = ref('')
+const isToken = computed(() => !!sessionStorage.getItem('token'))
 
 const tour = ref({});
 const showPopup = ref(false);
