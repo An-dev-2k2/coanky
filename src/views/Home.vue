@@ -89,7 +89,8 @@
             <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đăng Ký</span>
           </router-link>
         </div>
-        <div v-else ref="actionBtnsRef" class="flex justify-center items-center gap-5 mt-10">
+        <div v-else ref="actionBtnsRef" data-aos="fade-up" data-aos-delay="1500" data-aos-duration="700"
+          class="flex justify-center items-center gap-5 mt-10">
           <button @click="logout"
             class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
             <img src="/images/btn.png" class="w-full absolute" alt="">
