@@ -50,7 +50,7 @@
       <!-- Content -->
       <div class="p-6 flex flex-col items-center gap-4">
         <!-- Title -->
-        <p class="text-xs tracking-[0.3em] uppercase" style="color: #D4A017;">Ấn Ký</p>
+        <p class="text-xs tracking-[0.3em] uppercase font-rowdies text-[#D4A017]">Ấn Ký</p>
 
         <!-- Image container -->
         <div class="relative">
@@ -66,7 +66,7 @@
 
         <!-- Name -->
         <div class="text-center">
-          <h3 class="text-xl font-semibold tracking-wide" style="color: #FFF3C5;">
+          <h3 class="text-xl font-semibold tracking-wide font-rowdies text-[#FFF3C5]">
             {{ selectedIcon?.name }}
           </h3>
         </div>
@@ -83,21 +83,21 @@
         <!-- Collected info -->
         <div v-if="selectedIcon?.collected" class="w-full rounded-xl p-3 text-center"
           style="background: rgba(212,160,23,0.08); border: 1px solid rgba(212,160,23,0.2);">
-          <p class="text-xs mb-1" style="color: rgba(255,243,197,0.5);">Ngày hoàn thành</p>
-          <p class="text-sm font-medium" style="color: #FFF3C5;">
+          <p class="text-xs mb-1 font-rowdies" style="color: rgba(255,243,197,0.5);">Ngày hoàn thành</p>
+          <p class="text-sm font-medium font-rowdies text-[#FFF3C5]">
             {{ formatDate(selectedIcon?.stampedAt) }}
           </p>
           <div class="mt-2 flex items-center justify-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: #4ade80;"></span>
-            <span class="text-xs" style="color: #4ade80;">Đã thu thập</span>
+            <span class="w-1.5 h-1.5 rounded-full animate-pulse bg-green-500"></span>
+            <span class="text-xs font-rowdies text-[#4ade80]">Đã thu thập</span>
           </div>
         </div>
 
         <div v-else class="w-full rounded-xl p-3 text-center"
           style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);">
           <div class="flex items-center justify-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full" style="background: #9ca3af;"></span>
-            <span class="text-xs" style="color: #9ca3af;">Chưa thu thập</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-[#9ca3af]"></span>
+            <span class="text-xs font-rowdies text-[#9ca3af]">Chưa thu thập</span>
           </div>
         </div>
       </div>
