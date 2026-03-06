@@ -109,6 +109,7 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import AuthAPI from '@/services/api/client/AuthAPI'
+import AOS from 'aos'
 
 const toast = useToast()
 const store = useStore()
@@ -167,6 +168,8 @@ const logout = async () => {
     token.value = null
     store.commit('user/setMe', {})
     toast.success('Đăng xuất thành công')
+    await nextTick()
+    AOS.refreshHard()
   }
   catch (err) {
     console.log(err)

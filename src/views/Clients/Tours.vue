@@ -2,7 +2,7 @@
   <div>
     <img class="h-screen w-full fixed" src="/images/bg-tour.png" alt="">
     <ResponsiveContainer>
-      <div class=" relative flex justify-center flex-col items-center xl:top-10 top-20">
+      <div class=" relative flex justify-center flex-col items-center xl:top-28 top-24">
         <img data-aos="zoom-out" data-aos-delay="700" data-aos-duration="200" src="/images/lo-trinh-tam-an.png"
           class="3xl:w-[600px] xl:w-[400px] w-[280px]" alt="Lo Trinh Tam An">
         <div v-if="tours.length > 0" class="grid 3xl:grid-cols-5 xl:grid-cols-4 grid-cols-1 w-full gap-16 px-10 mt-10">

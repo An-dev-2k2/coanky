@@ -95,7 +95,7 @@ const onSubmit = handleSubmit(async (values) => {
     toast.success(message || 'Đăng nhập thành công!')
     sessionStorage.setItem('token', data)
     const redirectPath = route.query.redirect || '/'
-    router.push(redirectPath)
+    await router.replace(redirectPath)
   }
   catch (error) {
     toast.error(error?.message || 'Đăng nhập thất bại. Vui lòng thử lại.')

@@ -73,6 +73,22 @@ const routes = [
     ],
   },
   {
+    path: '/profile',
+    component: Default,
+    children: [
+      {
+        path: '',
+        name: 'profile',
+        meta: {
+          title: 'Thông tin cá nhân',
+          authRequired: true,
+          hideHeader: false,
+        },
+        component: () => import('@/views/Clients/Profile.vue'),
+      },
+    ],
+  },
+  {
     path: '/login',
     component: Default,
     children: [

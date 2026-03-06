@@ -25,6 +25,14 @@ class AuthAPI {
         .catch((err) => reject(err.response.data))
     })
   }
+  async profile() {
+    return new Promise((resolve, reject) => {
+      axios
+        .get('auth/profile')
+        .then((res) => resolve(res.data))
+        .catch((err) => reject(err.response.data))
+    })
+  }
   async logout() {
     return new Promise((resolve, reject) => {
       axios

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <img class="h-screen w-full absolute" src="/images/bg-tour.png" alt="">
-    <img class="h-screen w-full absolute" src="/images/bg-icon.png" alt="">
-    <div class=" relative flex justify-center items-center flex-col xl:top-10 top-20">
+    <img class="h-screen w-full fixed top-0 left-0" src="/images/bg-tour.png" alt="">
+    <img class="h-screen w-full fixed top-0 left-0" src="/images/bg-icon.png" alt="">
+    <div class=" relative flex justify-center items-center flex-col xl:top-28 top-24">
       <img data-aos="zoom-out" data-aos-delay="700" data-aos-duration="200" src="/images/so-tay-an-ky.png"
         class="3xl:w-[600px] xl:w-[400px] w-[280px]" alt="Lo Trinh Tam An">
       <div class=" relative xl:inline-block">

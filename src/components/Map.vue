@@ -21,7 +21,7 @@
         <!-- SIDEBAR -->
         <div ref="sidebarRef" :class="[
           isSidebarOpen ? 'translate-x-0' : 'translate-x-full',
-          isCompleted ? 'opacity-60 pointer-events-none' : ''
+          isCompleted ? '' : ''
         ]" class="absolute top-0 right-0 h-full w-80 md:w-1/3
            bg-white shadow-lg
            transition-all duration-500 ease-in-out
@@ -362,7 +362,7 @@ function animateIconToSidebar(location, index) {
   // ── PHASE 2: Sau khi đến giữa màn hình → bay vào sidebar ──
   setTimeout(() => {
     Object.assign(flyingIcon.style, {
-      transition: "left 1s cubic-bezier(0.65, 0, 0.35, 1), top 1s cubic-bezier(0.65, 0, 0.35, 1), transform 1s ease-in, filter 1s ease-in, opacity 1s ease-in",
+      transition: "left 5s cubic-bezier(0.65, 0, 0.35, 1), top 5s cubic-bezier(0.65, 0, 0.35, 1), transform 5s ease-in, filter 5s ease-in, opacity 5s ease-in",
       left: endX + "px",
       top: endY + "px",
       transform: "scale(0.4) rotate(360deg)",
