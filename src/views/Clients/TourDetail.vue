@@ -18,7 +18,7 @@
         </router-link>
       </div>
     </div>
-    <img class="h-screen w-full absolute" src="/images/bg-detail-tour.jpg" alt="">
+    <img class="h-screen w-full fixed top-0 left-0 right-0" src="/images/bg-detail-tour.jpg" alt="">
     <div class="relative xl:pt-20 xl:px-40 pt-24">
       <img src="/images/cuon-tren.png" class="relative z-10" />
       <div class="xl:px-[48px] px-[15px] -translate-y-5 relative z-5">

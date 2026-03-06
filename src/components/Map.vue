@@ -403,6 +403,10 @@ let lastCheckTime = 0;
 const CHECK_INTERVAL = 1000;
 const stampingSet = new Set();
 const COLLECT_RADIUS = 50; // 50 mét
+const positionHistory = [];
+const SMOOTH_COUNT = 5;
+let lastUpdatePos = null;
+const MIN_MOVE_METERS = 3;
 
 const humanIcon = L.icon({
   iconUrl: "https://cdn-icons-png.freepik.com/256/12569/12569178.png?semt=ais_white_label",
@@ -429,6 +433,13 @@ onMounted(() => {
   }
 });
 
+function smoothPosition(lat, lon) {
+  positionHistory.push({ lat, lon });
+  if (positionHistory.length > SMOOTH_COUNT) positionHistory.shift();
+  const avgLat = positionHistory.reduce((s, p) => s + p.lat, 0) / positionHistory.length;
+  const avgLon = positionHistory.reduce((s, p) => s + p.lon, 0) / positionHistory.length;
+  return { lat: avgLat, lon: avgLon };
+}
 const initMap = () => {
   if (!navigator.geolocation) return;
 
@@ -696,10 +707,19 @@ function renderLocations() {
 function startWatch() {
   navigator.geolocation.watchPosition(
     (pos) => {
-      const { latitude, longitude } = pos.coords;
+      const { latitude, longitude, accuracy } = pos.coords;
       console.log("📍 New position:", latitude, longitude);
 
-      updateUser(latitude, longitude);
+      if (accuracy > 50) return;
+      const { lat, lon } = smoothPosition(latitude, longitude);
+
+      // 3. Ngưỡng di chuyển tối thiểu
+      if (lastUpdatePos && map) {
+        const moved = map.distance([lastUpdatePos.lat, lastUpdatePos.lon], [lat, lon]);
+        if (moved < MIN_MOVE_METERS) return;
+      }
+      lastUpdatePos = { lat, lon };
+      updateUser(lat, lon);
 
       // Bỏ lần đầu để tránh auto collect ngay khi load
       if (!hasReceivedFirstPosition) {
