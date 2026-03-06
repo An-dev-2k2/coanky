@@ -89,6 +89,22 @@ const routes = [
     ],
   },
   {
+    path: '/change-password',
+    component: Default,
+    children: [
+      {
+        path: '',
+        name: 'change-password',
+        meta: {
+          title: 'Đổi mật khẩu',
+          authRequired: true,
+          hideHeader: false,
+        },
+        component: () => import('@/views/Clients/ChangePassword.vue'),
+      },
+    ],
+  },
+  {
     path: '/login',
     component: Default,
     children: [

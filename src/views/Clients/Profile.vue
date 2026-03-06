@@ -1,13 +1,5 @@
 <template>
-  <div class="profile-page font-rowdies">
-    <!-- Noise texture overlay -->
-    <!-- <div class="noise-overlay"></div> -->
-
-    <!-- Decorative corner ornaments -->
-    <!-- <div class="corner corner-tl"></div>
-    <div class="corner corner-tr"></div>
-    <div class="corner corner-bl"></div>
-    <div class="corner corner-br"></div> -->
+  <div class="profile-page xl:mb-0 mb-20 font-rowdies">
     <img class="h-screen w-full fixed" src="/images/bg-tour.png" alt="">
 
     <div class="scroll-container xl:top-28 top-24">
@@ -34,9 +26,6 @@
       </div>
 
       <!-- === DIVIDER === -->
-      <!-- <div class="ink-divider">
-        <span class="divider-ornament">❧</span>
-      </div> -->
       <div class="flex justify-center xl:my-5 my-2">
         <img src="/images/line.png" class="xl:w-[200px] w-[100px]" alt="line">
       </div>
@@ -59,11 +48,6 @@
           <div class="stat-label">Tour đang tham gia</div>
         </div>
       </div>
-
-      <!-- === INK DIVIDER === -->
-      <!-- <div class="ink-divider">
-        <span class="divider-ornament">❦</span>
-      </div> -->
       <div class="flex justify-center xl:my-5 my-2">
         <img src="/images/line.png" class="xl:w-[200px] w-[100px]" alt="line">
       </div>
@@ -106,35 +90,23 @@
           </tbody>
         </table>
       </div>
-
-      <!-- === INK DIVIDER === -->
-      <!-- <div class="ink-divider">
-        <span class="divider-ornament">❧</span>
-      </div> -->
       <div class="flex justify-center xl:my-5 my-2">
         <img src="/images/line.png" class="xl:w-[200px] w-[100px]" alt="line">
       </div>
 
       <!-- === ACTION BUTTONS === -->
       <div class="actions">
-        <button
+        <a href="/change-password"
           class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
           <img src="/images/btn.png" class="w-full absolute" alt="">
           <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đổi mật khẩu</span>
-        </button>
+        </a>
         <button @click="logout"
           class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
           <img src="/images/btn.png" class="w-full absolute" alt="">
           <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đăng Xuất</span>
         </button>
       </div>
-
-      <!-- Bottom seal decoration -->
-      <!-- <div class="bottom-seal">
-        <div class="seal-circle">
-          <span>御</span>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -246,7 +218,6 @@ onMounted(() => {
   align-items: flex-start;
   justify-content: center;
   position: relative;
-  overflow: hidden;
 }
 
 .noise-overlay {

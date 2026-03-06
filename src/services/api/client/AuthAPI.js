@@ -33,6 +33,14 @@ class AuthAPI {
         .catch((err) => reject(err.response.data))
     })
   }
+  async changePassword(data) {
+    return new Promise((resolve, reject) => {
+      axios
+        .post('auth/change-password', data)
+        .then((res) => resolve(res.data))
+        .catch((err) => reject(err.response.data))
+    })
+  }
   async logout() {
     return new Promise((resolve, reject) => {
       axios
