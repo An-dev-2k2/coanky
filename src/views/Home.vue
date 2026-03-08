@@ -3,14 +3,14 @@
     <div class="bg-[#FFF7E0] flex items-center justify-center overflow-hidden flex-col relative h-screen">
       <img src="/images/background.png" alt="map" class=" absolute top-0 left-0 w-full h-screen">
       <div
-        class="z-100 3xl:w-[1500px] xl:w-[1200px] w-[340px] 3xl:right-[10px] xl:right-[80px] right-[20px] absolute 3xl:top-[450px] top-[400px] -translate-y-1/2">
-        <img src="/images/line-dashes.png" class="" alt="line">
+        class="z-100 w-full xl:pr-20 xl:pl-[250px] lg:pr-20 lg:pl-[200px] pr-5 pl-10 absolute 3xl:top-[450px] top-[400px] -translate-y-1/2">
+        <img src="/images/line-dashes.png" class="w-full" alt="line">
       </div>
       <img src="/images/mountain1.png"
-        class="absolute 3xl:left-20 xl:left-20 left-3 bottom-20 z-10 3xl:w-[816px] xl:w-[600px] w-[200px] opacity-30"
+        class="absolute 3xl:left-20 xl:left-20 lg:left-20 left-3 bottom-20 z-10 3xl:w-[816px] xl:w-[600px] lg:w-[600px] w-[200px] opacity-30"
         alt="mountain1">
       <img src="/images/mountain2.png"
-        class=" absolute 3xl:right-20 right-3 bottom-20 z-10 3xl:w-[1000px] xl:w-[750px] w-[250px] opacity-30"
+        class=" absolute 3xl:right-20 lg:right-10 right-3 bottom-20 z-10 3xl:w-[1000px] xl:w-[750px] lg:w-[750px] w-[250px] opacity-30"
         alt="mountain2">
       <img data-aos="zoom-in-up" data-aos-delay="500" data-aos-duration="500" src="/images/mountain-line1.png"
         class=" absolute xl:left-32 left-6 top-40 z-10 3xl:w-[216px] xl:w-[180px] w-[60px] opacity-30"
@@ -31,19 +31,19 @@
         class=" absolute 3xl:left-[1565px] xl:left-[1200px] left-[280px] 3xl:top-[258px] top-[200px] z-10 3xl:w-[216px] xl:w-[180px] w-[60px] opacity-30"
         alt="mountain-line1">
       <img src="/images/icon1.png" data-aos="zoom-in" data-aos-delay="500" data-aos-duration="700"
-        class="map-icon transition-all duration-500 absolute 3xl:left-[250px] xl:left-[240px] left-[20px] 3xl:top-[390px] top-[370px] z-10 3xl:w-[120px] xl:w-[90px] w-[40px] opacity-30"
+        class="map-icon transition-all duration-500 absolute 3xl:left-[250px] xl:left-[240px] lg:left-[200px] xs:left-[30px] xss:left-[25px] 3xl:top-[390px] lg:top-[340px] top-[370px] z-10 3xl:w-[120px] lg:w-[90px] w-[40px] opacity-30"
         alt="icon">
       <img src="/images/icon2.png" data-aos="zoom-in" data-aos-delay="700" data-aos-duration="700"
-        class="map-icon transition-all duration-500 absolute xl:left-[520px] left-[100px] 3xl:top-[160px] xl:top-[160px] top-[310px] z-10 3xl:w-[120px] xl:w-[90px] w-[40px] opacity-30"
+        class="map-icon transition-all duration-500 absolute xl:left-[520px] lg:left-[420px] xs:left-[130px] xss:left-[120px] 3xl:top-[160px] xl:top-[160px] lg:top-[180px] xs:top-[300px] xss:top-[310px] z-10 3xl:w-[120px] lg:w-[90px] w-[40px] opacity-30"
         alt="icon">
       <img src="/images/icon3.png" data-aos="zoom-in" data-aos-delay="900" data-aos-duration="700"
-        class="map-icon transition-all duration-500 absolute 3xl:left-[900px] xl:left-[800px] left-[170px] 3xl:top-[246px] xl:top-[246px] top-[340px] z-10 3xl:w-[120px] xl:w-[90px] w-[40px] opacity-30"
+        class="map-icon transition-all duration-500 absolute 3xl:left-[900px] xl:left-[800px] lg:left-[620px] xs:left-[200px] xss:left-[180px] 3xl:top-[246px] xl:top-[246px] lg:top-[250px] top-[340px] z-10 3xl:w-[120px] lg:w-[90px] w-[40px] opacity-30"
         alt="icon">
       <img src="/images/icon4.png" data-aos="zoom-in" data-aos-delay="1100" data-aos-duration="700"
-        class="map-icon transition-all duration-500 absolute 3xl:left-[1345px] xl:left-[1100px] left-[260px] 3xl:top-[128px] xl:top-[130px] top-[300px] z-10 3xl:w-[120px] xl:w-[90px] w-[35px] opacity-30"
+        class="map-icon transition-all duration-500 absolute 3xl:left-[1345px] xl:left-[1100px] lg:left-[850px] xs:left-[290px] xss:left-[270px] 3xl:top-[128px] xl:top-[130px] lg:top-[150px] top-[290px] z-10 3xl:w-[120px] lg:w-[90px] w-[35px] opacity-30"
         alt="icon">
       <img src="/images/icon5.png" data-aos="zoom-in" data-aos-delay="1300" data-aos-duration="700"
-        class="map-icon transition-all duration-500 absolute 3xl:left-[1540px] xl:left-[1250px] left-[300px] 3xl:top-[450px] top-[400px] z-10 3xl:w-[120px] xl:w-[90px] w-[40px] opacity-30"
+        class="map-icon transition-all duration-500 absolute 3xl:left-[1540px] xl:left-[1250px] lg:left-[1000px] xs:left-[340px] xss:left-[320px] 3xl:top-[450px] top-[400px] z-10 3xl:w-[120px] lg:w-[90px] w-[40px] opacity-30"
         alt="icon">
       <!-- <img src="/images/icon5.png" data-aos="zoom-in" data-aos-delay="1300" data-aos-duration="700"
         :class="isStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
