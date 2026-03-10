@@ -14,36 +14,35 @@
         </div>
       </div>
       <div v-else class="flex flex-col md:flex-row h-full">
-        <div class="relative rounded-xl bg-gray-200 overflow-hidden w-full h-full md:h-full">
+        <div class="relative rounded-xl bg-gray-200 mt-10 overflow-hidden w-full h-full md:h-full">
           <div id="map" class="w-full h-full"></div>
-        </div>
-
-        <!-- SIDEBAR -->
-        <div ref="sidebarRef" :class="[
-          isSidebarOpen ? 'translate-x-0' : 'translate-x-full',
-          isCompleted ? '' : ''
-        ]" class="absolute top-0 right-0 h-full w-80 md:w-1/3
-           bg-white shadow-lg
-           transition-all duration-500 ease-in-out
-           z-[1000]">
           <div v-if="isCompleted"
             class="absolute inset-0 z-[2000] flex items-center justify-center bg-white/70 backdrop-blur-sm">
 
             <div class="stamp-animation
-           border-8 border-red-600
-           text-red-600
-           text-3xl font-extrabold
-           px-10 py-4
-           rounded-xl
-           bg-white
-           shadow-2xl
-           tracking-widest">
+             border-8 border-red-600
+             text-red-600
+             text-3xl font-extrabold
+             px-10 py-4
+             rounded-xl
+             bg-white
+             shadow-2xl
+             tracking-widest">
 
               ĐÃ HOÀN THÀNH
 
             </div>
 
           </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div ref="sidebarRef" :class="[
+          isSidebarOpen ? 'translate-x-0' : 'translate-x-full',
+        ]" class="absolute top-0 right-0 h-full w-80 md:w-1/3
+           bg-white shadow-lg
+           transition-all duration-500 ease-in-out
+           z-[2001]">
           <!-- BUTTON (NẰM TRONG SIDEBAR) -->
           <button @click="toggleSidebar" class="absolute top-1/2 -translate-y-1/2 -left-10
              bg-white w-10 h-12 rounded-l-xl
@@ -67,28 +66,9 @@
               </p>
             </div>
 
-            <!-- <div class="mt-6">
-              <h2 class="text-xl font-bold mb-4">🏅 Ấn Ký</h2>
-              <div class="grid grid-cols-4 gap-3">
-                <div v-for="(location, index) in locations" :key="index" class="flex flex-col items-center gap-1">
-                  <div class="w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-500" :class="location.collected
-                    ? 'bg-green-100 shadow-lg shadow-green-300'
-                    : 'bg-gray-100'">
-                    <img :ref="el => setSidebarIconRef(el, index)" :src="location.icon?.image" :alt="location.name"
-                      class="w-10 h-10 object-contain transition-all duration-500" :class="location.collected
-                        ? 'opacity-100 scale-110 drop-shadow-[0_0_6px_#4caf50]'
-                        : 'grayscale brightness-50 opacity-60'" />
-                  </div>
-                  <span class="text-xs text-center line-clamp-2 text-gray-500 leading-tight">
-                    {{ location.name }}
-                  </span>
-                </div>
-              </div>
-            </div> -->
-
             <div class="flex justify-center mt-6">
-              <button @click="goToNearest" :disabled="isLoadingSearch"
-                :class="isLoadingSearch ? ' cursor-no-drop opacity-40' : ''"
+              <button @click="goToNearest" :disabled="isLoadingSearch || isCompleted"
+                :class="(isLoadingSearch || isCompleted) ? ' cursor-no-drop opacity-40' : ''"
                 class="w-[300px] text-white relative flex justify-center items-center py-2 mb-4 active:scale-95 transition">
                 <img src="/images/btn-search.png" alt="">
                 <template v-if="isLoadingSearch">
@@ -400,6 +380,7 @@ let currentTarget = null;
 let routingControl;
 let hasReceivedFirstPosition = false;
 let lastCheckTime = 0;
+let hasAnimatedOnLoad = false;
 const CHECK_INTERVAL = 1000;
 const stampingSet = new Set();
 const COLLECT_RADIUS = 50; // 50 mét
@@ -464,10 +445,14 @@ const initMap = () => {
         await nextTick();
         map.invalidateSize();
 
-        setTimeout(() => {
-          map.invalidateSize();
-          animateCollectedOnLoad();
-        }, 300);
+        // ✅ Chỉ animate 1 lần duy nhất
+        if (!hasAnimatedOnLoad) {
+          hasAnimatedOnLoad = true;
+          setTimeout(() => {
+            map.invalidateSize();
+            animateCollectedOnLoad();
+          }, 300);
+        }
       });
 
       map.on("zoomend", updateRadarSize);
@@ -548,7 +533,7 @@ function addLocateButton() {
         </svg>
       `;
       btnLocate.onclick = function () {
-        if (!userMarker) return;
+        if (!userMarker || isCompleted.value) return;
         const pos = userMarker.getLatLng();
         map.setView(pos, 18, { animate: true, duration: 1 });
       };
@@ -567,7 +552,7 @@ function addLocateButton() {
         </svg>
       `;
       btnFit.onclick = function () {
-        if (!userMarker || !currentTarget) return;
+        if (!userMarker || !currentTarget || isCompleted.value) return;
 
         const userPos = userMarker.getLatLng();
         const targetPos = L.latLng(currentTarget.lat, currentTarget.lon);
@@ -641,7 +626,7 @@ async function drawRouteTo(target) {
 }
 
 function autoFindNearest() {
-  if (!userMarker) return;
+  if (!userMarker || isCompleted.value) return;
 
   // 🔥 Nếu đã có target và chưa collected thì giữ nguyên
   if (currentTarget && !currentTarget.collected) {
