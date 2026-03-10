@@ -24,10 +24,10 @@
       <div class="xl:px-[48px] px-[15px] -translate-y-5 relative z-5">
         <div
           class="bg-[url('/images/cuon-giua.png')] bg-cover bg-center bg-no-repeat xl:px-28 px-10 pt-5 xl:pb-5 pb-10">
-          <p class="text-[#B06C03] flex items-center gap-1 xl:text-xs text-[10px]">
+          <!--<p class="text-[#B06C03] flex items-center gap-1 xl:text-xs text-[10px]">
             <Clock class="xl:w-4 w-2.5" />
             <span>Ngày đăng: {{ formatDate(tour?.createdAt) }} {{ formatTimeOnly(tour?.createdAt) }}</span>
-          </p>
+          </p> -->
           <p class="text-center xl:pt-5 pt-3 xl:text-3xl text-lg text-[#B06C03] uppercase">{{ tour?.title }}</p>
           <p class="text-center xl:text-sm text-[11px] xl:mt-4 text-[#B06C03]">"{{ tour?.description }}"</p>
           <div class="flex justify-center xl:mt-5 mt-2">
