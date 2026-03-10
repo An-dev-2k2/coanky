@@ -252,7 +252,7 @@ function toggleAudio(index) {
   }
 
   // Phát bài mới
-  currentAudio = new Audio(location.audio)
+  currentAudio = new Audio(location.audio.audio)
   playingIndex.value = index
   audioProgress.value = 0
 
