@@ -342,7 +342,7 @@ function animateIconToSidebar(location, index) {
   // ── PHASE 2: Sau khi đến giữa màn hình → bay vào sidebar ──
   setTimeout(() => {
     Object.assign(flyingIcon.style, {
-      transition: "left 5s cubic-bezier(0.65, 0, 0.35, 1), top 5s cubic-bezier(0.65, 0, 0.35, 1), transform 5s ease-in, filter 5s ease-in, opacity 5s ease-in",
+      transition: "left 5s cubic-bezier(0.4, 0, 1, 1), top 5s cubic-bezier(0.4, 0, 1, 1), transform 5s ease-in, filter 5s ease-in, opacity 5s ease-in",
       left: endX + "px",
       top: endY + "px",
       transform: "scale(0.4) rotate(360deg)",
