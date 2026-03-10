@@ -190,6 +190,68 @@
       <!-- MAP -->
 
     </div>
+    <Modal :is-title="false" class-form="overflow-hidden" width="380px" :model-value="!!collectedPopup"
+      @update:modelValue="confirmPopup()">
+
+      <div class="font-rowdies relative overflow-hidden" style="
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(180,130,60,0.07) 30px),
+                      linear-gradient(160deg,#f5e6c8 0%,#ede0c4 40%,#e8d5a8 100%);
+    padding: 32px 28px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+  ">
+        <!-- Inner border -->
+        <div class="absolute inset-[6px] border border-amber-700/25 rounded-sm pointer-events-none"></div>
+
+        <!-- Title -->
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <img src="/images/hoavan.png" class="w-5" />
+          <h2 class="text-base font-bold tracking-widest text-[#3b1f0a]">Thu Thập Ấn Ký</h2>
+          <img src="/images/hoavan.png" class="w-5 scale-x-[-1]" />
+        </div>
+
+        <div class="flex justify-center mb-5">
+          <img src="/images/line.png" class="w-[140px]" alt="line" />
+        </div>
+
+        <!-- Icon ấn ký -->
+        <div class="flex justify-center mb-4">
+          <div class="w-24 h-24 rounded-2xl flex items-center justify-center shadow-md"
+            style="background: rgba(255,255,255,0.5); border: 1px solid rgba(180,130,60,0.3)">
+            <img :src="collectedPopup?.icon?.image" :alt="collectedPopup?.name"
+              class="w-16 h-16 object-contain drop-shadow-[0_0_10px_#4caf50]" />
+          </div>
+        </div>
+
+        <!-- Tên + trạng thái -->
+        <div class="text-center mb-2">
+          <p class="text-[11px] font-bold tracking-[0.08em] uppercase text-[#6b3f10] mb-1">Ấn Ký Mới</p>
+          <h3 class="text-xl font-bold text-[#3b1f0a] mb-1">{{ collectedPopup?.name }}</h3>
+          <p class="text-sm text-green-700 font-medium">✅ Thu thập thành công!</p>
+        </div>
+
+        <!-- Queue -->
+        <p v-if="popupQueue.length > 0" class="text-center text-[11px] text-amber-700/60 mt-1 mb-4">
+          Còn {{ popupQueue.length }} ấn ký khác đang chờ
+        </p>
+        <div v-else class="mb-4"></div>
+
+        <div class="flex justify-center mb-2">
+          <img src="/images/line.png" class="w-[140px]" alt="line" />
+        </div>
+
+        <!-- Button -->
+        <div class="flex justify-center mt-4">
+          <button @click="confirmPopup()" class="relative w-[180px] flex justify-center items-center py-2
+               cursor-pointer hover:brightness-110 active:scale-95 transition-all duration-300">
+            <img src="/images/btn.png" class="w-full absolute" alt="" />
+            <span class="text-[var(--color-text)] font-semibold text-sm z-10">
+              {{ popupQueue.length > 0 ? `Tiếp theo (${popupQueue.length})` : 'Xác nhận' }}
+            </span>
+          </button>
+        </div>
+
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -203,6 +265,7 @@ import AppAPI from "@/services/api/client/AppAPI";
 import { ChevronLeft, ChevronRight, Loader } from "lucide-vue-next";
 import TourAPI from "@/services/api/client/TourAPI";
 import { useRoute } from "vue-router";
+import Modal from "./Modal.vue";
 
 const route = useRoute();
 const slug = route.params.slug;
@@ -214,6 +277,8 @@ const sidebarRef = ref(null)
 const playingIndex = ref(-1)
 const audioProgress = ref(0)
 const isMapReady = ref(false)
+const collectedPopup = ref(null)
+const popupQueue = ref([])
 let currentAudio = null
 let progressInterval = null
 
@@ -407,7 +472,20 @@ const collectedCount = computed(() =>
 const progressPercent = computed(() =>
   (collectedCount.value / props.locations.length) * 100
 );
+function showNextPopup() {
+  if (popupQueue.value.length === 0) {
+    collectedPopup.value = null
+    return
+  }
+  collectedPopup.value = popupQueue.value.shift()
+}
 
+function confirmPopup() {
+  collectedPopup.value = null
+  setTimeout(() => {
+    showNextPopup()
+  }, 300) // đợi transition ẩn xong rồi hiện cái tiếp
+}
 onMounted(() => {
   if (!props.isAuthorized) {
     isLoading.value = false;
@@ -507,6 +585,11 @@ watch(
     if (val) {
       await nextTick();
       initMap()
+
+      // if (props.locations.length > 0) {
+      //   collectedPopup.value = props.locations[0];
+      //   popupQueue.value = props.locations.slice(1, 3); // test queue luôn
+      // }
     }
   },
   { immediate: true }
@@ -856,6 +939,11 @@ async function checkCollection(userLat, userLon) {
 
         // ✅ Update state
         props.locations[index].collected = true;
+
+        popupQueue.value.push(location)
+        if (!collectedPopup.value) {
+          showNextPopup()
+        }
 
         await nextTick();
         // ✅ Animation

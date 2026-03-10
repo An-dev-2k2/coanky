@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div v-if="modelValue" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
+      <div v-if="modelValue" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50"
         @mousedown.self="$emit('update:modelValue', false)">
         <div :class="classForm" class="w-full flex flex-col" :style="{ maxWidth: width, maxHeight: '90vh' }">
           <!-- Header -->
