@@ -354,7 +354,7 @@ function animateIconToSidebar(location, index) {
   // ── Dọn dẹp sau khi animation kết thúc ──
   setTimeout(() => {
     flyingIcon.remove();
-  }, 1800); // 700 + 1000 + buffer
+  }, 6000); // 700 + 5000 + buffer
 }
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
