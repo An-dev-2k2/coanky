@@ -20,7 +20,7 @@
          text-transparent font-title">
                 {{ tour.title }}
               </p>
-              <p class="text-center text-sm bg-gradient-to-r
+              <p class="text-center text-xs bg-gradient-to-r
          to-[#1d3c06]
          via-[#546310]
          from-[#8b8e01]
