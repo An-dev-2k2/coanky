@@ -26,8 +26,7 @@
     background-image: url('/images/cuon-giua.png');
     background-size: 100% calc(100% + 20px);  /* X = số pixel gap */
     background-repeat: repeat-y;
-  ">
-          class="3xl:px-36 xl:px-28 px-10 pt-5 xl:pb-5 pb-10">
+  " class="3xl:px-36 xl:px-28 px-10 pt-5 xl:pb-5 pb-10">
           <!--<p class="text-[#B06C03] flex items-center gap-1 xl:text-xs text-[10px]">
             <Clock class="xl:w-4 w-2.5" />
             <span>Ngày đăng: {{ formatDate(tour?.createdAt) }} {{ formatTimeOnly(tour?.createdAt) }}</span>
