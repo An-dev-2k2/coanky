@@ -325,7 +325,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, watch, nextTick } from "vue";
+import { onMounted, ref, computed, watch, nextTick, onUnmounted } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
@@ -591,14 +591,20 @@ onMounted(() => {
   if (!props.isAuthorized) {
     isLoading.value = false;
   }
-  if (window.DeviceOrientationEvent) {
-    window.addEventListener("deviceorientation", (event) => {
-      if (event.alpha != null) {
-        deviceHeading.value = event.alpha
-      }
-    })
-  }
+  // if (window.DeviceOrientationEvent) {
+  //   window.addEventListener("deviceorientation", (event) => {
+  //     if (event.alpha != null) {
+  //       deviceHeading.value = 360 - event.alpha
+  //       updateUserDirection()
+  //     }
+  //   })
+  // }
+  enableOrientation()
 });
+
+onUnmounted(() => {
+  window.removeEventListener("deviceorientation", handleOrientation)
+})
 
 function smoothPosition(lat, lon) {
   positionHistory.push({ lat, lon });
@@ -919,7 +925,38 @@ function startWatch() {
   );
 }
 
+function updateUserDirection() {
+  if (!userMarker) return
 
+  const el = userMarker.getElement()
+  if (!el) return
+
+  const dir = el.querySelector(".user-direction")
+  if (!dir) return
+
+  dir.style.transform =
+    `translate(-50%, -50%) rotate(${deviceHeading.value}deg)`
+}
+async function enableOrientation() {
+  if (
+    typeof DeviceOrientationEvent !== "undefined" &&
+    typeof DeviceOrientationEvent.requestPermission === "function"
+  ) {
+    const response = await DeviceOrientationEvent.requestPermission()
+    if (response === "granted") {
+      window.addEventListener("deviceorientation", handleOrientation)
+    }
+  } else {
+    window.addEventListener("deviceorientation", handleOrientation)
+  }
+}
+
+function handleOrientation(event) {
+  if (event.alpha != null) {
+    deviceHeading.value = 360 - event.alpha
+    updateUserDirection()
+  }
+}
 function updateRouteProgress(lat, lon) {
   if (!currentRoute.length) return;
 
@@ -1428,7 +1465,7 @@ async function goToNearest() {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-
+  transition: transform 0.15s linear;
   pointer-events: none;
 
   /* gradient xanh phát ra từ tâm */
