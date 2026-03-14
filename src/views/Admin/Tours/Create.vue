@@ -41,11 +41,6 @@
               class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 placeholder:text-sm w-full"
               placeholder="Nhập vai trò..." />
           </FormField>
-          <FormField name="master" class="col-span-3" label="Master Seal">
-            <Field name="master" as="input" type="text" id="master"
-              class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 placeholder:text-sm w-full"
-              placeholder="Nhập master seal..." />
-          </FormField>
           <FormField name="description" class="col-span-12" label="Mô tả">
             <Field name="description" as="textarea" id="description" rows="4"
               class="px-3 py-2 bg-white text-sm rounded-md outline-none border border-slate-300/70 placeholder:text-sm w-full"
@@ -389,9 +384,7 @@ const schema = toTypedSchema(
         .max(100, '% giảm giá không được vượt quá 100')
         .optional()
     ),
-    // audio: z.string().trim().nonempty('Vui lòng chọn audio'),
     role: z.string().trim().nonempty('Vai trò không được để trống'),
-    master: z.string().trim().nonempty('Master Seal không được để trống'),
     description: z.string().trim().nonempty('Mô tả không được để trống').min(3, 'Mô tả tối thiểu 3 ký tự').max(500, 'Mô tả tối đa 500 ký tự'),
     image: z
       .any()
@@ -415,7 +408,7 @@ const schema = toTypedSchema(
 )
 const { handleSubmit, resetForm, setValues, setFieldError } = useForm({
   validationSchema: schema,
-  initialValues: { title: '', price: '', percent: '', image: null, description: '', days: '', nights: '', role: '', master: '' },
+  initialValues: { title: '', price: '', percent: '', image: null, description: '', days: '', nights: '', role: '' },
 })
 
 const isSearching = ref(false)
@@ -572,7 +565,6 @@ const onSubmit = handleSubmit(async (values) => {
   formData.append('days', values.days)
   formData.append('nights', values.nights)
   formData.append('role', values.role)
-  formData.append('master', values.master)
   formData.append('description', values.description)
   formData.append('content', content.value)
   if (singleImageFile.value) {
@@ -654,7 +646,6 @@ const setFormValues = (tour) => {
     days: tour.days,
     nights: tour.nights,
     role: tour.role,
-    master: tour.master,
     image: tour.image,
   })
 

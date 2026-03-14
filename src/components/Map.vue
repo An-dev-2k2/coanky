@@ -525,14 +525,14 @@ const isCompleted = computed(() =>
 
 let map;
 let userMarker;
-let radarCircle;
+// let radarCircle;
 let markers = [];
 let routeLine;
 let remainingLine;
 let passedLine;
 let currentRoute = [];
 let initialPosition = null;
-let radarSweep;
+// let radarSweep;
 let locateControl;
 let currentTarget = null;
 let routingControl;
@@ -547,15 +547,22 @@ const SMOOTH_COUNT = 5;
 let lastUpdatePos = null;
 const MIN_MOVE_METERS = 3;
 
-const humanIcon = L.icon({
-  iconUrl: "https://cdn-icons-png.freepik.com/256/12569/12569178.png?semt=ais_white_label",
-  iconSize: [30, 30],
+const humanIcon = L.divIcon({
+  className: "user-marker",
+  html: `
+    <div class="user-marker-wrapper">
+      <div class="user-direction"></div>
+      <div class="user-dot"></div>
+    </div>
+  `,
+  iconSize: [40, 40],
+  iconAnchor: [20, 20]
 });
 const defaultLocationIcon = L.icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/512/854/854878.png",
   iconSize: [35, 35],
 });
-let currentRadarRadius = 60;
+// let currentRadarRadius = 60;
 
 // const locations = ref([]);
 const collectedCount = computed(() =>
@@ -626,7 +633,7 @@ const initMap = () => {
         }
       });
 
-      map.on("zoomend", updateRadarSize);
+      // map.on("zoomend", updateRadarSize);
       renderLocations();
       updateUser(latitude, longitude);
 
@@ -868,7 +875,7 @@ function renderLocations() {
 function startWatch() {
   navigator.geolocation.watchPosition(
     (pos) => {
-      const { latitude, longitude, accuracy } = pos.coords;
+      const { latitude, longitude, accuracy, heading } = pos.coords;
       console.log("📍 New position:", latitude, longitude);
 
       if (accuracy > 50) return;
@@ -880,7 +887,7 @@ function startWatch() {
         if (moved < MIN_MOVE_METERS) return;
       }
       lastUpdatePos = { lat, lon };
-      updateUser(lat, lon);
+      updateUser(lat, lon, heading);
 
       // Bỏ lần đầu để tránh auto collect ngay khi load
       if (!hasReceivedFirstPosition) {
@@ -934,7 +941,7 @@ function updateRouteProgress(lat, lon) {
     [end.lat, end.lng],
   ]);
 }
-function updateUser(lat, lon) {
+function updateUser(lat, lon, heading) {
   if (!userMarker) {
     userMarker = L.marker([lat, lon], {
       icon: humanIcon,
@@ -943,47 +950,57 @@ function updateUser(lat, lon) {
     userMarker.setLatLng([lat, lon]);
   }
 
-  updateRadar(lat, lon);
+  // rotate hướng
+  const el = userMarker.getElement();
+  if (el) {
+    const dir = el.querySelector(".user-direction");
+    if (dir) {
+      dir.style.transform =
+        `translate(-50%, -50%) rotate(${heading || 0}deg)`;
+    }
+  }
+
+  // updateRadar(lat, lon);
 
   autoFindNearest(); // 🔥 tự động tìm gần nhất
   updateRouteProgress(lat, lon);
 }
 
-function updateRadar(lat, lon) {
-  const zoom = map.getZoom();
-  currentRadarRadius = 20 * (20 - zoom);
+// function updateRadar(lat, lon) {
+//   const zoom = map.getZoom();
+//   currentRadarRadius = 20 * (20 - zoom);
 
-  // Radar nền
-  if (!radarCircle) {
-    radarCircle = L.circle([lat, lon], {
-      radius: currentRadarRadius,
-      color: "#2196f3",
-      fillOpacity: 0.08,
-      weight: 1,
-    }).addTo(map);
-  } else {
-    radarCircle.setLatLng([lat, lon]);
-    radarCircle.setRadius(currentRadarRadius);
-  }
+//   // Radar nền
+//   if (!radarCircle) {
+//     radarCircle = L.circle([lat, lon], {
+//       radius: currentRadarRadius,
+//       color: "#2196f3",
+//       fillOpacity: 0.08,
+//       weight: 1,
+//     }).addTo(map);
+//   } else {
+//     radarCircle.setLatLng([lat, lon]);
+//     radarCircle.setRadius(currentRadarRadius);
+//   }
 
-  // Radar quét animation
-  if (!radarSweep) {
-    radarSweep = L.marker([lat, lon], {
-      icon: L.divIcon({
-        className: "radar-sweep",
-        iconSize: [currentRadarRadius * 2, currentRadarRadius * 2],
-      }),
-    }).addTo(map);
-  } else {
-    radarSweep.setLatLng([lat, lon]);
-  }
-}
+//   // Radar quét animation
+//   if (!radarSweep) {
+//     radarSweep = L.marker([lat, lon], {
+//       icon: L.divIcon({
+//         className: "radar-sweep",
+//         iconSize: [currentRadarRadius * 2, currentRadarRadius * 2],
+//       }),
+//     }).addTo(map);
+//   } else {
+//     radarSweep.setLatLng([lat, lon]);
+//   }
+// }
 
-function updateRadarSize() {
-  if (!userMarker) return;
-  const pos = userMarker.getLatLng();
-  updateRadar(pos.lat, pos.lng);
-}
+// function updateRadarSize() {
+//   if (!userMarker) return;
+//   const pos = userMarker.getLatLng();
+//   updateRadar(pos.lat, pos.lng);
+// }
 
 // function checkCollection(userLat, userLon) {
 //   if (isFirstLoad) return;
@@ -1151,7 +1168,7 @@ async function goToNearest() {
   font-weight: bold;
 }
 
-.radar-sweep {
+/* .radar-sweep {
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -1178,7 +1195,7 @@ async function goToNearest() {
   to {
     transform: rotate(360deg);
   }
-}
+} */
 
 .locate-btn {
   background: white;
@@ -1374,5 +1391,81 @@ async function goToNearest() {
   margin-top: 24px;
   font-size: 12px;
   color: #9b7445;
+}
+
+.user-marker-wrapper {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+/* chấm xanh */
+.user-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #1a73e8;
+  border: 3px solid white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(26, 115, 232, 0.6);
+  z-index: 2;
+}
+
+/* hướng */
+.user-direction {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  pointer-events: none;
+
+  /* gradient xanh phát ra từ tâm */
+  background:
+    radial-gradient(circle at center,
+      rgba(26, 115, 232, 0.45) 0%,
+      rgba(26, 115, 232, 0.30) 25%,
+      rgba(26, 115, 232, 0.15) 45%,
+      rgba(26, 115, 232, 0.08) 60%,
+      rgba(26, 115, 232, 0.03) 70%,
+      transparent 80%);
+
+  /* tạo hình quạt */
+  -webkit-mask: conic-gradient(from -45deg at center,
+      black 0deg,
+      black 90deg,
+      transparent 90deg);
+
+  mask: conic-gradient(from -45deg at center,
+      black 0deg,
+      black 90deg,
+      transparent 90deg);
+}
+
+.user-dot::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(26, 115, 232, 0.5);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
 </style>

@@ -42,10 +42,6 @@
                   <img src="/images/role.png" alt="Vai trò" class="w-6">
                   <span class="text-sm text-[#700001] uppercase line-clamp-1">{{ tour.role }}</span>
                 </div>
-                <div class="flex items-center gap-3">
-                  <img src="/images/master.png" alt="Master Seal" class="w-6">
-                  <span class="text-sm text-[#700001] uppercase line-clamp-1">{{ tour.master }}</span>
-                </div>
               </div>
               <div class="grid grid-cols-6 gap-2 mt-1">
                 <div v-for="(i, index) in tour.diadiem" :key="index">
