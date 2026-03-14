@@ -21,7 +21,7 @@
     <img class="h-screen w-full fixed top-0 left-0 right-0" src="/images/bg-detail-tour.jpg" alt="">
     <div class="relative xl:pt-24 xl:px-40 pt-24">
       <img src="/images/cuon-tren.png" class="relative z-10" />
-      <div class="3xl:px-[63px] xl:px-[48px] px-[15px] 3xl:-translate-y-7 -translate-y-5 relative z-5">
+      <div class="3xl:px-[63px] xl:px-[48px] px-[16px] 3xl:-translate-y-7 -translate-y-5 relative z-5">
         <div
           class="bg-[url('/images/cuon-giua.png')] bg-cover bg-center bg-no-repeat 3xl:px-36 xl:px-28 px-10 pt-5 xl:pb-5 pb-10">
           <!--<p class="text-[#B06C03] flex items-center gap-1 xl:text-xs text-[10px]">
@@ -586,4 +586,94 @@ onMounted(() => {
 /* .tour-map-timeline.no-line::before {
   display: none;
 } */
+
+/* ===== DESKTOP (default) ===== */
+.tour-map-timeline {
+  --gap: 40px;
+  flex-wrap: nowrap;
+}
+
+.timeline-icon {
+  width: 110px;
+}
+
+/* ===== TABLET ===== */
+@media (max-width:1024px) {
+
+  .tour-map-timeline {
+    --gap: 25px;
+  }
+
+  .timeline-icon {
+    width: 90px;
+  }
+
+  .timeline-name {
+    font-size: 11px;
+  }
+
+}
+
+/* ===== MOBILE ===== */
+@media (max-width:768px) {
+
+  .tour-map-timeline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    margin-left: 30px;
+  }
+
+  /* line dọc */
+  .tour-map-timeline::before {
+    content: "";
+    position: absolute;
+    left: 9px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #B06C03;
+    opacity: .3;
+  }
+
+  .timeline-item {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  /* bỏ line ngang */
+  .timeline-item::after {
+    display: none;
+  }
+
+  .timeline-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin-top: 0;
+  }
+
+  .timeline-icon {
+    width: 70px;
+  }
+
+  .timeline-name {
+    font-size: 13px;
+    text-align: left;
+  }
+
+}
+
+/* ===== SMALL MOBILE ===== */
+@media (max-width:480px) {
+
+  .timeline-icon {
+    width: 60px;
+  }
+
+  .timeline-name {
+    font-size: 12px;
+  }
+
+}
 </style>
