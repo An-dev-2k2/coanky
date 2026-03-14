@@ -11,7 +11,7 @@
             v-for="(tour, index) in tours" :key="tour.id">
             <img src="/images/bg-card.png" alt="Card Background" class="w-full absolute top-0 left-0">
             <div class="3xl:pt-24 pt-28 px-6 relative z-10">
-              <p class="text-center text-[50px] leading-none line-clamp-2
+              <p class="text-center text-[40px] leading-none line-clamp-2
          bg-gradient-to-r
          to-[#1d3c06]
          via-[#546310]
@@ -25,7 +25,7 @@
          via-[#546310]
          from-[#8b8e01]
          bg-clip-text
-         text-transparent uppercase line-clamp-2">
+         text-transparent uppercase line-clamp-1">
                 {{ tour.description }}
               </p>
               <div class="mt-5 flex flex-col gap-2 border-b border-[#1d3c06] pb-3 font-cafeta">
