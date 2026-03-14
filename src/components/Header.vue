@@ -361,6 +361,7 @@ onBeforeUnmount(() => {
     inset 0 1px 0 rgba(220, 160, 60, 0.1);
   overflow: hidden;
   transform-origin: top right;
+  z-index: 1000000;
 }
 
 /* Arrow tip */

@@ -10,8 +10,8 @@
             :to="'/tours/' + tour.slug" class="relative w-full transition-all duration-300 hover:-translate-y-1"
             v-for="(tour, index) in tours" :key="tour.id">
             <img src="/images/bg-card.png" alt="Card Background" class="w-full absolute top-0 left-0">
-            <div class="pt-28 px-6 relative z-10">
-              <p class="text-center text-[50px] line-clamp-2
+            <div class="3xl:pt-24 pt-28 px-6 relative z-10">
+              <p class="text-center text-[50px] leading-none line-clamp-2
          bg-gradient-to-r
          to-[#1d3c06]
          via-[#546310]

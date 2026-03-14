@@ -43,10 +43,11 @@ defineProps({
   title: { type: String, default: '' },
   width: { type: String, default: '500px' },
   data: { type: Object, default: {} },
+  mode: { type: String, default: 'delete' },
   isLoading: { type: Boolean, default: false }
 })
 
-const emits = defineEmits(['update:modelValue', 'submit'])
+const emits = defineEmits(['update:modelValue', 'submit', 'close'])
 </script>
 
 <style scoped>

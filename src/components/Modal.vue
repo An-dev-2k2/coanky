@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div v-if="modelValue" class="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50"
+      <div v-if="modelValue" :class="classDialog" class="fixed inset-0 flex items-center justify-center bg-black/50"
         @mousedown.self="$emit('update:modelValue', false)">
         <div :class="classForm" class="w-full flex flex-col" :style="{ maxWidth: width, maxHeight: '90vh' }">
           <!-- Header -->
@@ -14,7 +14,7 @@
           </div>
 
           <!-- Body -->
-          <div class="overflow-y-auto px-5 py-4 flex-1 relative">
+          <div :class="classBody" class="overflow-y-auto flex-1 relative">
             <slot />
           </div>
 
@@ -36,7 +36,9 @@ defineProps({
   title: { type: String, default: '' },
   width: { type: String, default: '500px' },
   isTitle: { type: Boolean, default: true },
-  classForm: { type: String, default: 'bg-white rounded-xl shadow-2xl' }
+  classForm: { type: String, default: 'bg-white rounded-xl shadow-2xl' },
+  classDialog: { type: String, default: 'z-[1000]' },
+  classBody: { type: String, default: 'px-5 py-4' }
 })
 
 defineEmits(['update:modelValue'])

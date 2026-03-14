@@ -15,9 +15,9 @@
       </div>
       <div v-else class="flex flex-col md:flex-row h-full">
         <div class="relative rounded-xl bg-gray-200 mt-10 overflow-hidden w-full h-full md:h-full">
-          <div id="map" class="w-full h-full"></div>
+          <div id="map" class="w-full h-full z-10"></div>
           <div v-if="isCompleted"
-            class="absolute inset-0 z-[2000] flex items-center justify-center bg-white/70 backdrop-blur-sm">
+            class="absolute inset-0 z-[20] flex items-center justify-center bg-white/70 backdrop-blur-sm">
 
             <div class="stamp-animation
              border-8 border-red-600
@@ -32,7 +32,16 @@
               ĐÃ HOÀN THÀNH
 
             </div>
+            <button @click="showCertificate = true" class="absolute bottom-4 w-[240px] flex justify-center items-center py-3
+           cursor-pointer hover:brightness-110 active:scale-95 transition">
 
+              <img src="/images/btn.png" class="absolute w-full" />
+
+              <span class="z-10 font-semibold text-md">
+                📜 Nhận Giấy Chứng Nhận
+              </span>
+
+            </button>
           </div>
         </div>
 
@@ -144,6 +153,10 @@
                           '🔒Thu thập để mở khóa' }}
                       </p>
                     </div>
+                    <button v-if="location.collected" @click="openAudioPlayer(index)" class="ml-2 w-7 h-7 flex items-center justify-center
+         rounded-full hover:bg-black/10 transition">
+                      <EllipsisVertical />
+                    </button>
                   </div>
                 </div>
 
@@ -252,6 +265,62 @@
 
       </div>
     </Modal>
+
+    <Modal :is-title="false" width="550px" class-body="" class-form="" class-dialog="z-[2100]"
+      :model-value="showCertificate" @update:modelValue="showCertificate = $event">
+      <div class="certificate-page font-rowdies">
+
+        <div class="scroll-container certificate-scroll">
+
+          <!-- HEADER -->
+          <div class="certificate-header">
+            <img src="/images/hoavan.png" class="w-8 opacity-70">
+            <h2>CHỨNG NHẬN HÀNH TRÌNH</h2>
+            <img src="/images/hoavan.png" class="w-8 opacity-70">
+          </div>
+
+          <p class="certificate-sub">
+            CỔ ẤN KÝ – HÀNH TRÌNH DI SẢN
+          </p>
+
+          <!-- USER -->
+          <p class="certificate-label">Trân trọng vinh danh</p>
+
+          <h1 class="certificate-name">
+            {{ me?.username }}
+          </h1>
+
+          <!-- TOUR -->
+          <p class="certificate-label mt-6">Đã hoàn thành hành trình</p>
+
+          <h2 class="certificate-tour">
+            {{ tour?.title }}
+          </h2>
+
+          <p class="certificate-desc">
+            Đã thu thập đầy đủ các Ấn ký di sản tại các địa điểm của tuyến khám phá.
+          </p>
+
+          <!-- ROLE -->
+          <p class="certificate-label mt-6">Danh hiệu được trao</p>
+
+          <h3 class="certificate-role">
+            {{ tour?.role }}
+          </h3>
+
+          <p class="certificate-desc text-xs mt-6">Cảm ơn bạn đã cùng Cổ Ấn Ký thắp sáng lại
+            những mảnh ghép di sản đang ngủ yên.</p>
+
+          <!-- DATE -->
+          <p class="certificate-date">
+            Ngày hoàn thành: {{ formatDate(progress.updatedAt) }}
+          </p>
+
+        </div>
+
+      </div>
+    </Modal>
+    <AudioPlayerModal v-model="showAudioPlayer" :audio="selectedAudio" />
   </div>
 </template>
 
@@ -262,11 +331,14 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
 import polyline from "@mapbox/polyline";
 import AppAPI from "@/services/api/client/AppAPI";
-import { ChevronLeft, ChevronRight, Loader } from "lucide-vue-next";
+import { ChevronLeft, ChevronRight, Loader, EllipsisVertical } from "lucide-vue-next";
 import TourAPI from "@/services/api/client/TourAPI";
 import { useRoute } from "vue-router";
 import Modal from "./Modal.vue";
+import { useFormat } from "@/composables/useFormat";
+import AudioPlayerModal from "./AudioPlayerModal.vue";
 
+const { formatDate } = useFormat()
 const route = useRoute();
 const slug = route.params.slug;
 const isLoading = ref(true);
@@ -279,12 +351,18 @@ const audioProgress = ref(0)
 const isMapReady = ref(false)
 const collectedPopup = ref(null)
 const popupQueue = ref([])
+const showCertificate = ref(false)
+const showAudioPlayer = ref(false)
+const selectedAudio = ref(null)
 let currentAudio = null
 let progressInterval = null
 
 const props = defineProps({
   isAuthorized: Boolean,
   errorMessage: String,
+  me: Object,
+  tour: Object,
+  progress: Object,
   locations: {
     type: Array,
     default: () => []
@@ -333,6 +411,21 @@ function toggleAudio(index) {
     audioProgress.value = 0
     clearInterval(progressInterval)
   }
+}
+
+function openAudioPlayer(index) {
+  const location = props.locations[index]
+
+  if (!location.collected || !location.audio) return
+
+  selectedAudio.value = {
+    title: location.name,
+    url: location.audio.audio,
+    icon: location.icon?.image,
+    background: location.audio.image
+  }
+
+  showAudioPlayer.value = true
 }
 function animateIconToSidebar(location, index) {
   if (!map || !sidebarRef.value) return;
@@ -1199,5 +1292,87 @@ async function goToNearest() {
 
 .stamp-animation {
   animation: stampEffect 0.6s ease-out forwards;
+}
+
+.certificate-page {
+  display: flex;
+  justify-content: center;
+}
+
+/* reuse scroll container style */
+.certificate-scroll {
+  max-width: 600px;
+  padding: 50px 40px;
+  text-align: center;
+}
+
+/* header */
+.certificate-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.certificate-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: #3b1f0a;
+}
+
+/* subtitle */
+.certificate-sub {
+  font-size: 12px;
+  color: #8b6a3e;
+  letter-spacing: .1em;
+  margin-bottom: 24px;
+}
+
+/* labels */
+.certificate-label {
+  font-size: 12px;
+  color: #8b6a3e;
+  letter-spacing: .06em;
+}
+
+/* username */
+.certificate-name {
+  font-size: 30px;
+  font-weight: 700;
+  color: #3b1f0a;
+  margin-top: 6px;
+}
+
+/* tour */
+.certificate-tour {
+  font-size: 20px;
+  font-weight: 600;
+  color: #4a2e10;
+  margin-top: 4px;
+}
+
+/* desc */
+.certificate-desc {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #8b6a3e;
+  font-style: italic;
+}
+
+/* role */
+.certificate-role {
+  font-size: 18px;
+  font-weight: 700;
+  color: #c0392b;
+  margin-top: 4px;
+}
+
+/* date */
+.certificate-date {
+  margin-top: 24px;
+  font-size: 12px;
+  color: #9b7445;
 }
 </style>

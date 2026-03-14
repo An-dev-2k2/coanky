@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="fixed bottom-0 left-0 right-0 z-10">
+    <div class="fixed bottom-0 left-0 right-0 z-20">
       <img src="/images/bg-footer-price.png" class="xl:block hidden" alt="bg footer price">
       <div
         class=" xl:absolute xl:bg-transparent bg-[#F4DBAB] xl:py-0 py-2 flex justify-center items-center gap-5 top-0 left-0 w-full h-full">
@@ -21,9 +21,9 @@
     <img class="h-screen w-full fixed top-0 left-0 right-0" src="/images/bg-detail-tour.jpg" alt="">
     <div class="relative xl:pt-24 xl:px-40 pt-24">
       <img src="/images/cuon-tren.png" class="relative z-10" />
-      <div class="xl:px-[48px] px-[15px] -translate-y-5 relative z-5">
+      <div class="3xl:px-[63px] xl:px-[48px] px-[15px] 3xl:-translate-y-7 -translate-y-5 relative z-5">
         <div
-          class="bg-[url('/images/cuon-giua.png')] bg-cover bg-center bg-no-repeat xl:px-28 px-10 pt-5 xl:pb-5 pb-10">
+          class="bg-[url('/images/cuon-giua.png')] bg-cover bg-center bg-no-repeat 3xl:px-36 xl:px-28 px-10 pt-5 xl:pb-5 pb-10">
           <!--<p class="text-[#B06C03] flex items-center gap-1 xl:text-xs text-[10px]">
             <Clock class="xl:w-4 w-2.5" />
             <span>Ngày đăng: {{ formatDate(tour?.createdAt) }} {{ formatTimeOnly(tour?.createdAt) }}</span>
@@ -36,7 +36,7 @@
           <div class="xl:mt-3 mt-2 tour-content" v-html="formattedContent"></div>
         </div>
       </div>
-      <img src="/images/cuon-duoi.png" class="relative z-0 -translate-y-14" />
+      <img src="/images/cuon-duoi.png" class="relative z-0 3xl:-translate-y-24 -translate-y-14" />
       <!-- <button v-if="!tour?.isMap" @click="showPopup = true" class="px-6 py-3 bg-green-700 text-white rounded-lg">
         Đặt tour
       </button>
@@ -93,8 +93,8 @@
                 <img src="/images/bg-qr.png" class="w-[280px]" alt="">
                 <template v-if="descQR">
                   <img
-                    :src="`https://img.vietqr.io/image/MB-0150320032628-print.jpg?addInfo=${descQR}&accountName=NGUYEN PHUONG THAO`"
-                    alt="" class="w-32 absolute">
+                    :src="`https://img.vietqr.io/image/MB-0150320032628-qr_only.jpg?addInfo=${descQR}&accountName=NGUYEN PHUONG THAO`"
+                    alt="" class="w-40 absolute">
                 </template>
                 <template v-else>
                   <p class=" absolute text-sm text-[#B06C03] px-8 text-center">Bạn không có QR. Vui lòng liên hệ admin
@@ -106,6 +106,22 @@
           </div>
         </div>
       </Modal>
+    </div>
+    <div v-if="tour?.diadiem?.length"
+      class="tour-map-timeline relative flex gap-[var(--gap)] justify-center items-start mt-10 mb-40"
+      :class="{ 'no-line': tour.diadiem.length === 1 }">
+      <div v-for="(location, index) in tour.diadiem" :key="index"
+        class="timeline-item relative flex flex-col items-center" :class="{ collected: location.collected }">
+        <div class="timeline-dot bg-white z-10 w-5 h-5 rounded-full border-2 border-[#B06C03] relative"></div>
+
+        <div class="timeline-card">
+          <img :src="location.icon?.image"
+            class="timeline-icon w-28 container grayscale opacity-50 transition-all duration-300" />
+          <p class="timeline-name">
+            {{ location.icon?.name }}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -207,7 +223,7 @@ watch(me, (val) => {
     descQR.value = val?.deposit_identifier ? 'NAP TIEN ' + val?.deposit_identifier : ''
     socket.emit("join_user_room", val._id);
   }
-})
+}, { immediate: true })
 const getTourDetail = async () => {
   try {
     const { data } = await TourAPI.getDetail(tourSlug)
@@ -260,6 +276,10 @@ onMounted(() => {
   flex-direction: column;
   margin: 1.5em 0 0.5em;
 } */
+
+:root {
+  --gap: 40px;
+}
 
 .tour-content h2 {
   display: flex;
@@ -514,4 +534,56 @@ onMounted(() => {
     bottom: 5px;
   }
 }
+
+
+/* container timeline */
+
+/* line nối tới item tiếp theo */
+.timeline-item::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: calc(100% + var(--gap));
+  height: 2px;
+  background: #B06C03;
+  opacity: .3;
+  z-index: 0;
+}
+
+/* item cuối không có line */
+.timeline-item:last-child::after {
+  display: none;
+}
+
+/* card bên dưới */
+.timeline-card {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* tên */
+.timeline-name {
+  font-size: 12px;
+  color: #B06C03;
+  margin-top: 5px;
+}
+
+/* collected state */
+.timeline-item.collected .timeline-dot {
+  background: #B06C03;
+}
+
+.timeline-item.collected .timeline-icon {
+  filter: none;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* .tour-map-timeline.no-line::before {
+  display: none;
+} */
 </style>

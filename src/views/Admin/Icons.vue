@@ -138,6 +138,7 @@ const deleteIcon = async (id) => {
   }
   catch (e) {
     console.log(e)
+    toast.error("Xóa ấn ký thất bại")
   }
 }
 

@@ -67,6 +67,7 @@
               <th>Trạng thái</th>
               <th>Ngày mua</th>
               <th>Ấn ký</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -82,6 +83,11 @@
               <td class="td-date">{{ formatDate(tour.purchasedAt) }}</td>
               <td class="td-stamps">
                 <span class="stamps-count">{{ tour.stampsCollected }}/{{ tour.totalStamps }}</span>
+              </td>
+              <td>
+                <router-link v-if="tour.status === 'completed'" :to="`/tours/${tour.slug}/map`"
+                  class="td-btn text-blue-700 underline">Chi
+                  tiết</router-link>
               </td>
             </tr>
             <tr v-if="!data?.tours?.length">
@@ -264,32 +270,6 @@ onMounted(() => {
 }
 
 /* ========== SCROLL CONTAINER ========== */
-.scroll-container {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 680px;
-  background: linear-gradient(160deg, #f5e6c8 0%, #ede0c4 40%, #e8d5a8 100%);
-  border-radius: 4px;
-  padding: 48px 40px 40px;
-  box-shadow:
-    0 0 0 1px rgba(150, 100, 30, 0.4),
-    0 0 0 3px rgba(100, 60, 10, 0.15),
-    0 20px 80px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(180, 130, 60, 0.07) 30px),
-    linear-gradient(160deg, #f5e6c8 0%, #ede0c4 40%, #e8d5a8 100%);
-}
-
-.scroll-container::before {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  border: 1px solid rgba(150, 100, 30, 0.25);
-  border-radius: 2px;
-  pointer-events: none;
-}
 
 /* ========== HEADER ========== */
 .scroll-header {

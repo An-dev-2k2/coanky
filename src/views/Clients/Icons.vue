@@ -23,8 +23,10 @@
               class="text-center text-[#FFF3C5] group-hover:tracking-wider transition-all duration-300 mt-2 xl:text-sm text-xs">
               {{
                 icon.name }}</p>
-            <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
-              class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+            <div class="p-3">
+              <img :src="icon.image" :class="!icon.collected ? ' grayscale' : ''"
+                class="w-full group-hover:scale-110 transition-all duration-300" alt="Icon Image">
+            </div>
           </div>
         </div>
       </div>
