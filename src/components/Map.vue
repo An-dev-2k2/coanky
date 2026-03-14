@@ -604,7 +604,7 @@ const initMap = () => {
 
   navigator.geolocation.getCurrentPosition(
     async (pos) => {
-      const { latitude, longitude } = pos.coords;
+      const { latitude, longitude, heading } = pos.coords;
       initialPosition = [latitude, longitude];
 
       map = L.map("map").setView(initialPosition, 18);
@@ -635,7 +635,7 @@ const initMap = () => {
 
       // map.on("zoomend", updateRadarSize);
       renderLocations();
-      updateUser(latitude, longitude);
+      updateUser(latitude, longitude, heading);
 
       // ✅ Tắt loading TRƯỚC
       isLoading.value = false;
@@ -950,19 +950,16 @@ function updateUser(lat, lon, heading) {
     userMarker.setLatLng([lat, lon]);
   }
 
-  // rotate hướng
+  // ✅ Giữ translate + thêm rotate
   const el = userMarker.getElement();
   if (el) {
     const dir = el.querySelector(".user-direction");
     if (dir) {
-      dir.style.transform =
-        `translate(-50%, -50%) rotate(${heading || 0}deg)`;
+      dir.style.transform = `translate(-50%, -50%) rotate(${heading || 0}deg)`;
     }
   }
 
-  // updateRadar(lat, lon);
-
-  autoFindNearest(); // 🔥 tự động tìm gần nhất
+  autoFindNearest();
   updateRouteProgress(lat, lon);
 }
 
@@ -1417,32 +1414,27 @@ async function goToNearest() {
 /* hướng */
 .user-direction {
   position: absolute;
-  width: 60px;
-  height: 60px;
-
+  width: 80px;
+  height: 80px;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
-
+  transform: translate(-50%, -50%) rotate(0deg);
+  transform-origin: center center;
+  /* ✅ xoay quanh tâm chấm */
   pointer-events: none;
 
-  /* gradient xanh phát ra từ tâm */
-  background:
-    radial-gradient(circle at center,
-      rgba(26, 115, 232, 0.45) 0%,
-      rgba(26, 115, 232, 0.30) 25%,
-      rgba(26, 115, 232, 0.15) 45%,
-      rgba(26, 115, 232, 0.08) 60%,
-      rgba(26, 115, 232, 0.03) 70%,
-      transparent 80%);
+  background: radial-gradient(circle at 50% 50%,
+      rgba(26, 115, 232, 0.5) 0%,
+      rgba(26, 115, 232, 0.35) 20%,
+      rgba(26, 115, 232, 0.15) 40%,
+      transparent 65%);
 
-  /* tạo hình quạt */
-  -webkit-mask: conic-gradient(from -45deg at center,
+  /* hình quạt ~90° hướng lên trên */
+  -webkit-mask: conic-gradient(from -45deg at 50% 50%,
       black 0deg,
       black 90deg,
       transparent 90deg);
-
-  mask: conic-gradient(from -45deg at center,
+  mask: conic-gradient(from -45deg at 50% 50%,
       black 0deg,
       black 90deg,
       transparent 90deg);
