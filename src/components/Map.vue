@@ -357,6 +357,8 @@ const selectedAudio = ref(null)
 const deviceHeading = ref(0)
 let currentAudio = null
 let progressInterval = null
+let lastHeading = 0
+let smoothHeading = 0
 
 const props = defineProps({
   isAuthorized: Boolean,
@@ -952,10 +954,21 @@ async function enableOrientation() {
 }
 
 function handleOrientation(event) {
-  if (event.alpha != null) {
-    deviceHeading.value = 360 - event.alpha
-    updateUserDirection()
-  }
+  if (event.alpha == null) return
+
+  const rawHeading = 360 - event.alpha
+
+  let delta = rawHeading - lastHeading
+
+  if (delta > 180) delta -= 360
+  if (delta < -180) delta += 360
+
+  smoothHeading += delta
+  lastHeading = rawHeading
+
+  deviceHeading.value = smoothHeading
+
+  updateUserDirection()
 }
 function updateRouteProgress(lat, lon) {
   if (!currentRoute.length) return;
