@@ -354,6 +354,7 @@ const popupQueue = ref([])
 const showCertificate = ref(false)
 const showAudioPlayer = ref(false)
 const selectedAudio = ref(null)
+const deviceHeading = ref(0)
 let currentAudio = null
 let progressInterval = null
 
@@ -590,6 +591,13 @@ onMounted(() => {
   if (!props.isAuthorized) {
     isLoading.value = false;
   }
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", (event) => {
+      if (event.alpha != null) {
+        deviceHeading.value = event.alpha
+      }
+    })
+  }
 });
 
 function smoothPosition(lat, lon) {
@@ -604,7 +612,7 @@ const initMap = () => {
 
   navigator.geolocation.getCurrentPosition(
     async (pos) => {
-      const { latitude, longitude, heading } = pos.coords;
+      const { latitude, longitude } = pos.coords;
       initialPosition = [latitude, longitude];
 
       map = L.map("map").setView(initialPosition, 18);
@@ -635,7 +643,7 @@ const initMap = () => {
 
       // map.on("zoomend", updateRadarSize);
       renderLocations();
-      updateUser(latitude, longitude, heading);
+      updateUser(latitude, longitude);
 
       // ✅ Tắt loading TRƯỚC
       isLoading.value = false;
@@ -875,7 +883,7 @@ function renderLocations() {
 function startWatch() {
   navigator.geolocation.watchPosition(
     (pos) => {
-      const { latitude, longitude, accuracy, heading } = pos.coords;
+      const { latitude, longitude, accuracy } = pos.coords;
       console.log("📍 New position:", latitude, longitude);
 
       if (accuracy > 50) return;
@@ -887,7 +895,7 @@ function startWatch() {
         if (moved < MIN_MOVE_METERS) return;
       }
       lastUpdatePos = { lat, lon };
-      updateUser(lat, lon, heading);
+      updateUser(lat, lon);
 
       // Bỏ lần đầu để tránh auto collect ngay khi load
       if (!hasReceivedFirstPosition) {
@@ -941,7 +949,7 @@ function updateRouteProgress(lat, lon) {
     [end.lat, end.lng],
   ]);
 }
-function updateUser(lat, lon, heading) {
+function updateUser(lat, lon) {
   if (!userMarker) {
     userMarker = L.marker([lat, lon], {
       icon: humanIcon,
@@ -950,12 +958,12 @@ function updateUser(lat, lon, heading) {
     userMarker.setLatLng([lat, lon]);
   }
 
-  // ✅ Giữ translate + thêm rotate
   const el = userMarker.getElement();
   if (el) {
     const dir = el.querySelector(".user-direction");
     if (dir) {
-      dir.style.transform = `translate(-50%, -50%) rotate(${heading || 0}deg)`;
+      dir.style.transform =
+        `translate(-50%, -50%) rotate(${deviceHeading.value}deg)`;
     }
   }
 
@@ -1414,27 +1422,32 @@ async function goToNearest() {
 /* hướng */
 .user-direction {
   position: absolute;
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
+
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) rotate(0deg);
-  transform-origin: center center;
-  /* ✅ xoay quanh tâm chấm */
+  transform: translate(-50%, -50%);
+
   pointer-events: none;
 
-  background: radial-gradient(circle at 50% 50%,
-      rgba(26, 115, 232, 0.5) 0%,
-      rgba(26, 115, 232, 0.35) 20%,
-      rgba(26, 115, 232, 0.15) 40%,
-      transparent 65%);
+  /* gradient xanh phát ra từ tâm */
+  background:
+    radial-gradient(circle at center,
+      rgba(26, 115, 232, 0.45) 0%,
+      rgba(26, 115, 232, 0.30) 25%,
+      rgba(26, 115, 232, 0.15) 45%,
+      rgba(26, 115, 232, 0.08) 60%,
+      rgba(26, 115, 232, 0.03) 70%,
+      transparent 80%);
 
-  /* hình quạt ~90° hướng lên trên */
-  -webkit-mask: conic-gradient(from -45deg at 50% 50%,
+  /* tạo hình quạt */
+  -webkit-mask: conic-gradient(from -45deg at center,
       black 0deg,
       black 90deg,
       transparent 90deg);
-  mask: conic-gradient(from -45deg at 50% 50%,
+
+  mask: conic-gradient(from -45deg at center,
       black 0deg,
       black 90deg,
       transparent 90deg);
