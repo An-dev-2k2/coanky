@@ -16,7 +16,7 @@
       <div v-else class="flex flex-col md:flex-row h-full">
         <div class="relative rounded-xl bg-gray-200 mt-10 overflow-hidden w-full h-full md:h-full">
           <div id="map" class="w-full h-full z-10"></div>
-          <div v-if="!isCompleted"
+          <div v-if="isCompleted"
             class="absolute inset-0 z-[20] flex items-center justify-center bg-white/70 backdrop-blur-sm">
 
             <div class="stamp-animation
