@@ -16,13 +16,13 @@
       <div v-else class="flex flex-col md:flex-row h-full">
         <div class="relative rounded-xl bg-gray-200 mt-10 overflow-hidden w-full h-full md:h-full">
           <div id="map" class="w-full h-full z-10"></div>
-          <div v-if="isCompleted"
+          <div v-if="!isCompleted"
             class="absolute inset-0 z-[20] flex items-center justify-center bg-white/70 backdrop-blur-sm">
 
             <div class="stamp-animation
              border-8 border-red-600
              text-red-600
-             text-3xl font-extrabold
+             3xl:text-3xl text-base font-extrabold
              px-10 py-4
              rounded-xl
              bg-white
@@ -32,12 +32,12 @@
               ĐÃ HOÀN THÀNH
 
             </div>
-            <button @click="showCertificate = true" class="absolute bottom-4 w-[240px] flex justify-center items-center py-3
+            <button @click="showCertificate = true" class="absolute bottom-4 3xl:w-[240px] w-[220px] flex justify-center items-center py-3
            cursor-pointer hover:brightness-110 active:scale-95 transition">
 
               <img src="/images/btn.png" class="absolute w-full" />
 
-              <span class="z-10 font-semibold text-md">
+              <span class="z-10 font-semibold 3xl:text-md text-sm">
                 📜 Nhận Giấy Chứng Nhận
               </span>
 
@@ -266,53 +266,58 @@
       </div>
     </Modal>
 
-    <Modal :is-title="false" width="550px" class-body="" class-form="" class-dialog="z-[2100]"
+    <Modal :is-title="false" width="850px" class-body="" class-form="" class-dialog="z-[2100]"
       :model-value="showCertificate" @update:modelValue="showCertificate = $event">
-      <div class="certificate-page font-rowdies">
-
-        <div class="scroll-container certificate-scroll">
+      <div class="certificate-page items-center font-rowdies">
+        <img class=" relative z-0 left-0" src="/images/bgr-chungnhan.jpg" />
+        <div
+          class="certificate-scroll top-0 text-center 2xl:px-[30px] 2xl:py-[40px] px-[20px] py-[20px] z-100 absolute">
 
           <!-- HEADER -->
           <div class="certificate-header">
             <img src="/images/hoavan.png" class="w-8 opacity-70">
-            <h2>CHỨNG NHẬN HÀNH TRÌNH</h2>
+            <h2 class="2xl:text-[22px] text-sm">CHỨNG NHẬN HÀNH TRÌNH</h2>
             <img src="/images/hoavan.png" class="w-8 opacity-70">
           </div>
 
-          <p class="certificate-sub">
+          <!-- <p class="certificate-sub">
             CỔ ẤN KÝ – HÀNH TRÌNH DI SẢN
-          </p>
+          </p> -->
 
           <!-- USER -->
-          <p class="certificate-label">Trân trọng vinh danh</p>
+          <p class="certificate-label 2xl:text-[12px] text-[10px] uppercase text-black 2xl:mt-4 mt-1">Trân trọng vinh
+            danh
+          </p>
 
-          <h1 class="certificate-name">
+          <h1 class="certificate-name 2xl:text-[30px] text-[20px]">
             {{ me?.username }}
           </h1>
 
           <!-- TOUR -->
-          <p class="certificate-label mt-6">Đã hoàn thành hành trình</p>
+          <p class="certificate-label 2xl:text-[12px] text-[8px] 2xl:mt-6 mt-2">Vì đã hoàn thành xuất sắc hành trình
+          </p>
 
-          <h2 class="certificate-tour">
+          <h2 class="certificate-tour 2xl:text-[20px] text-[14px]">
             {{ tour?.title }}
           </h2>
 
-          <p class="certificate-desc">
+          <p class="certificate-desc 2xl:text-[13px] 2xl:block hidden text-[10px]">
             Đã thu thập đầy đủ các Ấn ký di sản tại các địa điểm của tuyến khám phá.
           </p>
 
           <!-- ROLE -->
-          <p class="certificate-label mt-6">Danh hiệu được trao</p>
+          <p class="certificate-label 2xl:text-[12px] text-[10px] 2xl:block hidden 2xl:mt-6 mt-2">Danh hiệu được trao
+          </p>
 
-          <h3 class="certificate-role">
+          <h3 class="certificate-role 2xl:text-[18px] text-[14px] 2xl:block hidden">
             {{ tour?.role }}
           </h3>
 
-          <p class="certificate-desc text-xs mt-6">Cảm ơn bạn đã cùng Cổ Ấn Ký thắp sáng lại
+          <p class="certificate-desc text-xs 2xl:mt-6 mt-2 2xl:block hidden">Cảm ơn bạn đã cùng Cổ Ấn Ký thắp sáng lại
             những mảnh ghép di sản đang ngủ yên.</p>
 
           <!-- DATE -->
-          <p class="certificate-date">
+          <p class="certificate-date text-[8px] 2xl:text-[12px] mt-2">
             Ngày hoàn thành: {{ formatDate(progress.updatedAt) }}
           </p>
 
@@ -544,7 +549,7 @@ let lastCheckTime = 0;
 let hasAnimatedOnLoad = false;
 const CHECK_INTERVAL = 1000;
 const stampingSet = new Set();
-const COLLECT_RADIUS = 50; // 50 mét
+const COLLECT_RADIUS = 2; // 2 mét
 const positionHistory = [];
 const SMOOTH_COUNT = 5;
 let lastUpdatePos = null;
@@ -1372,11 +1377,11 @@ async function goToNearest() {
 }
 
 /* reuse scroll container style */
-.certificate-scroll {
+/* .certificate-scroll {
   max-width: 600px;
   padding: 50px 40px;
   text-align: center;
-}
+} */
 
 /* header */
 .certificate-header {
@@ -1388,10 +1393,8 @@ async function goToNearest() {
 }
 
 .certificate-header h2 {
-  font-size: 22px;
   font-weight: 700;
-  letter-spacing: .08em;
-  color: #3b1f0a;
+  color: #d5985c;
 }
 
 /* subtitle */
@@ -1403,23 +1406,20 @@ async function goToNearest() {
 }
 
 /* labels */
-.certificate-label {
-  font-size: 12px;
-  color: #8b6a3e;
-  letter-spacing: .06em;
-}
+/* .certificate-label { */
+/* font-size: 12px; */
+/* color: #8b6a3e; */
+/* letter-spacing: .06em; */
+/* } */
 
 /* username */
 .certificate-name {
-  font-size: 30px;
   font-weight: 700;
   color: #3b1f0a;
-  margin-top: 6px;
 }
 
 /* tour */
 .certificate-tour {
-  font-size: 20px;
   font-weight: 600;
   color: #4a2e10;
   margin-top: 4px;
@@ -1427,24 +1427,18 @@ async function goToNearest() {
 
 /* desc */
 .certificate-desc {
-  margin-top: 8px;
-  font-size: 13px;
   color: #8b6a3e;
   font-style: italic;
 }
 
 /* role */
 .certificate-role {
-  font-size: 18px;
   font-weight: 700;
   color: #c0392b;
-  margin-top: 4px;
 }
 
 /* date */
 .certificate-date {
-  margin-top: 24px;
-  font-size: 12px;
   color: #9b7445;
 }
 

@@ -14,7 +14,7 @@
           </div>
 
           <!-- Body -->
-          <div :class="classBody" class="overflow-y-auto flex-1 relative">
+          <div :class="classBody" class="flex-1 relative">
             <slot />
           </div>
 
