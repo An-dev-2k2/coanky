@@ -115,7 +115,7 @@ const onDialogSubmit = async (d) => {
   if (modeDialog.value === 'create') {
     data.value.push(d)
   } else if (modeDialog.value === 'update') {
-    const index = data.value.findIndex(item => item.id === d.id)
+    const index = data.value.findIndex(item => item._id === d._id)
     if (index !== -1) {
       data.value[index] = d
     }
