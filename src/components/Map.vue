@@ -22,7 +22,7 @@
             <div class="stamp-animation
              border-8 border-red-600
              text-red-600
-             3xl:text-3xl text-base font-extrabold
+             2xl:text-3xl text-base font-extrabold
              px-10 py-4
              rounded-xl
              bg-white
@@ -32,12 +32,12 @@
               ĐÃ HOÀN THÀNH
 
             </div>
-            <button @click="showCertificate = true" class="absolute bottom-4 3xl:w-[240px] w-[220px] flex justify-center items-center py-3
+            <button @click="showCertificate = true" class="absolute bottom-4 2xl:w-[240px] w-[220px] flex justify-center items-center py-3
            cursor-pointer hover:brightness-110 active:scale-95 transition">
 
               <img src="/images/btn.png" class="absolute w-full" />
 
-              <span class="z-10 font-semibold 3xl:text-md text-sm">
+              <span class="z-10 font-semibold 2xl:text-md text-sm">
                 📜 Nhận Giấy Chứng Nhận
               </span>
 
