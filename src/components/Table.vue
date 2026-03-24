@@ -29,11 +29,11 @@
               'rounded-r-lg': cellIndex === fields.length - 1
             }" class="px-2 py-2 text-sm text-gray-600 group-hover:bg-gray-100 transition-colors">
               <template v-if="field.key === 'index'">
-                <p class="text-center font-bold">{{ rowIndex + 1 }}</p>
+                <p class="text-center font-bold">{{ (currentPage - 1) * perPage + rowIndex + 1 }}</p>
               </template>
               <template v-else>
                 <slot :name="field.key" :item="item" :value="field.key === 'index'
-                  ? (rowIndex + 1)
+                  ? ((currentPage - 1) * perPage + rowIndex + 1)
                   : item[field.key]" :field="field" :index="rowIndex">
                   {{ item[field.key] }}
                 </slot>
@@ -60,7 +60,7 @@ defineOptions({
   name: 'AppTable'
 })
 
-defineProps({
+const props = defineProps({
   data: {
     type: Array,
     required: true
@@ -72,6 +72,14 @@ defineProps({
   isLoading: {
     type: Boolean,
     default: false
+  },
+  currentPage: {
+    type: Number,
+    default: 1
+  },
+  perPage: {
+    type: Number,
+    default: 10
   }
 })
 </script>

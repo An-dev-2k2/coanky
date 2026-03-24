@@ -9,7 +9,7 @@
       </router-link>
     </div>
     <Card class="py-0 mt-5">
-      <Table :fields="fields" :data="data">
+      <Table :fields="fields" :data="data" :currentPage="pagination.page" :perPage="pagination.limit">
         <template #head-name="{ field }">
           <p class="text-center">{{ field.label }}</p>
         </template>
@@ -56,6 +56,8 @@
         </template>
       </Table>
     </Card>
+    <BasePagination :total="pagination.total" :limit="pagination.limit" :currentPage="pagination.page"
+      @change="handlePageChange" />
     <component v-model="showModal" :is="currentDialog" :data="selectedDialog" :mode="modeDialog" @close="closeDialog"
       @submit="onDialogSubmit" />
   </div>
@@ -66,9 +68,10 @@ import { Plus, Trash2, Pen } from 'lucide-vue-next';
 import Button from '@/components/Button.vue';
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
+import BasePagination from '@/components/BasePagination.vue';
 import { useFormat } from '@/composables/useFormat';
 import { useToast } from 'vue-toastification';
-import { onMounted, ref, markRaw, defineAsyncComponent } from 'vue';
+import { onMounted, ref, markRaw, defineAsyncComponent, reactive } from 'vue';
 import TourAPI from '@/services/api/admin/TourAPI';
 
 const toast = useToast()
@@ -89,16 +92,30 @@ const currentDialog = ref(null)
 const modeDialog = ref(null)
 const selectedDialog = ref(null)
 const showModal = ref(false)
+const pagination = reactive({
+  total: 0,
+  page: 1,
+  limit: 10
+})
 
 const getTours = async () => {
   try {
-    const { data: d } = await TourAPI.get()
-    data.value = d
+    const res = await TourAPI.get({
+      page: pagination.page,
+      limit: pagination.limit
+    })
+    data.value = res.data
+    pagination.total = res.pagination.total
   }
   catch (e) {
     console.log(e)
     toast.error("Lấy danh sách tour thất bại")
   }
+}
+
+const handlePageChange = (page) => {
+  pagination.page = page
+  getTours()
 }
 
 const openDialog = (type, props = {}) => {
@@ -130,7 +147,7 @@ const deleteTour = async (id) => {
   try {
     await TourAPI.delete(id)
     toast.success("Xóa tour thành công")
-    data.value = data.value.filter(i => i._id !== id)
+    getTours()
   }
   catch (e) {
     console.log(e)

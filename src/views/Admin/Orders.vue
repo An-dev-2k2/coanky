@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card class="py-0">
-      <Table :fields="fields" :data="dataTable">
+      <Table :fields="fields" :data="dataTable" :currentPage="pagination.page" :perPage="pagination.limit">
         <template #head-title="{ field }">
           <p class="text-center">{{ field.label }}</p>
         </template>
@@ -64,15 +64,18 @@
         </template>
       </Table>
     </Card>
+    <BasePagination :total="pagination.total" :limit="pagination.limit" :currentPage="pagination.page"
+      @change="handlePageChange" />
   </div>
 </template>
 
 <script setup>
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
+import BasePagination from '@/components/BasePagination.vue';
 import { useFormat } from '@/composables/useFormat';
 import OrderAPI from '@/services/api/admin/OrderAPI';
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { Loader, Check } from 'lucide-vue-next';
 
 const statusMap = {
@@ -114,15 +117,29 @@ const fields = [
 ]
 
 const dataTable = ref([])
+const pagination = reactive({
+  total: 0,
+  page: 1,
+  limit: 10
+})
 
 const getOrders = async () => {
   try {
-    const { data } = await OrderAPI.get()
-    dataTable.value = data
+    const res = await OrderAPI.get({
+      page: pagination.page,
+      limit: pagination.limit
+    })
+    dataTable.value = res.data
+    pagination.total = res.pagination.total
   }
   catch (err) {
     console.log(err)
   }
+}
+
+const handlePageChange = (page) => {
+  pagination.page = page
+  getOrders()
 }
 
 onMounted(() => {

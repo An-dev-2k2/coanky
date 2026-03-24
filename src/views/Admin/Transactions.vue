@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card class="py-0">
-      <Table :fields="fields" :data="data">
+      <Table :fields="fields" :data="data" :currentPage="pagination.page" :perPage="pagination.limit">
         <template #head-username="{ field }">
           <p class="text-center">{{ field.label }}</p>
         </template>
@@ -30,14 +30,17 @@
         </template>
       </Table>
     </Card>
+    <BasePagination :total="pagination.total" :limit="pagination.limit" :currentPage="pagination.page"
+      @change="handlePageChange" />
   </div>
 </template>
 
 <script setup>
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
+import BasePagination from '@/components/BasePagination.vue';
 import AppAPI from '@/services/api/admin/AppAPI';
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useFormat } from '@/composables/useFormat';
 
 const { formatPrice, formatDate, formatTimeOnly } = useFormat()
@@ -59,15 +62,29 @@ const statusColorMap = {
 }
 
 const data = ref([])
+const pagination = reactive({
+  total: 0,
+  page: 1,
+  limit: 10
+})
 
 const getTransactions = async () => {
   try {
-    const { data: d } = await AppAPI.getTransactions()
-    data.value = d
+    const res = await AppAPI.getTransactions({
+      page: pagination.page,
+      limit: pagination.limit
+    })
+    data.value = res.data
+    pagination.total = res.pagination.total
   }
   catch (error) {
     console.log(error)
   }
+}
+
+const handlePageChange = (page) => {
+  pagination.page = page
+  getTransactions()
 }
 
 onMounted(() => {

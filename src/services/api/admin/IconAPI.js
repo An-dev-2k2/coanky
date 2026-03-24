@@ -4,10 +4,10 @@ class IconAPI {
   constructor(apiEndpoint = 'admin/icons') {
     this.apiEndpoint = apiEndpoint
   }
-  async get() {
+  async get(params = {}) {
     return new Promise((resolve, reject) => {
       axios
-        .get(this.apiEndpoint)
+        .get(this.apiEndpoint, { params })
         .then((res) => resolve(res.data))
         .catch((err) => reject(err.response.data))
     })

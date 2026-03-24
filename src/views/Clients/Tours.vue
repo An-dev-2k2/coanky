@@ -52,6 +52,10 @@
           </router-link>
         </div>
         <p v-else class="text-center text-[30px] text-[#B06C03] pt-20">Không có tour nào.</p>
+        <div class="mt-10 pb-20 w-full flex justify-center">
+          <BasePagination :total="pagination.total" :limit="pagination.limit" :currentPage="pagination.page"
+            @change="handlePageChange" />
+        </div>
       </div>
     </ResponsiveContainer>
   </div>
@@ -60,18 +64,33 @@
 <script setup>
 import TourAPI from '@/services/api/client/TourAPI';
 import ResponsiveContainer from '@/components/ResponsiveContainer.vue';
-import { onMounted, ref } from 'vue';
+import BasePagination from '@/components/BasePagination.vue';
+import { onMounted, reactive, ref } from 'vue';
 import { Star, Crown, Flag } from 'lucide-vue-next';
 
 const tours = ref([])
+const pagination = reactive({
+  total: 0,
+  page: 1,
+  limit: 10
+})
 const getTours = async () => {
   try {
-    const { data } = await TourAPI.getTours()
-    tours.value = data
+    const res = await TourAPI.getTours({
+      page: pagination.page,
+      limit: pagination.limit
+    })
+    tours.value = res.data
+    pagination.total = res.pagination.total
   }
   catch (error) {
     console.error('Error fetching tours:', error)
   }
+}
+
+const handlePageChange = (page) => {
+  pagination.page = page
+  getTours()
 }
 
 onMounted(() => {

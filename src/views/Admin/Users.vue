@@ -1,7 +1,7 @@
 <template>
   <div>
     <Card class="py-0">
-      <Table :fields="fields" :data="data">
+      <Table :fields="fields" :data="data" :currentPage="pagination.page" :perPage="pagination.limit">
         <template #head-price="{ field }">
           <p class="text-center">{{ field.label }}</p>
         </template>
@@ -44,6 +44,8 @@
         </template> -->
       </Table>
     </Card>
+    <BasePagination :total="pagination.total" :limit="pagination.limit" :currentPage="pagination.page"
+      @change="handlePageChange" />
   </div>
 </template>
 
@@ -51,11 +53,12 @@
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
 import Button from '@/components/Button.vue';
+import BasePagination from '@/components/BasePagination.vue';
 import { Pen, Trash2 } from 'lucide-vue-next';
 import { useFormat } from '@/composables/useFormat';
 import { useToast } from 'vue-toastification';
 import AuthAPI from '@/services/api/admin/AuthAPI';
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 
 const toast = useToast()
 const { formatPrice, formatDate, formatTimeOnly } = useFormat()
@@ -82,6 +85,11 @@ const fields = [
 // ]
 
 const data = ref([])
+const pagination = reactive({
+  total: 0,
+  page: 1,
+  limit: 10
+})
 const roleNameMap = {
   'admin': ' Quản trị viên',
   'user': ' Người dùng'
@@ -89,12 +97,21 @@ const roleNameMap = {
 
 const getUsers = async () => {
   try {
-    const { data: d } = await AuthAPI.getUsers();
-    data.value = d
+    const res = await AuthAPI.getUsers({
+      page: pagination.page,
+      limit: pagination.limit
+    });
+    data.value = res.data
+    pagination.total = res.pagination.total
   }
   catch (err) {
     toast.error(err?.message)
   }
+}
+
+const handlePageChange = (page) => {
+  pagination.page = page
+  getUsers()
 }
 
 onMounted(() => {

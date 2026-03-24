@@ -7,7 +7,7 @@
       </Button>
     </div>
     <Card class="py-0 mt-5">
-      <Table :fields="fields" :data="data">
+      <Table :fields="fields" :data="data" :currentPage="pagination.page" :perPage="pagination.limit">
         <template #head-image="{ field }">
           <p class="text-center">{{ field.label }}</p>
         </template>
@@ -46,15 +46,18 @@
     </Card>
     <component v-model="showModal" :is="currentDialog" :title="titleDialog" :nameBtn="nameBtnDialog"
       :data="selectedDialog" :mode="modeDialog" @close="closeDialog" @submit="onDialogSubmit" />
+    <BasePagination :total="pagination.total" :limit="pagination.limit" :currentPage="pagination.page"
+      @change="handlePageChange" />
   </div>
 </template>
 
 <script setup>
-import { ref, markRaw, defineAsyncComponent, onMounted } from 'vue'
+import { ref, markRaw, defineAsyncComponent, onMounted, reactive } from 'vue'
 import { Plus, Upload, Trash2, Pen } from 'lucide-vue-next';
 import Button from '@/components/Button.vue';
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
+import BasePagination from '@/components/BasePagination.vue';
 import { useFormat } from '@/composables/useFormat';
 import IconAPI from '@/services/api/admin/IconAPI';
 import { useToast } from 'vue-toastification';
@@ -78,6 +81,11 @@ const titleDialog = ref('')
 const nameBtnDialog = ref('')
 
 const showModal = ref(false)
+const pagination = reactive({
+  total: 0,
+  page: 1,
+  limit: 10
+})
 
 const openDialog = (type, props = {}) => {
   if (type === 'create') {
@@ -117,13 +125,8 @@ const closeDialog = () => {
 }
 
 const onDialogSubmit = async (d) => {
-  if (modeDialog.value === 'create') {
-    data.value.push(d)
-  } else if (modeDialog.value === 'update') {
-    const index = data.value.findIndex(i => i._id === d._id)
-    if (index !== -1) {
-      data.value[index] = d
-    }
+  if (modeDialog.value === 'create' || modeDialog.value === 'update') {
+    getIcons()
   } else if (modeDialog.value === 'delete') {
     await deleteIcon(d)
   }
@@ -134,7 +137,7 @@ const deleteIcon = async (id) => {
   try {
     await IconAPI.delete(id)
     toast.success('Xóa ấn ký thành công!')
-    data.value = data.value.filter(i => i._id !== id)
+    getIcons()
   }
   catch (e) {
     console.log(e)
@@ -144,12 +147,21 @@ const deleteIcon = async (id) => {
 
 const getIcons = async () => {
   try {
-    const { data: d } = await IconAPI.get()
-    data.value = d
+    const res = await IconAPI.get({
+      page: pagination.page,
+      limit: pagination.limit
+    })
+    data.value = res.data
+    pagination.total = res.pagination.total
   }
   catch (e) {
     console.log(e)
   }
+}
+
+const handlePageChange = (page) => {
+  pagination.page = page
+  getIcons()
 }
 
 onMounted(() => {

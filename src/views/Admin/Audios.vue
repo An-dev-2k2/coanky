@@ -7,7 +7,7 @@
       </Button>
     </div>
     <Card class="py-0 mt-5">
-      <Table :fields="fields" :data="data">
+      <Table :fields="fields" :data="data" :currentPage="pagination.page" :perPage="pagination.limit">
         <template #head-name="{ field }">
           <p class="text-center">{{ field.label }}</p>
         </template>
@@ -43,6 +43,8 @@
     </Card>
     <component v-model="showModal" :is="currentDialog" :title="titleDialog" :nameBtn="nameBtnDialog"
       :data="selectedDialog" :mode="modeDialog" @submit="onDialogSubmit" />
+    <BasePagination :total="pagination.total" :limit="pagination.limit" :currentPage="pagination.page"
+      @change="handlePageChange" />
   </div>
 </template>
 
@@ -50,9 +52,10 @@
 import Card from '@/components/Card.vue';
 import Table from '@/components/Table.vue';
 import Button from '@/components/Button.vue';
+import BasePagination from '@/components/BasePagination.vue';
 import { Plus, Pen, Trash2 } from 'lucide-vue-next';
 import { useFormat } from '@/composables/useFormat';
-import { ref, markRaw, defineAsyncComponent, onMounted } from 'vue'
+import { ref, markRaw, defineAsyncComponent, onMounted, reactive } from 'vue'
 import AudioAPI from '@/services/api/admin/AudioAPI';
 import { useToast } from 'vue-toastification';
 
@@ -75,6 +78,11 @@ const modeDialog = ref(null)
 const selectedDialog = ref(null)
 const titleDialog = ref('')
 const nameBtnDialog = ref('')
+const pagination = reactive({
+  total: 0,
+  page: 1,
+  limit: 10
+})
 
 const openDialog = (type, props = {}) => {
   if (type === 'create') {
@@ -112,13 +120,8 @@ const openDialog = (type, props = {}) => {
 }
 
 const onDialogSubmit = async (d) => {
-  if (modeDialog.value === 'create') {
-    data.value.push(d)
-  } else if (modeDialog.value === 'update') {
-    const index = data.value.findIndex(item => item._id === d._id)
-    if (index !== -1) {
-      data.value[index] = d
-    }
+  if (modeDialog.value === 'create' || modeDialog.value === 'update') {
+    getAudios()
   } else if (modeDialog.value === 'delete') {
     await deleteAudio(d)
   }
@@ -128,7 +131,7 @@ const onDialogSubmit = async (d) => {
 const deleteAudio = async (id) => {
   try {
     await AudioAPI.delete(id)
-    data.value = data.value.filter(i => i._id !== id)
+    getAudios()
     toast.success('Xóa audio thành công!')
   } catch (e) {
     console.log(e)
@@ -147,12 +150,21 @@ const closeDialog = () => {
 
 const getAudios = async () => {
   try {
-    const { data: d } = await AudioAPI.get()
-    data.value = d
+    const res = await AudioAPI.get({
+      page: pagination.page,
+      limit: pagination.limit
+    })
+    data.value = res.data
+    pagination.total = res.pagination.total
   }
   catch (e) {
     console.log(e)
   }
+}
+
+const handlePageChange = (page) => {
+  pagination.page = page
+  getAudios()
 }
 
 onMounted(() => {

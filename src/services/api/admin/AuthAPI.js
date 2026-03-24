@@ -20,10 +20,10 @@ class AuthAPI {
         .catch((err) => reject(err.response.data))
     })
   }
-  async getUsers() {
+  async getUsers(params = {}) {
     return new Promise((resolve, reject) => {
       axios
-        .get(this.apiEndpoint + '/users')
+        .get(this.apiEndpoint + '/users', { params })
         .then((res) => resolve(res.data))
         .catch((err) => reject(err.response.data))
     })

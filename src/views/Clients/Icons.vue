@@ -29,6 +29,10 @@
             </div>
           </div>
         </div>
+        <div class="mt-5 flex justify-center w-full">
+          <BasePagination :total="pagination.total" :limit="pagination.limit" :currentPage="pagination.page"
+            @change="handlePageChange" />
+        </div>
       </div>
     </div>
     <Modal :model-value="isPopup" title="Thông tin ấn ký" class="font-rowdies" @update:modelValue="isPopup = $event">
@@ -108,15 +112,21 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import IconAPI from '@/services/api/client/IconAPI';
 import Modal from '@/components/Modal.vue';
+import BasePagination from '@/components/BasePagination.vue';
 import { useFormat } from '@/composables/useFormat';
 
 const { formatDate } = useFormat()
 const icons = ref([])
 const isPopup = ref(false)
 const selectedIcon = ref(null)
+const pagination = reactive({
+  total: 0,
+  page: 1,
+  limit: 24 // 6 columns * 4 rows approx
+})
 
 const showPopup = (icon) => {
   selectedIcon.value = icon
@@ -125,12 +135,21 @@ const showPopup = (icon) => {
 const getIcons = async () => {
   // Gọi API để lấy danh sách icons
   try {
-    const { data } = await IconAPI.getIcons()
-    icons.value = data
+    const res = await IconAPI.getIcons({
+      page: pagination.page,
+      limit: pagination.limit
+    })
+    icons.value = res.data
+    pagination.total = res.pagination.total
   }
   catch (error) {
     console.error('Lỗi khi lấy danh sách icons:', error);
   }
+}
+
+const handlePageChange = (page) => {
+  pagination.page = page
+  getIcons()
 }
 onMounted(() => {
   getIcons()
