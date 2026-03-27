@@ -208,7 +208,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 40px;
+  padding: 0px 40px;
 }
 
 /* ── LOGO ── */
@@ -218,7 +218,7 @@ onBeforeUnmount(() => {
 }
 
 .logo-img {
-  width: 120px;
+  width: 100px;
 }
 
 /* ── RIGHT ── */
