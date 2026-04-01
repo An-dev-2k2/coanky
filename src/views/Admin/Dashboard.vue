@@ -1,5 +1,24 @@
 <template>
   <div>
+    <div class="mt-1 flex justify-between items-center bg-white p-4 rounded-lg shadow-sm mb-6">
+      <h4 class="text-base font-semibold uppercase">Dashboard</h4>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-600">Từ:</span>
+          <input type="date" v-model="startDate"
+            class="px-3 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-600">Đến:</span>
+          <input type="date" v-model="endDate"
+            class="px-3 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm" />
+        </div>
+        <Button @click="getDashboard" class="!py-1.5 flex items-center gap-2">
+          <Search class="w-4 h-4" />
+          Lọc
+        </Button>
+      </div>
+    </div>
     <div class="mt-1">
       <h4 class="text-base font-semibold uppercase">Thống kê tổng</h4>
       <div class="grid grid-cols-4 gap-6 mt-2">
@@ -37,7 +56,7 @@
     </div>
     <div class="grid grid-cols-12 gap-6 mt-6">
       <Card class="col-span-12">
-        <ChartRevenueByDate :start-of-month="startOfMonth" :end-of-today="endOfToday" :data="revenueByDate" />
+        <ChartRevenueByDate :start-of-month="startDate" :end-of-today="endDate" :data="revenueByDate" />
       </Card>
       <Card class="col-span-6">
         <ChartRevenueAndTours :data="revenueAndTours" />
@@ -57,9 +76,10 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { DollarSign, Users, Handbag, TicketsPlane, TrendingUp, TrendingDown } from 'lucide-vue-next';
+import { DollarSign, Users, Handbag, TicketsPlane, TrendingUp, TrendingDown, Search } from 'lucide-vue-next';
 import CountUp from 'vue-countup-v3'
 import Card from '@/components/Card.vue';
+import Button from '@/components/Button.vue';
 import moment from 'moment';
 import ChartRevenueByDate from '@/components/admin/ChartRevenueByDate.vue';
 import ChartRevenueAndTours from '@/components/admin/ChartRevenueAndTours.vue';
@@ -116,8 +136,8 @@ const tourStatus = ref({
   notCompleted: 0
 })
 
-const startOfMonth = ref(moment().startOf('month').format('YYYY-MM-DD'))
-const endOfToday = ref(moment().format('YYYY-MM-DD'))
+const startDate = ref(moment().startOf('month').format('YYYY-MM-DD'))
+const endDate = ref(moment().format('YYYY-MM-DD'))
 
 // const generateRevenueByDate = () => {
 //   const start = moment(startOfMonth.value)
@@ -193,8 +213,8 @@ const endOfToday = ref(moment().format('YYYY-MM-DD'))
 const getDashboard = async () => {
   try {
     const body = {
-      startDate: startOfMonth.value,
-      endDate: endOfToday.value
+      startDate: startDate.value,
+      endDate: endDate.value
     }
     const { data } = await AppAPI.getDashboard(body)
     stats.value = data.stats
