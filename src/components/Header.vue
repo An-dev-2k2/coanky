@@ -178,9 +178,7 @@ onBeforeUnmount(() => {
   left: 0;
   right: 0;
   z-index: 90;
-  background: linear-gradient(to bottom,
-      rgba(20, 10, 4, 0.97) 0%,
-      rgba(26, 14, 6, 0.95) 100%);
+  background: #880000;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
