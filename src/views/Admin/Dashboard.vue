@@ -70,6 +70,9 @@
       <Card class="col-span-7">
         <Table :fields="fieldsIconStatus" :data="dataIconStatus" />
       </Card>
+      <Card class="col-span-12">
+        <ChartTopTours :data="topTours" />
+      </Card>
     </div>
   </div>
 </template>
@@ -85,6 +88,7 @@ import ChartRevenueByDate from '@/components/admin/ChartRevenueByDate.vue';
 import ChartRevenueAndTours from '@/components/admin/ChartRevenueAndTours.vue';
 import ChartRevenueByYear from '@/components/admin/ChartRevenueByYear.vue';
 import ChartTourStatus from '@/components/admin/ChartTourStatus.vue';
+import ChartTopTours from '@/components/admin/ChartTopTours.vue';
 import Table from '@/components/Table.vue';
 import AppAPI from '@/services/api/admin/AppAPI';
 
@@ -135,6 +139,8 @@ const tourStatus = ref({
   completed: 0,
   notCompleted: 0
 })
+
+const topTours = ref([])
 
 const startDate = ref(moment().startOf('month').format('YYYY-MM-DD'))
 const endDate = ref(moment().format('YYYY-MM-DD'))
@@ -222,6 +228,7 @@ const getDashboard = async () => {
     revenueAndTours.value = data.revenueAndTours
     revenueByYear.value = data.revenueCompare
     tourStatus.value = data.tourStatus
+    topTours.value = data.topTours || []
     dataIconStatus.value = data.userIcons
   }
   catch (err) {
