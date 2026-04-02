@@ -64,14 +64,14 @@
       <Card class="col-span-6">
         <ChartRevenueByYear :data="revenueByYear" />
       </Card>
-      <Card class="col-span-5">
+      <Card class="col-span-6">
         <ChartTourStatus :data="tourStatus" />
       </Card>
-      <Card class="col-span-7">
-        <Table :fields="fieldsIconStatus" :data="dataIconStatus" />
+      <Card class="col-span-6">
+        <ChartTopTours :data="topTours" />
       </Card>
       <Card class="col-span-12">
-        <ChartTopTours :data="topTours" />
+        <Table :fields="fieldsIconStatus" :data="dataIconStatus" />
       </Card>
     </div>
   </div>

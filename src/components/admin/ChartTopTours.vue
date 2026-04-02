@@ -1,19 +1,24 @@
 <template>
-  <div>
+  <div class="relative">
     <div class="flex items-center justify-between mb-1">
       <span class="font-bold">Top tour được mua nhiều nhất</span>
       <span v-if="data && data.length" class="text-xs text-gray-400 font-medium">
         Top {{ data.length }} tour
       </span>
     </div>
-    <div v-if="!data || data.length === 0" class="flex flex-col items-center justify-center h-[360px] text-gray-400">
+    
+    <!-- Lớp phủ khi không có dữ liệu -->
+    <div v-if="!data || data.length === 0" 
+      class="absolute inset-0 top-8 flex flex-col items-center justify-center bg-white/50 z-10 text-gray-400">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-2 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
           d="M9 17v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v8m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
       </svg>
       <span class="text-sm">Chưa có dữ liệu trong khoảng thời gian này</span>
     </div>
-    <div v-else class="chart" ref="chartRef"></div>
+
+    <!-- Chart container luôn hiển thị để tránh lỗi ref null -->
+    <div class="chart" ref="chartRef"></div>
   </div>
 </template>
 
@@ -31,22 +36,16 @@ const props = defineProps({
 const chartRef = ref(null)
 let myChart = null
 
-// Bảng màu gradient đẹp cho từng slice
 const COLORS = [
-  '#6366f1', // indigo
-  '#f59e0b', // amber
-  '#10b981', // emerald
-  '#ef4444', // red
-  '#3b82f6', // blue
-  '#8b5cf6', // violet
-  '#ec4899', // pink
-  '#14b8a6', // teal
+  '#6366f1', '#f59e0b', '#10b981', '#ef4444', 
+  '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6'
 ]
 
 const renderChart = (data) => {
-  if (!chartRef.value || !data || data.length === 0) return
-
+  // Sử dụng nextTick để đảm bảo DOM đã sẵn sàng
   nextTick(() => {
+    if (!chartRef.value || !data || data.length === 0) return
+
     if (!myChart) {
       myChart = echarts.init(chartRef.value)
     }
@@ -102,12 +101,8 @@ const renderChart = (data) => {
             borderColor: '#fff',
             borderWidth: 2
           },
-          label: {
-            show: false
-          },
-          labelLine: {
-            show: false
-          },
+          label: { show: false },
+          labelLine: { show: false },
           emphasis: {
             scale: true,
             scaleSize: 6,
@@ -133,11 +128,13 @@ const renderChart = (data) => {
 }
 
 watch(() => props.data, (newVal) => {
-  if (newVal && newVal.length) renderChart(newVal)
+  renderChart(newVal)
 }, { deep: true })
 
 onMounted(() => {
-  if (props.data && props.data.length) renderChart(props.data)
+  if (props.data && props.data.length > 0) {
+    renderChart(props.data)
+  }
   window.addEventListener('resize', () => {
     myChart && myChart.resize()
   })
@@ -146,6 +143,6 @@ onMounted(() => {
 
 <style scoped>
 .chart {
-  height: 360px;
+  height: 400px;
 }
 </style>
