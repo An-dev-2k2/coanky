@@ -30,7 +30,7 @@
             </div>
           </div>
         </template>
-        <template #head-price="{ field }">
+        <template #head-finalPrice="{ field }">
           <p class="text-center">{{ field.label }}</p>
         </template>
         <template #head-percent="{ field }">
@@ -42,7 +42,7 @@
         <template #head-tourProcess="{ field }">
           <p class="text-center">{{ field.label }}</p>
         </template>
-        <template #price="{ value }">
+        <template #finalPrice="{ value }">
           <p class="text-center font-bold text-red-600">{{ formatPrice(value) }} VNĐ</p>
         </template>
         <template #percent="{ value }">
@@ -109,7 +109,7 @@ const fields = [
   { key: 'code', label: "Mã đơn hàng" },
   { key: 'title', label: "Tên tour" },
   { key: 'image', label: "Ảnh đại diện" },
-  { key: 'price', label: "Giá" },
+  { key: 'finalPrice', label: "Giá sau giảm" },
   { key: 'percent', label: "% giảm giá" },
   { key: 'status', label: "Trạng thái" },
   { key: 'tourProcess', label: "Tiến trình" },
