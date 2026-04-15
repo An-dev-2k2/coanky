@@ -16,9 +16,16 @@
         </div>
         <button 
           @click="handleSearch"
-          class="bg-gradient-to-r hover:opacity-90 from-sky-500 to-emerald-500 text-white px-5 py-2 text-sm font-semibold rounded-xl transition shadow-md whitespace-nowrap flex items-center gap-2"
+          :disabled="isLoading"
+          :class="isLoading ? 'cursor-no-drop opacity-70' : 'cursor-pointer hover:opacity-90'"
+          class="bg-gradient-to-r from-sky-500 to-emerald-500 text-white px-5 py-2 text-sm font-semibold rounded-xl transition shadow-md whitespace-nowrap flex items-center justify-center min-w-[100px] gap-2"
         >
-          Tìm kiếm
+          <template v-if="isLoading">
+            <Loader class="animate-spin w-4 h-4" />
+          </template>
+          <template v-else>
+            Tìm kiếm
+          </template>
         </button>
       </div>
     </div>
@@ -142,6 +149,7 @@ const fields = [
 
 const dataTable = ref([])
 const searchQuery = ref('')
+const isLoading = ref(false)
 const pagination = reactive({
   total: 0,
   page: 1,
@@ -149,6 +157,8 @@ const pagination = reactive({
 })
 
 const getOrders = async () => {
+  if (isLoading.value) return;
+  isLoading.value = true;
   try {
     const params = {
       page: pagination.page,
@@ -163,6 +173,8 @@ const getOrders = async () => {
   }
   catch (err) {
     console.log(err)
+  } finally {
+    isLoading.value = false;
   }
 }
 
