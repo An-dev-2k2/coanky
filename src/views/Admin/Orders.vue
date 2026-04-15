@@ -1,6 +1,30 @@
 <template>
   <div>
+    <!-- Search Box -->
+    <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <h2 class="text-xl font-bold text-gray-800">Danh sách Đơn hàng</h2>
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <div class="relative w-full md:w-64 lg:w-80">
+          <input 
+            v-model="searchQuery" 
+            @keyup.enter="handleSearch"
+            type="text" 
+            placeholder="TênKH, Email, Mã Code..." 
+            class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-400 transition-shadow bg-white"
+          />
+          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        </div>
+        <button 
+          @click="handleSearch"
+          class="bg-gradient-to-r hover:opacity-90 from-sky-500 to-emerald-500 text-white px-5 py-2 text-sm font-semibold rounded-xl transition shadow-md whitespace-nowrap flex items-center gap-2"
+        >
+          Tìm kiếm
+        </button>
+      </div>
+    </div>
+
     <Card class="py-0">
+
       <Table :fields="fields" :data="dataTable" :currentPage="pagination.page" :perPage="pagination.limit">
         <template #head-title="{ field }">
           <p class="text-center">{{ field.label }}</p>
@@ -76,7 +100,7 @@ import BasePagination from '@/components/BasePagination.vue';
 import { useFormat } from '@/composables/useFormat';
 import OrderAPI from '@/services/api/admin/OrderAPI';
 import { onMounted, reactive, ref } from 'vue';
-import { Loader, Check } from 'lucide-vue-next';
+import { Loader, Check, Search } from 'lucide-vue-next';
 
 const statusMap = {
   'success': 'Thành công',
@@ -117,6 +141,7 @@ const fields = [
 ]
 
 const dataTable = ref([])
+const searchQuery = ref('')
 const pagination = reactive({
   total: 0,
   page: 1,
@@ -125,16 +150,25 @@ const pagination = reactive({
 
 const getOrders = async () => {
   try {
-    const res = await OrderAPI.get({
+    const params = {
       page: pagination.page,
       limit: pagination.limit
-    })
+    }
+    if (searchQuery.value) {
+      params.search = searchQuery.value
+    }
+    const res = await OrderAPI.get(params)
     dataTable.value = res.data
     pagination.total = res.pagination.total
   }
   catch (err) {
     console.log(err)
   }
+}
+
+const handleSearch = () => {
+  pagination.page = 1
+  getOrders()
 }
 
 const handlePageChange = (page) => {
