@@ -618,7 +618,7 @@ function MyCustomUploadAdapterPlugin(editor) {
 
 const getAudios = async () => {
   try {
-    const { data } = await AudioAPI.get()
+    const { data } = await AudioAPI.get({ limit: 0 })
     audioList.value = data
   }
   catch (e) {
@@ -628,7 +628,7 @@ const getAudios = async () => {
 
 const getIcons = async () => {
   try {
-    const { data } = await IconAPI.get()
+    const { data } = await IconAPI.get({ limit: 0 })
     iconList.value = data
   }
   catch (e) {
