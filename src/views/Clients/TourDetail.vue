@@ -541,17 +541,9 @@ onMounted(() => {
 
 /* container timeline */
 
-/* line nối tới item tiếp theo */
+/* line nối tới item tiếp theo - Đã chuyển sang dùng background ở .timeline-item */
 .timeline-item::after {
-  content: "";
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  width: 100%; /* Line dài bằng đúng item để nối tới tâm item tiếp theo */
-  height: 2px;
-  background: #B06C03;
-  opacity: .3;
-  z-index: 0;
+  display: none;
 }
 
 /* item cuối không có line */
@@ -600,6 +592,23 @@ onMounted(() => {
 .timeline-item {
   width: 160px; /* Cố định chiều rộng để các dot thẳng hàng */
   flex-shrink: 0;
+  /* Line nối ngang dùng background để không bị tràn viewport */
+  background-image: linear-gradient(to right, #B06C034D, #B06C034D);
+  background-size: 100% 2px;
+  background-position: 0 10px;
+  background-repeat: no-repeat;
+}
+
+.timeline-item:first-child {
+  background-image: linear-gradient(to right, transparent 50%, #B06C034D 50%);
+}
+
+.timeline-item:last-child {
+  background-image: linear-gradient(to right, #B06C034D 50%, transparent 50%);
+}
+
+.timeline-item:first-child:last-child {
+  background-image: none;
 }
 
 .timeline-icon {
