@@ -111,7 +111,7 @@
       </Modal>
     </div>
     <div v-if="tour?.diadiem?.length"
-      class="tour-map-timeline relative flex gap-[var(--gap)] justify-center items-start mt-10 mb-40"
+      class="tour-map-timeline relative flex justify-center items-start mt-10 mb-40"
       :class="{ 'no-line': tour.diadiem.length === 1 }">
       <div v-for="(location, index) in tour.diadiem" :key="index"
         class="timeline-item relative flex flex-col items-center" :class="{ collected: location.collected }">
@@ -547,7 +547,7 @@ onMounted(() => {
   position: absolute;
   top: 10px;
   left: 50%;
-  width: calc(100% + var(--gap));
+  width: 100%; /* Line dài bằng đúng item để nối tới tâm item tiếp theo */
   height: 2px;
   background: #B06C03;
   opacity: .3;
@@ -592,12 +592,18 @@ onMounted(() => {
 
 /* ===== DESKTOP (default) ===== */
 .tour-map-timeline {
-  --gap: 40px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap; /* Cho phép xuống hàng */
+  row-gap: 80px;  /* Khoảng cách giữa các hàng */
+  justify-content: center;
+}
+
+.timeline-item {
+  width: 160px; /* Cố định chiều rộng để các dot thẳng hàng */
+  flex-shrink: 0;
 }
 
 .timeline-icon {
-  width: 110px;
+  width: 100px;
 }
 
 /* ===== TABLET ===== */
