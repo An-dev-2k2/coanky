@@ -10,6 +10,17 @@
             class="relative w-full transition-all duration-300 hover:-translate-y-1" v-for="(tour, index) in tours"
             :key="tour.id">
             <img src="/images/bg-card.png" alt="Card Background" class="w-full absolute top-0 left-0">
+            <!-- Tags Trạng thái -->
+            <div class="absolute top-16 right-8 z-20 flex flex-col gap-1 items-end pointer-events-none">
+              <div v-if="tour.isCompleted"
+                class="bg-gradient-to-r from-[#8b8e01] to-[#1d3c06] text-white text-[10px] px-3 py-1 rounded-bl-xl rounded-tr-xl font-cafeta uppercase shadow-md border border-[#f5e1a4]/30 backdrop-blur-sm">
+                Đã hoàn thành
+              </div>
+              <div v-if="tour.isInProgress"
+                class="bg-gradient-to-r from-[#b06c03] to-[#700001] text-white text-[10px] px-3 py-1 rounded-bl-xl rounded-tr-xl font-cafeta uppercase shadow-md border border-[#f5e1a4]/30 backdrop-blur-sm animate-pulse">
+                Đang tham gia
+              </div>
+            </div>
             <div class="3xl:pt-24 pt-28 px-6 relative z-10">
               <p class="text-center text-[40px] leading-none line-clamp-2
          bg-gradient-to-r
