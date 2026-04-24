@@ -66,38 +66,40 @@
       <div class="flex justify-center items-center flex-col h-screen">
         <img data-aos="zoom-in" data-aos-delay="500" data-aos-duration="500" src="/images/logo.png" ref="logoRef"
           alt="logo" class="3xl:w-[650px] xl:w-[500px] w-[270px] translate-y-10">
-        <div data-aos="flip-left" data-aos-delay="1000" data-aos-duration="1000">
-          <div ref="startBtnRef"
-            class=" relative cursor-pointer flex justify-center items-center group xl:-translate-y-12 -translate-y-10 transition-all duration-300"
-            @click="startApp">
-            <img src="/images/start-app.png" alt="start app" class="3xl:w-[120px] xl:w-[120px] w-[90px]">
-            <p
-              class="absolute top-0 left-0 text-[#980000] group-hover:text-[#FF4D00] transition-all duration-300 xl:text-2xl text-base xl:pt-20 pt-16 px-5 text-center">
-              Bắt đầu
-              hành
-              trình
-            </p>
+        <div class="-mt-8 xl:-mt-12 flex flex-col items-center">
+          <div data-aos="flip-left" data-aos-delay="1000" data-aos-duration="1000">
+            <div ref="startBtnRef"
+              class="relative cursor-pointer flex justify-center items-center group transition-all duration-300"
+              @click="startApp">
+              <img src="/images/start-app.png" alt="start app" class="3xl:w-[120px] xl:w-[120px] w-[90px]">
+              <p
+                class="absolute top-0 left-0 text-[#980000] group-hover:text-[#FF4D00] transition-all duration-300 xl:text-2xl text-base xl:pt-20 pt-16 px-5 text-center">
+                Bắt đầu
+                hành
+                trình
+              </p>
+            </div>
           </div>
-        </div>
-        <div v-if="!token" ref="actionBtnsRef" class="flex justify-center items-center gap-5 xl:mt-5 mt-10">
-          <router-link data-aos="fade-right" data-aos-delay="1500" data-aos-duration="700" to="/login"
-            class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
-            <img src="/images/btn.png" class="w-full absolute" alt="">
-            <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đăng Nhập</span>
-          </router-link>
-          <router-link data-aos="fade-left" data-aos-delay="1500" data-aos-duration="700" to="/register"
-            class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
-            <img src="/images/btn.png" class="w-full absolute" alt="">
-            <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đăng Ký</span>
-          </router-link>
-        </div>
-        <div v-else ref="actionBtnsRef" data-aos="fade-up" data-aos-delay="1500" data-aos-duration="700"
-          class="flex justify-center items-center gap-5 mt-10">
-          <button @click="logout"
-            class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
-            <img src="/images/btn.png" class="w-full absolute" alt="">
-            <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đăng Xuất</span>
-          </button>
+          <div v-if="!token" ref="actionBtnsRef" class="flex justify-center items-center gap-5 xl:mt-5 mt-10">
+            <router-link data-aos="fade-right" data-aos-delay="1500" data-aos-duration="700" to="/login"
+              class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
+              <img src="/images/btn.png" class="w-full absolute" alt="">
+              <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đăng Nhập</span>
+            </router-link>
+            <router-link data-aos="fade-left" data-aos-delay="1500" data-aos-duration="700" to="/register"
+              class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
+              <img src="/images/btn.png" class="w-full absolute" alt="">
+              <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đăng Ký</span>
+            </router-link>
+          </div>
+          <div v-else ref="actionBtnsRef" data-aos="fade-up" data-aos-delay="1500" data-aos-duration="700"
+            class="flex justify-center items-center gap-5 mt-10">
+            <button @click="logout"
+              class="text-sm text-[var(--color-text)] relative w-[150px] flex justify-center items-center cursor-pointer hover:brightness-110 transition-all duration-300">
+              <img src="/images/btn.png" class="w-full absolute" alt="">
+              <span class="text-[var(--color-text)] font-semibold text-sm z-10">Đăng Xuất</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
