@@ -65,7 +65,7 @@
     <div :class="!isStarted ? 'bg-[#FFF7E0]/70' : 'bg-transparent'" class=" fixed w-full top-0 left-0 h-screen z-[100]">
       <div class="flex justify-center items-center flex-col h-full -translate-y-10 xl:-translate-y-20">
         <img data-aos="zoom-in" data-aos-delay="500" data-aos-duration="500" src="/images/logo.png" ref="logoRef"
-          alt="logo" class="3xl:w-[650px] xl:w-[500px] w-[270px]">
+          alt="logo" class="3xl:w-[650px] xl:w-[500px] w-[270px] translate-y-10">
         <div data-aos="flip-left" data-aos-delay="1000" data-aos-duration="1000" ref="startBtnRef"
           class=" relative cursor-pointer flex justify-center items-center group xl:-translate-y-10 hover:-translate-y-12 transition-all duration-300"
           @click="startApp">
