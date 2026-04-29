@@ -549,7 +549,7 @@ let lastCheckTime = 0;
 let hasAnimatedOnLoad = false;
 const CHECK_INTERVAL = 1000;
 const stampingSet = new Set();
-const COLLECT_RADIUS = 2; // 2 mét
+const COLLECT_RADIUS = 20; // 20 mét (tăng từ 2m để dễ thu thập hơn với GPS thực tế)
 const positionHistory = [];
 const SMOOTH_COUNT = 5;
 let lastUpdatePos = null;
@@ -921,7 +921,7 @@ function startWatch() {
       if (now - lastCheckTime < CHECK_INTERVAL) return;
       lastCheckTime = now;
 
-      checkCollection(latitude, longitude);
+      checkCollection(lat, lon); // Sử dụng tọa độ đã làm mượt (lat, lon) thay vì tọa độ thô (latitude, longitude)
     },
     (err) => console.error(err),
     {
@@ -1103,7 +1103,7 @@ async function checkCollection(userLat, userLon) {
       try {
         // Gọi API lưu tiến trình
         await TourAPI.updateMap(slug, {
-          iconId: location.icon._id,
+          iconId: location.icon?._id || null,
           locationIndex: index
         });
 
