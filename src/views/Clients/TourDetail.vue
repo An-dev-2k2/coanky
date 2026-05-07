@@ -108,7 +108,7 @@
     <div class="fixed bottom-0 left-0 right-0 z-30 overflow-hidden min-h-[60px]">
       <img src="/images/bg-footer-price.png" class="xl:block hidden w-full object-cover" alt="bg footer price">
       <div
-        class=" xl:absolute xl:bg-transparent bg-[#F4DBAB] xl:py-0 py-2 flex justify-center items-center gap-5 top-0 left-0 w-full h-full">
+        class=" absolute xl:bg-transparent bg-[#F4DBAB] xl:py-0 py-2 flex justify-center items-center gap-5 top-0 left-0 w-full h-full">
         <p class="text-[#980000] xl:text-lg text-sm"><span class="text-[#B06C0380]">Giá: </span><b>{{
           formatPrice(tour?.price) }}
             VNĐ</b></p>
