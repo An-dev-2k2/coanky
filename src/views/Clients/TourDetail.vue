@@ -1,24 +1,6 @@
 <template>
-  <div>
+  <div class="w-full overflow-x-hidden">
     <img class="fixed inset-0 w-full h-full object-cover -z-10" src="/images/bg-detail-tour.jpg" alt="background detail">
-    <div class="fixed bottom-0 left-0 right-0 z-20 overflow-hidden">
-      <img src="/images/bg-footer-price.png" class="xl:block hidden w-full object-cover" alt="bg footer price">
-      <div
-        class=" xl:absolute xl:bg-transparent bg-[#F4DBAB] xl:py-0 py-2 flex justify-center items-center gap-5 top-0 left-0 w-full h-full">
-        <p class="text-[#980000] xl:text-lg text-sm"><span class="text-[#B06C0380]">Giá: </span><b>{{
-          formatPrice(tour?.price) }}
-            VNĐ</b></p>
-        <span class="text-[#B06C0380] line-through">-{{ tour?.percent }}%</span>
-        <button v-if="!tour?.isMap" @click="showPopup = true" class="flex justify-center items-center relative z-20">
-          <img src="/images/btn-green.png" alt="" class="w-[150px]">
-          <p class=" absolute text-white">Đặt tour</p>
-        </button>
-        <router-link v-else :to="tour?.slug + '/map'" class="flex justify-center items-center relative z-20">
-          <img src="/images/btn-green.png" alt="" class="w-[150px]">
-          <p class=" absolute text-white">Map</p>
-        </router-link>
-      </div>
-    </div>
     <div class="relative xl:pt-40 xl:px-40 pt-24">
       <img src="/images/cuon-tren.png" class="relative z-10" />
       <div class="3xl:px-[63px] xl:px-[48px] px-[16px] 3xl:-translate-y-7 -translate-y-5 relative z-5">
@@ -120,6 +102,25 @@
             {{ location.icon?.name }}
           </p>
         </div>
+      </div>
+      </div>
+
+    <div class="fixed bottom-0 left-0 right-0 z-30 overflow-hidden min-h-[60px]">
+      <img src="/images/bg-footer-price.png" class="xl:block hidden w-full object-cover" alt="bg footer price">
+      <div
+        class=" xl:absolute xl:bg-transparent bg-[#F4DBAB] xl:py-0 py-2 flex justify-center items-center gap-5 top-0 left-0 w-full h-full">
+        <p class="text-[#980000] xl:text-lg text-sm"><span class="text-[#B06C0380]">Giá: </span><b>{{
+          formatPrice(tour?.price) }}
+            VNĐ</b></p>
+        <span class="text-[#B06C0380] line-through">-{{ tour?.percent }}%</span>
+        <button v-if="!tour?.isMap" @click="showPopup = true" class="flex justify-center items-center relative z-20">
+          <img src="/images/btn-green.png" alt="" class="w-[150px]">
+          <p class=" absolute text-white">Đặt tour</p>
+        </button>
+        <router-link v-else :to="tour?.slug + '/map'" class="flex justify-center items-center relative z-20">
+          <img src="/images/btn-green.png" alt="" class="w-[150px]">
+          <p class=" absolute text-white">Map</p>
+        </router-link>
       </div>
     </div>
   </div>
@@ -635,14 +636,17 @@ onMounted(() => {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
-    margin-left: 30px;
+    padding-left: 30px;
+    margin-left: 0;
+    width: 100%;
+    overflow-x: hidden;
   }
 
   /* line dọc */
   .tour-map-timeline::before {
     content: "";
     position: absolute;
-    left: 9px;
+    left: 39px;
     top: 0;
     bottom: 0;
     width: 2px;
@@ -653,6 +657,8 @@ onMounted(() => {
   .timeline-item {
     flex-direction: row;
     align-items: center;
+    width: 100%;
+    background-image: none !important;
   }
 
   /* bỏ line ngang */
