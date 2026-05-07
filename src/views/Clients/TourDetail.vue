@@ -1,5 +1,6 @@
 <template>
   <div>
+    <img class="fixed inset-0 w-full h-full object-cover -z-10" src="/images/bg-detail-tour.jpg" alt="background detail">
     <div class="fixed bottom-0 left-0 right-0 z-20">
       <img src="/images/bg-footer-price.png" class="xl:block hidden" alt="bg footer price">
       <div
@@ -18,19 +19,14 @@
         </router-link>
       </div>
     </div>
-    <img class="h-screen w-full fixed top-0 left-0 right-0" src="/images/bg-detail-tour.jpg" alt="">
     <div class="relative xl:pt-40 xl:px-40 pt-24">
       <img src="/images/cuon-tren.png" class="relative z-10" />
       <div class="3xl:px-[63px] xl:px-[48px] px-[16px] 3xl:-translate-y-7 -translate-y-5 relative z-5">
         <div style="
     background-image: url('/images/cuon-giua.png');
-    background-size: 100% calc(100% + 20px);  /* X = số pixel gap */
+    background-size: 100% auto;
     background-repeat: repeat-y;
-  " class="3xl:px-36 xl:px-28 px-10 pt-5 xl:pb-5 pb-10">
-          <!--<p class="text-[#B06C03] flex items-center gap-1 xl:text-xs text-[10px]">
-            <Clock class="xl:w-4 w-2.5" />
-            <span>Ngày đăng: {{ formatDate(tour?.createdAt) }} {{ formatTimeOnly(tour?.createdAt) }}</span>
-          </p> -->
+  " class="3xl:px-36 xl:px-28 px-10 pt-5 xl:pb-24 pb-20">
           <p class="text-center xl:pt-5 pt-3 xl:text-3xl text-lg text-[#B06C03] uppercase">{{ tour?.title }}</p>
           <p class="text-center xl:text-sm text-[11px] xl:mt-4 text-[#B06C03]">"{{ tour?.description }}"</p>
           <div class="flex justify-center xl:mt-5 mt-2">
